@@ -6,26 +6,29 @@
 static PlaydateAPI *pd = NULL;
 static LCDFont *font;
 
-#define TEXT_WIDTH 86
-#define TEXT_HEIGHT 16
+static const int kScreenWidth = LCD_COLUMNS;
+static const int kScreenHeight = LCD_ROWS;
 
-int x = (400 - TEXT_WIDTH) / 2;
-int y = (240 - TEXT_HEIGHT) / 2;
+static const int kTextWidth = 86;
+static const int kTextHeight = 16;
+
+
+int x = (kScreenWidth - kTextWidth) / 2;
+int y = (kScreenHeight - kTextHeight) / 2;
 int dx = 1;
 int dy = 2;
 
-// static int update(__attribute__ ((unused)) void* ud)
-static int update(void *ud) {
+static int update(void *userdata) {
     pd->graphics->clear(kColorBlack);
     pd->graphics->drawText("Greeble Bork!", strlen("Greeble Bork!"), kASCIIEncoding, x, y);
 
     x += dx; y += dy;
 	
-    if ( x < 0 || x > LCD_COLUMNS - TEXT_WIDTH ) {
+    if (x < 0 || x > kScreenWidth - kTextWidth) {
         dx = -dx;
     }
 	
-    if ( y < 0 || y > LCD_ROWS - TEXT_HEIGHT ) {
+    if (y < 0 || y > kScreenHeight - kTextHeight) {
         dy = -dy;
     }
         
@@ -38,7 +41,7 @@ static int update(void *ud) {
 int eventHandler(PlaydateAPI* playdate, 
                  PDSystemEvent event, 
                  uint32_t arg) {
-    if ( event == kEventInit ) {
+    if (event == kEventInit) {
         pd = playdate;
 
         pd->display->setRefreshRate(20);
