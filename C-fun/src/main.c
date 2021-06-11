@@ -19,7 +19,7 @@ int dx = 1;
 int dy = 2;
 
 static int update(void *userdata) {
-    pd->graphics->clear(kColorBlack);
+    pd->graphics->clear(kColorWhite);
     pd->graphics->drawText("Greeble Bork!", strlen("Greeble Bork!"), kASCIIEncoding, x, y);
 
     x += dx; y += dy;
@@ -38,19 +38,66 @@ static int update(void *userdata) {
 } // update
 
 
+static const char *eventNames[] = {
+    "kEventInit",
+    "kEventInitLua",
+    "kEventLock",
+    "kEventUnlock",
+    "kEventPause",
+    "kEventResume",
+    "kEventTerminate",
+    "kEventKeyPressed", // arg is keycode
+    "kEventKeyReleased",
+    "kEventLowPower"
+};
+
+
 int eventHandler(PlaydateAPI* playdate, 
                  PDSystemEvent event, 
                  uint32_t arg) {
-    if (event == kEventInit) {
+    if (pd == NULL) {
         pd = playdate;
+    }
 
+    pd->system->logToConsole("event received %s (%x)", eventNames[event], arg);
+
+    switch (event) {
+    case kEventInit:
         pd->display->setRefreshRate(20);
         pd->system->setUpdateCallback(update, NULL);
-
+        
         font = pd->graphics->loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", NULL);
         pd->graphics->setFont(font);
+        break;
+
+    case kEventInitLua:
+        break;
+
+    case kEventLock:
+        break;
+
+    case kEventUnlock:
+        break;
+
+    case kEventPause:
+        break;
+
+    case kEventResume:
+        break;
+
+    case kEventTerminate:
+        break;
+
+    case kEventKeyPressed: // arg is keycode
+        break;
+
+    case kEventKeyReleased:
+        break;
+
+    case kEventLowPower:
+        break;
     }
-	
+    
     return 0;
 } // eventHandler
 
