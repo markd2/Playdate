@@ -36,9 +36,7 @@ void callback(PDButtons button, UpDown state) {
 void checkButtons(void) {
     PDButtons pushed, released;
     pd->system->getButtonState(NULL, &pushed, &released);
-    
     buttonPumperPump(pumper, pushed, released);
-
 
 } // checkButtons
 
