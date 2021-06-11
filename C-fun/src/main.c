@@ -16,10 +16,44 @@ static const int kScreenHeight = LCD_ROWS;
 static const int kTextWidth = 86;
 static const int kTextHeight = 16;
 
+// give this the raw value from getButtonState
+typedef struct ButtonPumper ButtonPumper;
+
+// pumper, pushed, released
+typedef void ButtonPumperPumper(ButtonPumper*, PDButtons, PDButtons);
+
+typedef enum {
+    kPressed,
+    kReleased
+} UpDown;
+
+// this get called when there's a change.
+// called once for each button type when something changes
+typedef void ButtonPumperCallback(PDButtons, UpDown);
+
+struct ButtonPumper {
+    PDButtons lastPushed;
+    ButtonPumperPumper *pump;
+    ButtonPumperCallback *callback;
+};
+
+void pumper(ButtonPumper *pumper, PDButtons pushed, PDButtons released) {
+    pd->system->logToConsole("pump!");
+} // pumper
+
+
+void callback(PDButtons button, UpDown state) {
+    pd->system->logToConsole("callback!");
+} // callback
+
+
+static ButtonPumper buttonPumper;
 
 void checkButtons(void) {
-    PDButtons pushed;
-    pd->system->getButtonState(NULL, &pushed, NULL);
+    PDButtons pushed, released;
+    pd->system->getButtonState(NULL, &pushed, &released);
+
+    buttonPumper.pump(&buttonPumper, pushed, released);
 
     if (pushed & kButtonA || pushed & kButtonB) {
         char *buffer = pdMalloc(10);
@@ -97,6 +131,9 @@ int eventHandler(PlaydateAPI* playdate,
         
         font = pd->graphics->loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", NULL);
         pd->graphics->setFont(font);
+
+        buttonPumper.pump = pumper;
+        buttonPumper.callback = callback;
         break;
 
     case kEventInitLua:
