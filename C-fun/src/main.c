@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "buttonpumper.h"
 #include "globals.h"
 
 #include "pd_api.h"
@@ -18,60 +19,7 @@ static const int kScreenHeight = LCD_ROWS;
 static const int kTextWidth = 86;
 static const int kTextHeight = 16;
 
-// give this the raw value from getButtonState
-typedef struct ButtonPumper ButtonPumper;
-
-// pumper, pushed, released
-typedef void ButtonPumperPumper(ButtonPumper*, PDButtons, PDButtons);
-
-typedef enum {
-    kPressed,
-    kReleased
-} UpDown;
-
-// this get called when there's a change.
-// called once for each button type when something changes
-typedef void ButtonPumperCallback(PDButtons, UpDown);
-
-struct ButtonPumper {
-    PDButtons lastPushed;
-    ButtonPumperPumper *pump;
-    ButtonPumperCallback *callback;
-};
-
-void pumper(ButtonPumper *pumper, PDButtons pushed, PDButtons released) {
-    PDButtons buttons[] = {
-        kButtonLeft,
-        kButtonRight,
-        kButtonUp,
-        kButtonDown,
-        kButtonB,
-        kButtonA
-    };
-    for (int i = 0; i < sizeof(buttons) / sizeof(*buttons); i++) {
-        int mask = buttons[i];
-
-        if (pushed & mask) {
-            // if not pushed
-            if (!(pumper->lastPushed & mask)) {
-                // print("button down! %d", i);
-                pumper->lastPushed |= mask;
-                pumper->callback(mask, kPressed);
-                continue;
-            }
-        }
-
-        if (released & mask) {
-            // if pushed
-            if (pumper->lastPushed & mask) {
-                // print("button up! %d", i);
-                pumper->lastPushed &= ~mask;
-                pumper->callback(mask, kReleased);
-                continue;
-            }
-        }
-    }
-} // pumper
+ButtonPumper *pumper;
 
 
 void callback(PDButtons button, UpDown state) {
@@ -84,13 +32,13 @@ void callback(PDButtons button, UpDown state) {
     }
 } // callback
 
-static ButtonPumper buttonPumper;
 
 void checkButtons(void) {
     PDButtons pushed, released;
     pd->system->getButtonState(NULL, &pushed, &released);
+    
+    buttonPumperPump(pumper, pushed, released);
 
-    buttonPumper.pump(&buttonPumper, pushed, released);
 
 } // checkButtons
 
@@ -186,8 +134,7 @@ int eventHandler(PlaydateAPI* playdate,
         font = pd->graphics->loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", NULL);
         pd->graphics->setFont(font);
 
-        buttonPumper.pump = pumper;
-        buttonPumper.callback = callback;
+        pumper = buttonPumperNew(callback);
         break;
 
     case kEventInitLua:
