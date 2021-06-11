@@ -7,9 +7,6 @@
 
 #define print pd->system->logToConsole 
 
-void *pdMalloc(size_t size);
-void *pdRealloc(void *memory, size_t size);
-void pdFree(void *memory);
 const char *nameForButton(PDButtons button);
 
 
@@ -223,29 +220,3 @@ int eventHandler(PlaydateAPI* playdate,
     
     return 0;
 } // eventHandler
-
-
-
-// --------------------------------------------------
-// Utilities
-
-// wrappers for memory allocation that matches malloc/realloc/free
-
-// Allocates heap space if ptr is NULL, 
-// else reallocates the given pointer. 
-// If size is zero, frees the given pointer.
-
-void *pdMalloc(size_t size) {
-    return pd->system->realloc(NULL, size);
-} // pdMalloc
-
-
-void *pdRealloc(void *memory, size_t size) {
-    return pd->system->realloc(memory, size);
-} // pdRealloc
-
-
-void pdFree(void *memory) {
-    pd->system->realloc(memory, 0);
-} // pdFree
-
