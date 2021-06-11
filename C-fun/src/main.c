@@ -3,9 +3,12 @@
 
 #include "pd_api.h"
 
+#define print pd->system->logToConsole 
+
 void *pdMalloc(size_t size);
 void *pdRealloc(void *memory, size_t size);
 void pdFree(void *memory);
+const char *nameForButton(PDButtons button);
 
 static PlaydateAPI *pd = NULL;
 static LCDFont *font;
@@ -38,14 +41,49 @@ struct ButtonPumper {
 };
 
 void pumper(ButtonPumper *pumper, PDButtons pushed, PDButtons released) {
-    pd->system->logToConsole("pump!");
+    PDButtons buttons[] = {
+        kButtonLeft,
+        kButtonRight,
+        kButtonUp,
+        kButtonDown,
+        kButtonB,
+        kButtonA
+    };
+    for (int i = 0; i < sizeof(buttons) / sizeof(*buttons); i++) {
+        int mask = buttons[i];
+
+        if (pushed & mask) {
+            // if not pushed
+            if (!(pumper->lastPushed & mask)) {
+                // print("button down! %d", i);
+                pumper->lastPushed |= mask;
+                pumper->callback(mask, kPressed);
+                continue;
+            }
+        }
+
+        if (released & mask) {
+            // if pushed
+            if (pumper->lastPushed & mask) {
+                // print("button up! %d", i);
+                pumper->lastPushed &= ~mask;
+                pumper->callback(mask, kReleased);
+                continue;
+            }
+        }
+    }
 } // pumper
 
 
 void callback(PDButtons button, UpDown state) {
-    pd->system->logToConsole("callback!");
-} // callback
+    if (state == kReleased) {
+        print("UP %s", nameForButton(button));
+    }
 
+    if (state == kPressed) {
+        print("DOWN %s", nameForButton(button));
+    }
+} // callback
 
 static ButtonPumper buttonPumper;
 
@@ -54,17 +92,6 @@ void checkButtons(void) {
     pd->system->getButtonState(NULL, &pushed, &released);
 
     buttonPumper.pump(&buttonPumper, pushed, released);
-
-    if (pushed & kButtonA || pushed & kButtonB) {
-        char *buffer = pdMalloc(10);
-        pd->system->logToConsole("%p %x%x%x%x", buffer, buffer[0], buffer[1], buffer[2], buffer[3]);
-        buffer[0] = 12;
-        buffer[1] = 21;
-        buffer[2] = 42;
-        pdFree(buffer);
-
-        pd->system->logToConsole("PUSHED");
-    }
 
 } // checkButtons
 
@@ -113,6 +140,34 @@ static const char *eventNames[] = {
     "kEventKeyReleased",
     "kEventLowPower"
 };
+
+const char *nameForButton(PDButtons button) {
+    static PDButtons buttons[] = {
+        kButtonLeft,
+        kButtonRight,
+        kButtonUp,
+        kButtonDown,
+        kButtonB,
+        kButtonA
+    };
+    static const char *buttonNames[] = {
+        "Left",
+        "Right",
+        "Up",
+        "Down",
+        "button B",
+        "button A"
+    };
+
+    for (int i = 0; i < sizeof(buttons) / sizeof(*buttons); i++) {
+        if (button == buttons[i]) {
+            return buttonNames[i];
+        }
+    }
+
+    return "---";
+    
+} // nameForButton
 
 
 int eventHandler(PlaydateAPI* playdate, 
