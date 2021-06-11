@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "globals.h"
+
 #include "pd_api.h"
 
 #define print pd->system->logToConsole 
@@ -10,7 +12,7 @@ void *pdRealloc(void *memory, size_t size);
 void pdFree(void *memory);
 const char *nameForButton(PDButtons button);
 
-static PlaydateAPI *pd = NULL;
+
 static LCDFont *font;
 
 static const int kScreenWidth = LCD_COLUMNS;
