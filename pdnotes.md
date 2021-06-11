@@ -28,3 +28,72 @@ source/         art/
 % pdc source game.pdx
 % open game.pdx
 ```
+
+### Random
+
+Caveman debugging in C
+
+```
+pd->system->logToConsole("format string %d", 23);
+```
+
+Debugging with lldb
+
+```
+lldb ~/Developer/PlaydateSDK/bin/Playdate\ Simulator.app/Contents/MacOS/Playdate\ Simulator
+```
+
+Location of headers
+```
+/usr/local/playdate/gcc-arm-none-eabi-9-2019-q4-major/arm-none-eabi/include/stdlib.h
+```
+
+
+### Other Stuffs
+
+C entry point (like main)
+
+```
+int eventHandler(PlaydateAPI* playdate, 
+                 PDSystemEvent event, 
+                 uint32_t arg) {
+```
+
+with lifecycle enums.
+
+
+----------
+
+Trying to use vsnprintf causes a link error . Just vsprintf too.
+
+```
+function `_sbrk_r':
+sbrkr.c:(.text._sbrk_r+0xc): undefined reference to `_sbrk'
+```
+
+oh well.  maybe when get a device see if it's just a weird intel linker thing.
+
+```
+#define debuglog(...) _debuglog(__FILE__, __LINE__, __VA_ARGS__)
+void _debuglog(const char *file, int line, const char *format, ...) {
+    char buffer[1024];
+
+    va_list argList;
+    va_start(argList, format);
+    vsprintf(buffer, format, argList);
+    va_end(argList);
+    
+    pd->system->logToConsole("%s:%d %s", file, line, buffer);
+} // debuglog
+```
+
+----------
+
+Looks like memory allocations are automatically zeroed.
+Not documented, though.
+
+----------
+
+Doing a basic ADT-style API (see buttonpumper).  Toyed with doing a
+Galaxy #define vtable stuff, but since there's nothing polymorhic (yet),
+no need to go to the trouble.
