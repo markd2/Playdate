@@ -3,6 +3,10 @@
 
 #include "pd_api.h"
 
+void *pdMalloc(size_t size);
+void *pdRealloc(void *memory, size_t size);
+void pdFree(void *memory);
+
 static PlaydateAPI *pd = NULL;
 static LCDFont *font;
 
@@ -13,12 +17,35 @@ static const int kTextWidth = 86;
 static const int kTextHeight = 16;
 
 
-int x = (kScreenWidth - kTextWidth) / 2;
-int y = (kScreenHeight - kTextHeight) / 2;
-int dx = 1;
-int dy = 2;
+void checkButtons(void) {
+    PDButtons pushed;
+    pd->system->getButtonState(NULL, &pushed, NULL);
+
+    if (pushed & kButtonA || pushed & kButtonB) {
+        char *buffer = pdMalloc(10);
+        pd->system->logToConsole("%p %x%x%x%x", buffer, buffer[0], buffer[1], buffer[2], buffer[3]);
+        buffer[0] = 12;
+        buffer[1] = 21;
+        buffer[2] = 42;
+        pdFree(buffer);
+
+        pd->system->logToConsole("PUSHED");
+    }
+
+} // checkButtons
+
 
 static int update(void *userdata) {
+
+    checkButtons();
+
+    // Move
+
+    static int x = (kScreenWidth - kTextWidth) / 2;
+    static int y = (kScreenHeight - kTextHeight) / 2;
+    static int dx = 1;
+    static int dy = 2;
+
     pd->graphics->clear(kColorWhite);
     pd->graphics->drawText("Greeble Bork!", strlen("Greeble Bork!"), kASCIIEncoding, x, y);
 
@@ -37,6 +64,8 @@ static int update(void *userdata) {
     return 1;
 } // update
 
+
+// --------------------------------------------------
 
 static const char *eventNames[] = {
     "kEventInit",
@@ -100,4 +129,29 @@ int eventHandler(PlaydateAPI* playdate,
     
     return 0;
 } // eventHandler
+
+
+
+// --------------------------------------------------
+// Utilities
+
+// wrappers for memory allocation that matches malloc/realloc/free
+
+// Allocates heap space if ptr is NULL, 
+// else reallocates the given pointer. 
+// If size is zero, frees the given pointer.
+
+void *pdMalloc(size_t size) {
+    return pd->system->realloc(NULL, size);
+} // pdMalloc
+
+
+void *pdRealloc(void *memory, size_t size) {
+    return pd->system->realloc(memory, size);
+} // pdRealloc
+
+
+void pdFree(void *memory) {
+    pd->system->realloc(memory, 0);
+} // pdFree
 
