@@ -11,6 +11,8 @@ typedef void ButtonPumperCallback(PDButtons, UpDown);
 typedef struct ButtonPumper ButtonPumper;
 
 ButtonPumper *buttonPumperNew(ButtonPumperCallback *callback);
+void buttonPumperDelete(ButtonPumper *pumper);
+
 void buttonPumperPump(ButtonPumper *pumper, PDButtons pushed, PDButtons released);
 
 

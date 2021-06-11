@@ -13,6 +13,11 @@ ButtonPumper *buttonPumperNew(ButtonPumperCallback *callback) {
 } // new
 
 
+void buttonPumperDelete(ButtonPumper *pumper) {
+    pdFree(pumper);
+} // delete
+
+
 void buttonPumperPump(ButtonPumper *moi, PDButtons pushed, PDButtons released) {
     PDButtons buttons[] = {
         kButtonLeft,
