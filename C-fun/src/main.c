@@ -198,6 +198,7 @@ int eventHandler(PlaydateAPI* playdate,
         break;
 
     case kEventTerminate:
+        uninstallSpies();
         break;
 
     case kEventKeyPressed: // arg is keycode

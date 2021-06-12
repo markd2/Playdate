@@ -4,3 +4,4 @@
 // system (or game) calls in to them.
 //
 void installSpies(void);
+void uninstallSpies(void);
