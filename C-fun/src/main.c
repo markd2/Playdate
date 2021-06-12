@@ -116,10 +116,11 @@ const char *nameForButton(PDButtons button) {
 
 
 void menuItemCallback(void *userdata) {
-    print("menu item snorgle: %p", userdata);
+    print("menu item callback: %p", userdata);
 } // menuItemCallback
 
 
+PDMenuItem *snorgle;
 PDMenuItem *torgle;
 
 static const char *options[] = {
@@ -133,11 +134,12 @@ void setupMenu(void) {
     
     pd->system->removeAllMenuItems();
 
-    PDMenuItem *menuItem;
 
-    menuItem = pd->system->addMenuItem("Snorgle",
-                                       menuItemCallback,
-                                       (void *)"23");
+    snorgle = pd->system->addMenuItem("Snorgle",
+                                      menuItemCallback,
+                                      (void *)"23");
+#if 0
+    PDMenuItem *menuItem;
 //    menuItem = pd->system->addMenuItem("Greeble",
 //                                       menuItemCallback,
 //                                       (void *)"42");
@@ -150,6 +152,7 @@ void setupMenu(void) {
     menuItem = pd->system->addOptionsMenuItem("Blorf", options,
                                               sizeof(options) / sizeof(*options),
                                               menuItemCallback, "userdata?");
+#endif
 
 } // setupMenub
 
@@ -189,8 +192,9 @@ int eventHandler(PlaydateAPI* playdate,
 
     case kEventResume:
         print("hey!  back from menu!");
-        print("torgle value %d", pd->system->getMenuItemValue(torgle));
-        print("torgle userdata %s", pd->system->getMenuItemUserdata(torgle));
+//        print("torgle value %d", pd->system->getMenuItemValue(torgle));
+//        print("torgle userdata %s", pd->system->getMenuItemUserdata(torgle));
+        print("snorgle userdata %s", pd->system->getMenuItemUserdata(snorgle));
         break;
 
     case kEventTerminate:
