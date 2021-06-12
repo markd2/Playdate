@@ -161,7 +161,20 @@ void setupMenu(void) {
                                               menuItemCallback, "userdata?");
 #endif
 
-} // setupMenub
+    const char *path = "images/menuImage";
+    const char *error;
+
+    LCDBitmap *bitmap = pd->graphics->loadBitmap(path, &error);
+
+    if (error != NULL) {
+        print("error is ", error);
+    } 
+
+    if (bitmap != NULL) {
+        pd->system->setMenuImage(bitmap, 20);
+    }
+
+} // setupMenu
 
 
 int eventHandler(PlaydateAPI* playdate, 
