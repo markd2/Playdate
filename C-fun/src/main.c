@@ -3,6 +3,7 @@
 
 #include "buttonpumper.h"
 #include "globals.h"
+#include "memory.h"
 #include "spy.h"
 
 #include "pd_api.h"
@@ -23,11 +24,18 @@ ButtonPumper *pumper;
 
 void callback(PDButtons button, UpDown state) {
     if (state == kReleased) {
-        print("UP %s", nameForButton(button));
+        print("UP %s - time %d", nameForButton(button), pd->system->getCurrentTimeMilliseconds());
+        unsigned int sec, ms;
+        sec = pd->system->getSecondsSinceEpoch(&ms);
+        print("  - time2 %d.%d", sec, ms);
     }
 
     if (state == kPressed) {
         print("DOWN %s", nameForButton(button));
+        char *formatted;
+        pd->system->formatString(&formatted, "hello %s", "sailor");
+        print(formatted);
+        pdFree(formatted);
     }
 } // callback
 

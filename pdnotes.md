@@ -149,3 +149,27 @@ Maybe a chance for vgalaxyPolymorhpism.
 
 ----------
 
+added spy for `system` stuff.  Tedious, but do-able.  yay macros.
+
+----------
+
+time and time.  can get ms from some arbitrary and seconds/ms from an epoch.
+
+```
+pd->system->getCurrentTimeMilliseconds());
+unsigned int sec, ms;
+sec = pd->system->getSecondsSinceEpoch(&ms);
+```
+
+----------
+
+can sprintf with , but awkward.  And couldn't get a wrapper around it (no va_ version),
+and couldn't figure out __builtin_apply/_args/_return
+c.f. https://stackoverflow.com/a/61545790
+
+```
+        char *formatted;
+        pd->system->formatString(&formatted, "hello %s", "sailor");
+        // use it
+        pdFree(formatted);
+```
