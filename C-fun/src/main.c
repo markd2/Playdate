@@ -3,10 +3,9 @@
 
 #include "buttonpumper.h"
 #include "globals.h"
+#include "spy.h"
 
 #include "pd_api.h"
-
-#define print pd->system->logToConsole 
 
 const char *nameForButton(PDButtons button);
 
@@ -162,6 +161,7 @@ int eventHandler(PlaydateAPI* playdate,
                  uint32_t arg) {
     if (pd == NULL) {
         pd = playdate;
+        installSpies();
     }
 
     pd->system->logToConsole("event received %s (%x)", eventNames[event], arg);
@@ -198,6 +198,7 @@ int eventHandler(PlaydateAPI* playdate,
         break;
 
     case kEventTerminate:
+        uninstallSpies();
         break;
 
     case kEventKeyPressed: // arg is keycode

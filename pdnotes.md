@@ -147,3 +147,5 @@ Looks like all text is bashed to lowercase
 I don't know the UI context for all that stuff to want to put a wrapper around it yet.
 Maybe a chance for vgalaxyPolymorhpism.
 
+----------
+
