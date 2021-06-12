@@ -147,3 +147,36 @@ Looks like all text is bashed to lowercase
 I don't know the UI context for all that stuff to want to put a wrapper around it yet.
 Maybe a chance for vgalaxyPolymorhpism.
 
+----------
+
+Trying to make a spy for the function pointer structs, getting behavior
+I Just Don't Understand
+
+```
+static struct playdate_sys originalSystem;
+
+void (*glurble)(void);
+
+void _removeAllMenuItems(void) {
+    print("REMOVE ALL");
+    originalSystem.removeAllMenuItems();
+} // removeAllMenuItems
+
+
+void installSpies(void) {
+    originalSystem = *pd->system;
+    glurble = pd->system->removeAllMenuItems;
+
+    ((struct playdate_sys*)(pd->system))->removeAllMenuItems = _removeAllMenuItems;
+
+} // installSpies
+```
+
+Should be a straightforward patch, but the _removeAllMenuItems is going recursive.
+I can't see how that is happening - the originalSystem is getting dereferenced and
+populated, so should have copies of all the function pointers.  Then through that
+nasty casat, changes removeAllMenuItems to call the trampoline.  And that is working.
+The call through `originalSystem.removeAllMenuItems` is then calling itself.  Even
+calling through `glurble` does the same thing.
+
+
