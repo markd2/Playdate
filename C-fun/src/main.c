@@ -161,8 +161,8 @@ int eventHandler(PlaydateAPI* playdate,
                  uint32_t arg) {
     if (pd == NULL) {
         pd = playdate;
+        installSpies();
     }
-    installSpies();
 
     pd->system->logToConsole("event received %s (%x)", eventNames[event], arg);
 
