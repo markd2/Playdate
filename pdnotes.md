@@ -173,3 +173,73 @@ c.f. https://stackoverflow.com/a/61545790
         // use it
         pdFree(formatted);
 ```
+
+--------------------
+
+last misc function is setMenuImage.  Will need to figure out how to make an LCD Bitmap
+400x240
+left-half useful stuff 200px wide
+
+so, how to make an LCDBitmap?
+
+LCDBitmap* playdate->graphics->loadBitmap(const char* path, const char** outerr);
+
+now need a path %-)
+
+        pd->system->formatString(&path, "images/explosion/%d", i+1);
+
+(and the SpriteGame sample code doesn't free it %-) )
+
+`Source` has images/explosion/[1-8].png.
+
+
+So something like this:
+```
+    const char *path = "images/menuImage";
+    const char *error;
+
+    LCDBitmap *bitmap = pd->graphics->loadBitmap(path, &error);
+
+    if (error != NULL) {
+        print("error is ", error);
+    } 
+
+    if (bitmap != NULL) {
+        pd->system->setMenuImage(bitmap, 20);
+    }
+```
+
+Errors are of the form
+    error is 'file not found: images/menuImagex'
+
+interesting, image loaded, but got an error of
+    error is 'updateWillStart'
+so no idea what that is.
+
+
+----------
+
+Skipping audio for now - it's really deep.
+
+Display!
+
+setInverted doesn't invert the menu image
+
+```
+        pd->display->setFlipped(x, y);      // bools I assume
+        pd->display->setInverted(inverted); // bool I assume
+```
+
+Not sure what mosaic does.  Setting it seems to make the bouncing text
+disappear.
+
+From the lua docs, "Adds a mosaic effect to the display. Valid x and y
+values are between 0 and 3, inclusive.".  So should cycle back to this
+when getting more stuff on the screen
+
+Also a set refresh rate
+
+Scaling embiggens the top-left corner of the framebuffer.  1, 2, 4, 8 are valid values.
+
+
+

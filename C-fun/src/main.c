@@ -21,8 +21,13 @@ static const int kTextHeight = 16;
 
 ButtonPumper *pumper;
 
+static int scaleIndex = 0;
+static const int scales[] = { 1, 2, 4, 8 };
+static int inverted = 0;
+static int flipped = 0;
 
 void callback(PDButtons button, UpDown state) {
+    print("-----");
     if (state == kReleased) {
         print("UP %s - time %d", nameForButton(button), pd->system->getCurrentTimeMilliseconds());
         unsigned int sec, ms;
@@ -37,6 +42,39 @@ void callback(PDButtons button, UpDown state) {
         print(formatted);
         pdFree(formatted);
     }
+
+    if (button == kButtonUp) {
+        print("scale %d", scales[scaleIndex]);  // no getScale
+        print("height %d", pd->display->getHeight());
+        print("width %d", pd->display->getWidth());
+    }
+
+    if (state == kPressed && button == kButtonDown) {
+        scaleIndex = (scaleIndex + 1) % (sizeof(scales) / sizeof(*scales));
+
+        pd->display->setScale(scales[scaleIndex]);
+    }
+
+    // left button to toggle invert
+    if (state == kPressed && button == kButtonLeft) {
+        inverted = !inverted;
+        pd->display->setInverted(inverted);
+    }
+
+    // right button to cycle through flips
+    if (state == kPressed && button == kButtonRight) {
+        flipped = (flipped + 1) % 4;
+        print("flippa da bits %d %d", (flipped & 10) >> 1, flipped & 01);
+        pd->display->setFlipped((flipped & 10) >> 1, flipped & 01);
+    }
+
+    if (state == kPressed && button == kButtonUp) {
+        int x = 2;
+        int y = 3;
+        print("MOSAIC %d %d", x, y);
+        pd->display->setMosaic(x, y);
+    }
+
 } // callback
 
 
@@ -167,7 +205,7 @@ void setupMenu(void) {
     LCDBitmap *bitmap = pd->graphics->loadBitmap(path, &error);
 
     if (error != NULL) {
-        print("error is ", error);
+        print("error is '%s'", error);
     } 
 
     if (bitmap != NULL) {
