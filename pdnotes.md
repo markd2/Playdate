@@ -605,6 +605,197 @@ allOverlappingSprites - all sprites that have collide rects that are currently
    overlapping.  Ech consecutive pair is overlapp (0&1 overlap, 2 & 3 overlap)
 
 
+----------
+
+Audio
+
+getCurrentTime - (uint32_t) sound engine's current time value, in units of
+   sample frames.  32 bit int.  that's like 27 hours?  what happens if wraps
+   around?
+
+a sound channel contains sound sources and sound effects (very opaque structure)
+
+getDefaultChannel - returns default channel - where sound sources play if they
+    haven't been explicitly assigned to a different channel
+addChannel - adds the given channel to the sound engine
+removeChannel
+addSource - adds callback function that'll be called on every audio render cycle.
+  The headers have "_deprecated" for the callbsck
+setMicCallback(audioInputFunction, userdata, forceInternal(int))
+  - the callback will be called with the recorded audio data, monophonic stream
+    of samples.  Return 1 to keep recording, 0 to stop.
+  - if forceInternal is set, the device mic is used whether the the headset has a mic
+getHeadphoneState(int *headphone, int *mic, changeCallback(int headphone, int mic))
+  - sets headphone (if not NULL) to 1 if headphones currently plugged in
+  - mic is set if the headphones include a microphone
+  - if changeclalback is provided, will be called when the status changes.
+    - and audio output will *not* automatically switch - the callback should use
+       sound->setOutputsActive
+setOUtputsActive - force audio output to the given outputs (headphone / speaker)
+   regardless of the headphone status
+
+channels
+
+newChannel/freeChannel - makes a new sound channel object
+addSource/removeSource - adds or removes a _soundSource_ to the channel.
+  If a source is not assigned to the channel, it plays on the default global
+  channel.  Removing returns 1 if the source was found (and removed from) the channel
+
+addEffect/remove - on the tin
+
+get/setVolume - float volume [0-1]
+
+get/setVolumeModerator - channel / PDSynthSignalValue*mod
+  - sets/gets a signal to modulate the channel volume
+    PDSynthEnvelope and PDSynthLFO are subclasses of PDSynthSignal
+
+get/setPan - float pan. [-1, 1] where -1 is left, 0 center, 1 right
+get/setPanModulator - takes a PDSynthSignalValue
+addCallbackSource - creates a new 
+  - takes a channel, audioSource function, context, stereo flag
+  - the callback takes a context, int16_t *left / right, length
+    - no right if it's a stereo source.
+  - the functino should fill in the buffers.  return 1 to play, or 0 if the source
+    is silent through the cycle.
+  - caller takes ownership of the allocated source, and should free it
+    (I don't understsand why it's talking about memory management here)
+getDryLevelSignal - returns a signal that follows the volume of the channel before
+   effects are applied
+getWetLevelSignal - returns a signal that follows the volume of the channel after effects
+   are applied.
+
+soundSource is the parent class of FilePlayer, SamplePlayer, PDSynth, and 
+DelayLineTap.  Any objects of those types can be cast to a soundSource and used here.
+
+set/getVolume - set left/right volume. L/R returned via pointer   [0, 1.0]
+
+isPlaying - 1 if the source is currently playing
+
+setCompletionCallback - called when source has finished playing
+
+AudioSample
+
+newSampleBuffer - given a length, returns a new AudioSample with a buffer large enough
+  to load  file of given bytes
+loadIntoSample - load sound data from file into an existing AudioSample
+loadFile - allocates and returns a new AudioSample with the sound data from a given file
+newSampleFromData - given a uint8_t buffer, sound format, sample rate, and byte count,
+  will return a new AudioSample referencing the audio data.  It references the pointer
+  rather than copying. So keep the buffer around
+getData - retrieves the sample data (unclear if we allocate the buffer or not - guessing
+  not given the newSampleFromData behavior)
+freeSample - frees the AudioSample
+getLength - returns length in seconds (float) of the sample
+
+FilePlayer
+
+newPlayer / freePlayer - on the tin
+loadIntoPlayer - given a path, prepares a player to stream the file from there
+pause - pauses the file player
+play - plays a given FIlePlayer. repeat is > 1, it loops the given number of times.
+    If zero, loops endlessly until stopped
+isPlaying - returns 1 if olaying, zero if not
+setBufferLngth - sets buffer length to bufferLen seconds
+getLength - returns length in seconds of the file loaded into the player
+setFinishCallback - to be called when playback has completed
+  - an alias for setFinishCallback()
+didUnderrun - returns 1 if the player has underrun
+  - that is, the buffer is draining faster than being filled
+setLoopRange - player, start, end (both floats) - in seconds.  
+   - if end is omitted (?), the end of the file is used.  (I guess two methods?)
+   - nope. Dunno how it's going to do that. Guess pass it zero?
+setOffset - set current offset in seconds (float)
+set/getRate - playback rate - 1.0 is normal, 0.5 down an octave, 2.0 up an octave, etc.
+setStopOnUnderrun - if true, player will restart (after a stutter) as soon as data
+    is available. (kind of a strange way to name the method)
+set/getVolume - left/right volume (float) for channels of the player
+stop - stops playing the file
+fadeVolume - player, left, right, int32_len, finishCallback
+  - changes the volume of fileplayer to left/right over a lenght of len sample frames,
+    then calls the provided callback if given
+
+Sample Player
+
+getLength - length in seconds of sample in the player
+isPlaying - 1 if playing, zero if not
+newSamplePlayer - makes a new empty saple player
+play - repeat / rate.  Like above.  If repeat is -1, it ping-pong loops
+setFinishCallback - called when playbacck has completed
+set/getOffset - sets offset in seconds
+set playrange - start, end in frames
+setPaused - pauses/resume
+set/getRate - as above
+setSample - assigns AudioSample to the player
+set/getVoume - set playback volume of left/right channels
+stop - stops
+freePlayer - frees
+
+PD Synth
+
+new/free Synth - new syntho object
+setWaveform - one of these
+   square, triangle, sine, noise, sawtooth
+   POPhase, PODigital, POVosim (voice simulator)
+setGenerator - provides a custom waveform generator function.
+  (not planning on this any time soon, so...)
+setSample - provides a sample for the synth to play - uncompressed PCM (not ADPCM)
+setAttack/Decay/Sustain/Release - float values for ADSR
+setTranspose - transposes output by given number of half-steps (float).
+  - wonder if can do gliss by changing the transpose
+set/getFrequencyModulator - synth and synthSignalValue
+  - sets/gets a signal to modulate the frequency.  Signal is scaled so a value of
+    1 doubles the synth pitch (octave) and -1 halves it
+set/getAmplitudeModulator
+  - same, but for the amplitude
+getParameterCount - returns the number of parameters advertised by the synth
+  - docs called this setParameter)
+setParameter - takes paramter number and value.  Returns 0 if num is not valid
+set/getParamterModulator - set a signal for a paramter
+  - (these docs are rough with copy and paste errors)
+playNote - synth, frequency, velocity, length, when (uint32)
+playMidiNote - synth, MIDINote, velocity, len, when
+  - play a note on the synth with frequncy or MII note (C4 = 60)
+  - len -1 to leave note playing until a note off.
+  - if when is 0, note is played imediately, otherwise scheduled for the given time
+    (use sound->getCurrentTime() to get the curren time)
+noteOff (synth)
+set/getVolume - (l/r)
+isPlaying - is the synth currently playing
+
+PDSynthInstrument
+
+collects a number of PDSynth objects to provide polyphony.  "bank of voices for
+playing a sequence track"
+
+new/freeInstrument - makes a new instrument.  free removes from the sound engine if needed
+addVoice - instrument, PDSynth, MIDINote rangeStart/End, transpose
+   - will response to playNotes between start and end (inclusive). Transpose is half-step
+     units, added to the instrument's transpose parameter
+playNote/MIDI Note - passes the play(Midi)note to the synth in the collection that
+has been off for the longest, or has been playing longest if all synths are currently playing
+   - the synth that recived the play note is returned
+noteOff - forwards note of to the synth currently playing the note.
+pitchBend/Range - given a float end, or float halfSteps. Applied to the voices in the
+ instrument
+setTranspose - sets for all voices
+allNotesOff - sends noteOff to all voices
+set/getVolume - left/right
+activeVoiceCount - number of voices currently playing
+
+----------
+
+Signals
+
+represents a signal that can be used as a modulator.
+PDSynthSignal is used for 'active' signals that change their values automatically,
+like LFO and Envelope
+
+
+
+
+
+
+
 
 ----------
 
@@ -612,4 +803,4 @@ idea - use the menu options for different experiments.  Some kind of
 polymorphism (or callback) for "installing" what is getting shown.
 So can have :alot: of experiments that can choose from the menu.
 
-pong / breakout  game using bounce collision
+pong / breakout  game using bounce collision. crank to move paddle.
