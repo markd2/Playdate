@@ -790,8 +790,128 @@ represents a signal that can be used as a modulator.
 PDSynthSignal is used for 'active' signals that change their values automatically,
 like LFO and Envelope
 
+LFO
+
+newLFO(type)
+  - square, triangoe, sine, sampleAndHold, sawtoothUp/Down, Arpeggiator, Function
+free - frees
+setType - sets the LFO shape to the type
+setRate - cycles per second
+set phase - sets LFO phase
+setCenter/Depth - sets the center or depth of the LFO
+setArpeggiation - given values are in half-steps from the center note.
+  Give it an array of steps - 0,4,7,12 plays the notes of a major chord
+setFunction - custom function for LFO values
+  - function takes lfo, userdata, returns a float.
+setDelay - sets initial holdoff time for the LFO where the LFO remains at its
+   center value, and a ramp time where the value increases lineariluy to its max
+   depth.  float in seconds
+setRetrigger - if on, the LFO's phase is reset to 0 when a synth starts playing a note
+getValue - gets the current output value of the LFO
+
+Envelope
+newEnvlope - new PDSynthEnvlope with ADSR
+free - free
+setAttack/D/S/R - on the tin
+setLegato - if set, when the envelope is retriggered before it's released, it
+  remains in teh sustain phase instead of boinging back to the attack phase
+setRetrigger - if on, the envelope always starts at 0 when a note starts playing,
+  instead of the current value if it's active
+getValue  -return the current value
 
 
+Sound Effect
+
+parent class of the sound effect types
+TwoPoleFilter, OnePoleFilter, BitCrusher, RingModulator, Overdrive, and DelayLine
+
+newEffect(effectProc, userdata)
+  - new effect using the given processing function.
+  - proc is effect, int32_t *left/*right, nsSamples, bufactive flag
+  - bufactive is 1 if the samples have set in the left or right buffers
+  - functions should return 1 if it changed teh buffer samples, otherwise 0.
+  - left and right are Q8.24 format
+freeEffect - frees
+setMix - float level. set wet/dry mix for the effect.  1 is full wet, 0 leaves
+    the effect out of mix
+    - "useful if you're using a delay line with taps and don't want to hear the delay
+       line itself"
+set/getMixModulator - set a PDSynthSignal to modulate the effects mix level
+set/getUserdata - on the tin
+
+
+TwoPoleFilter
+effect->twoPoleFilter->newFilter - makes a new effect
+freeFilter - on the tin
+setType - lowPass, highpass, BandPass, notch, PEQ, low shelf, high shelf
+    (parametric EQ)  (holy cow)
+setFrequency - set the center/corner frequency in Hz
+set/getFrequencyModulator - give a synth signalnto modulate the frequency
+  - signal is scaled so a value of 1.0 corresponds to half the sample rate
+setGain - sets the filter gain
+setResonance - sets the filter resonance
+setResonanceModulator - you know how this goes
+
+OnePoleFilter
+
+simple low/highpass filter, with a single cutoff frequency
+
+newFilter/free - on the tin
+setParameter - set the single parameter, the cutoff.
+      talking about 0-1 -1-0 being high/low pass, but then how to do 
+     frequency?
+setParameterModulator - as above
+
+
+BitCrusher
+
+newBitCrusher/free
+setAmount - float. amount of crushing.  0 (no effect) to 1 (quantizing output to 1bit)
+setAmountModulator - set a signal to the crushing amount
+setUndersampleModulator - sets a signla to module the undersampling amount
+  - not sure what undersampler is.  The "amazingnoises" grain mangler effect says
+    "1 - sample freqeuncy is not changed. with 0.5 it's halved - 44100 downsampled
+     to 22050.
+
+Ring Modulator
+
+newRingmod/free - make/free
+setFrequency - float frequncy of the modulation signal
+set/getFrequnecyModulator
+
+overdrive
+
+newOverdrive/freeOverdrive - on the tin
+setGain - float, gain of the overdrive effect
+setLimit - level where the amplified input clips (float)
+setLimitModulator - use a signal
+setOffset - adds an offset ot the upper and lower limits to create an asymmeric clipping
+setOffsetModlator - use a signal
+
+DelayLine
+
+new/free - blahblahblah
+setLength - change the length of the delay line, clearing its contents
+  - int frames
+setFeedback - float - feedback level of the delay line
+addTap - returns a new tap on the delay line at the given delay position (int),
+  delay <= the length of the delay line
+
+Delay Line Tap
+
+this is a Sound Source, not an effect. A delay line tap can be added
+to any channel, not only the channel the delay line is on.
+
+free a tap - on the tin
+setTapDelay - frames
+  - sets the position of the tap on the delay line, up to the delay line's length
+setTapDelayModulator - add a signal
+  - if it's continuous (envlope or triangle LFO, but not square LFO), playback
+    is sped up or slowed down to compress or expand time.  (WHOA)
+setTapChannelsFlipped - if the delay line is stereo and flip is set, the tap
+  outputs the dlay line's left channel to its right output and vice versa
+
+SoundSequence
 
 
 
