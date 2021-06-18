@@ -913,9 +913,62 @@ setTapChannelsFlipped - if the delay line is stereo and flip is set, the tap
 
 SoundSequence
 
+new/freeSequence
+loadMIDIFile - sequence and a path.  1 on success, 0 on failure
+
+get/setTime - gets/sets the current time in the squence.  in samples since
+    the start of the file.  The step this moves the sequence to depends on the
+    tempo
+
+setLoops - looping range (startstep / endstep, int loops).  If loops is 0, it
+    repeats
+
+getTrackCount - number of tracks
+addTrack - takes soundSequence,r eturns a SequenceTrack
+get/setTrackAtIndex - on the tin
+allNotesOff - stop!
 
 
+SequenceTrack
 
+A SequenceTrack comprises a PDSynthInstrument, a sequence of notes to
+play on that instrument, and any number of ControlSignal objects to control
+parameter changes.
+
+new/freeTrack
+setInstrument / getInstrument - associates a PDSynthInstrument to a squence track
+add/removeNoteEvent - adds single note to track (uint32_t step, MIDINote note)
+clearNotes - clear notes from track
+getControlSignalCount - number of control objects on teh track
+getControlSignal - get control signal at index
+clearControlEvents - clears all control signals from teh track
+activeVoiceCount - number of voices currently playing in the track's instrument
+getPolyphony - returns the max number of simultanously palying notes
+  (value is onluy set whe nthe track loaded from a midi file.  Don't track
+  for user-created events)
+setMuted - mute/unmute track.
+
+
+Control Signal
+
+Subclass of PDSynthSignal used for sequencing changes to parameters.
+(automation)
+
+newSignal / freeSignal - make/nuke
+clearEvents - clears all events from the given signal
+addEvent - given a step, value, and interpolate.  Adds a value to the
+      signal's timeline at the given step. If interpolate is set, the
+      value is interpolated between the previous step + value and this
+      one.  
+removeEvent - removes the control event at the given step
+getMIDIControllerNumber - returns the midi controller nubmer for this
+   control signal, if it was created from a MIDI file
+
+
+----------
+
+And that's it.  (outside of json and lua gaskets).  That's all you need
+to know.
 
 ----------
 
