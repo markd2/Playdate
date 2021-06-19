@@ -7,6 +7,11 @@
 
 #include "pd_api.h"
 
+DemoSample *drawingDemoSample(void);
+
+
+DemoSample *currentSample;
+
 static LCDFont *font;
 
 static const int kScreenWidth = LCD_COLUMNS;
@@ -46,13 +51,12 @@ int eventHandler(PlaydateAPI* playdate,
 
     switch (event) {
     case kEventInit:
+        currentSample = drawingDemoSample();
+        pd->system->setUpdateCallback(currentSample->updateCallback, NULL);
+
         pd->display->setRefreshRate(20);
-        pd->system->setUpdateCallback(update, NULL);
-        
         font = pd->graphics->loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", NULL);
         pd->graphics->setFont(font);
-
-//        pumper = buttonPumperNew(callback);
         break;
 
     case kEventInitLua:
