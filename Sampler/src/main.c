@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "buttonpumper.h"
+#include "demoSample.h"
 #include "globals.h"
-#include "memory.h"
 #include "spy.h"
 
 #include "pd_api.h"
