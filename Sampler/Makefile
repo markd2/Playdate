@@ -1,7 +1,7 @@
 HEAP_SIZE      = 8388208
 STACK_SIZE     = 61800
 
-PRODUCT = C-Fun.pdx
+PRODUCT = Sampler.pdx
 
 # Locate the SDK
 SDK = $(shell egrep '^\s*SDKRoot' ~/.Playdate/config | head -n 1 | cut -c9-)
