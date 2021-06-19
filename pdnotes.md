@@ -972,8 +972,49 @@ to know.
 
 ----------
 
+ok, so an experimental system with things in the menus.
+
+In An OO world, it'd be something like this.
+
+These are the independent units (objects)
++---+   +---+
+|   |   |   |
++---+   +---+
+
+There's a menu that publishes them (so maybe category plus name)
+like Synth - filters / Synth - MIDI  Drawing - lineCaps  Darwing - font  Sprites - game.
+
+So the main.c will set up stuff.  Populate the menu.  The event handler will shunt
+events to the object.  Its own buttonPumper.  Its own updateCallback.
+
+So, properties and whatnot
+  name
+  category
+  updateCallback
+  suspend
+  resume
+
+each can make its own pumper, since that's driven by the update callback
+
+----------
+
+Also needing to figure out how to do a library kind of thing.  (like memory)
+
+oh bummer, a new version THAT I CAN'T GET :'-(
+
+
+----------
+
+
 idea - use the menu options for different experiments.  Some kind of 
 polymorphism (or callback) for "installing" what is getting shown.
 So can have :alot: of experiments that can choose from the menu.
 
 pong / breakout  game using bounce collision. crank to move paddle.
+
+and omg the synth stuff.  that is CRAZY.
+
+Rehearsal Buddy - if can do FFT on the mic, have a tuner.  The crank would be cool
+for changing a metronome. Use the synths to make sounds that can cut through various
+ensembles.
+
