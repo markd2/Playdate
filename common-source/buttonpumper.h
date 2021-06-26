@@ -12,7 +12,7 @@ typedef enum {
     kReleased
 } UpDown;
 
-typedef void ButtonPumperCallback(PDButtons, UpDown);
+typedef void ButtonPumperCallback(PDButtons, UpDown, void*);
 typedef struct ButtonPumper ButtonPumper;
 
 
@@ -30,7 +30,7 @@ typedef struct ButtonPumper ButtonPumper;
 //
 //    ButtonPumper *pumper = buttonPumperNew(pumpCallback);
 //
-ButtonPumper *buttonPumperNew(ButtonPumperCallback *callback);
+ButtonPumper *buttonPumperNew(ButtonPumperCallback *callback, void *context);
 
 // Clean up a pumper when it's no longer useful
 void buttonPumperDelete(ButtonPumper *pumper);
@@ -55,5 +55,6 @@ bool buttonPumperButtonIsDown(ButtonPumper *pumper, PDButtons button);
 struct ButtonPumper {
     PDButtons _lastPushed;
     ButtonPumperCallback *_callback;
+    void *_context;
 };
 

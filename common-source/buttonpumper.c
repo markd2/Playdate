@@ -3,11 +3,12 @@
 #include "memory.h"
 
 
-ButtonPumper *buttonPumperNew(ButtonPumperCallback *callback) {
+ButtonPumper *buttonPumperNew(ButtonPumperCallback *callback, void *context) {
     ButtonPumper *moi = pdMalloc(sizeof(ButtonPumper));
 
     moi->_lastPushed = 0;
     moi->_callback = callback;
+    moi->_context = context;
 
     return moi;
 } // new
@@ -34,7 +35,7 @@ void buttonPumperPump(ButtonPumper *moi, PDButtons pushed, PDButtons released) {
             // if not pushed
             if (!(moi->_lastPushed & mask)) {
                 moi->_lastPushed |= mask;
-                moi->_callback(mask, kPressed);
+                moi->_callback(mask, kPressed, moi->_context);
                 continue;
             }
         }
@@ -43,7 +44,7 @@ void buttonPumperPump(ButtonPumper *moi, PDButtons pushed, PDButtons released) {
             // if pushed
             if (moi->_lastPushed & mask) {
                 moi->_lastPushed &= ~mask;
-                moi->_callback(mask, kReleased);
+                moi->_callback(mask, kReleased, moi->_context);
                 continue;
             }
         }
