@@ -4,8 +4,6 @@
 #include "demoSample.h"
 #include "buttonpumper.h"
 #include "globals.h"
-#include "memory.h"
-#include "spy.h"
 
 #include "pd_api.h"
 
