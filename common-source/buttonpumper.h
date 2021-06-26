@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <stdbool.h>
+
 #include "pd_api.h"
 
 
@@ -42,6 +44,9 @@ void buttonPumperDelete(ButtonPumper *pumper);
 //     buttonPumperPump(pumper, pushed, released);
 //
 void buttonPumperPump(ButtonPumper *pumper, PDButtons pushed, PDButtons released);
+
+
+bool buttonPumperButtonIsDown(ButtonPumper *pumper, PDButtons button);
 
 
 // --------------------------------------------------

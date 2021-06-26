@@ -50,3 +50,8 @@ void buttonPumperPump(ButtonPumper *moi, PDButtons pushed, PDButtons released) {
     }
     
 } // pump
+
+
+bool buttonPumperButtonIsDown(ButtonPumper *pumper, PDButtons button) {
+    return pumper->_lastPushed & button;
+} // buttonPumperButtonIsDown
