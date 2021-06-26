@@ -28,6 +28,7 @@ typedef struct DrawingDemo {
     int count;
 
     Rect ellipseRect;
+    int ellipseAngle;
     int speed;
     
 } DrawingDemo;
@@ -37,7 +38,7 @@ static void drawShapes(DrawingDemo *demo) {
     pd->graphics->clear(kColorWhite);
     
     int lineWidth = 2;
-    float startAngle = 0.0;
+    float startAngle = demo->ellipseAngle;
     float endAngle = 0.0;
     LCDColor color = kColorBlack;
     pd->graphics->drawEllipse(demo->ellipseRect.x, demo->ellipseRect.y,
@@ -96,6 +97,14 @@ static int update(void *context)  {
     pd->system->getButtonState(NULL, &pushed, &released);
     buttonPumperPump(demo->pumper, pushed, released);
 
+    // dock crank to reset rotations.
+    if (pd->system->isCrankDocked()) {
+        demo->ellipseAngle = 0;
+    } else {
+        int crankAngle = pd->system->getCrankAngle();
+        demo->ellipseAngle = crankAngle;
+    }
+
     moveShapes(demo);
     drawShapes(demo);
 
@@ -122,6 +131,7 @@ DemoSample *drawingDemoSample(void) {
     demo->count = 0;
 
     demo->ellipseRect = (Rect){ 0, 0, 50, 30 };
+    demo->ellipseAngle = 0;
     demo->speed = 1;
 
     return (DemoSample *)demo;
