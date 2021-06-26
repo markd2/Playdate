@@ -972,8 +972,82 @@ to know.
 
 ----------
 
+ok, so an experimental system with things in the menus.
+
+In An OO world, it'd be something like this.
+
+These are the independent units (objects)
++---+   +---+
+|   |   |   |
++---+   +---+
+
+There's a menu that publishes them (so maybe category plus name)
+like Synth - filters / Synth - MIDI  Drawing - lineCaps  Darwing - font  Sprites - game.
+
+So the main.c will set up stuff.  Populate the menu.  The event handler will shunt
+events to the object.  Its own buttonPumper.  Its own updateCallback.
+
+So, properties and whatnot
+  name
+  category
+  updateCallback
+  suspend
+  resume
+
+each can make its own pumper, since that's driven by the update callback
+
+----------
+
+Also needing to figure out how to do a library kind of thing.  (like memory)
+
+oh bummer, a new version THAT I CAN'T GET :'-(
+
+----------
+
+in doing the Sampler, getting crashes on reload. Took a tour into hooking
+into kEventTerminate to clean up, but I'm guessing there's no need to - the OS
+will just wipe the stack/heap clean, reset all OS services, and launch the new game.
+
+The `pd` substrucutres (like `system`) all have their pointers clearned by that point
+
+```
+(lldb) print *pd->system
+print *pd->system
+(const playdate_sys) $5 = {
+  realloc = 0x0000000000000000
+  formatString = 0x0000000000000000
+  logToConsole = 0x0000000000000000
+```
+
+So trying to do `free` (via realloc) through that will ... not work.
+
+hrm, even on the reinit, all that stuff in null.
+
+really not understanding it.  Do the existing C samples reload twice?
+(c-fun did reload).  And SpriteGame reloads.
+
+OK, so why is this stuff dying
+
+LUCKILY doing it to myself.  uninstallSpies. need to observe the installed flag.
+
+----------
+
+Looks like no drawing support for angles.
+
+There is LCDBitmap transformedBitmap that should be able to do that?
+
+----------
+
+
 idea - use the menu options for different experiments.  Some kind of 
 polymorphism (or callback) for "installing" what is getting shown.
 So can have :alot: of experiments that can choose from the menu.
 
 pong / breakout  game using bounce collision. crank to move paddle.
+
+and omg the synth stuff.  that is CRAZY.
+
+Rehearsal Buddy - if can do FFT on the mic, have a tuner.  The crank would be cool
+for changing a metronome. Use the synths to make sounds that can cut through various
+ensembles.
+

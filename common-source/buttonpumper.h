@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <stdbool.h>
+
 #include "pd_api.h"
 
 
@@ -10,7 +12,7 @@ typedef enum {
     kReleased
 } UpDown;
 
-typedef void ButtonPumperCallback(PDButtons, UpDown);
+typedef void ButtonPumperCallback(PDButtons, UpDown, void*);
 typedef struct ButtonPumper ButtonPumper;
 
 
@@ -28,7 +30,7 @@ typedef struct ButtonPumper ButtonPumper;
 //
 //    ButtonPumper *pumper = buttonPumperNew(pumpCallback);
 //
-ButtonPumper *buttonPumperNew(ButtonPumperCallback *callback);
+ButtonPumper *buttonPumperNew(ButtonPumperCallback *callback, void *context);
 
 // Clean up a pumper when it's no longer useful
 void buttonPumperDelete(ButtonPumper *pumper);
@@ -38,11 +40,13 @@ void buttonPumperDelete(ButtonPumper *pumper);
 // last pump.
 //
 // Use like:
-//     PDButtons pushed, released;
 //     pd->system->getButtonState(NULL, &pushed, &released);
 //     buttonPumperPump(pumper, pushed, released);
 //
 void buttonPumperPump(ButtonPumper *pumper, PDButtons pushed, PDButtons released);
+
+
+bool buttonPumperButtonIsDown(ButtonPumper *pumper, PDButtons button);
 
 
 // --------------------------------------------------
@@ -51,5 +55,6 @@ void buttonPumperPump(ButtonPumper *pumper, PDButtons pushed, PDButtons released
 struct ButtonPumper {
     PDButtons _lastPushed;
     ButtonPumperCallback *_callback;
+    void *_context;
 };
 

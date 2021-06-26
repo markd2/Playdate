@@ -1,0 +1,5 @@
+name=Sampler
+author=Borkware
+description=Play with C API
+bundleID=com.borkware.cfun
+imagePath=
