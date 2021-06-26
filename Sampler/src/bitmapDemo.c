@@ -20,6 +20,9 @@ static int update(void *context)  {
     pd->system->getButtonState(NULL, &pushed, &released);
     buttonPumperPump(demo->pumper, pushed, released);
 
+    const char *snorgle = "snorgle";
+    pd->graphics->drawText(snorgle, strlen(snorgle), kASCIIEncoding, 30, kScreenHeight / 2);
+
     return 1;
 } // update
 
