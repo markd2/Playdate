@@ -1032,6 +1032,12 @@ LUCKILY doing it to myself.  uninstallSpies. need to observe the installed flag.
 
 ----------
 
+Looks like no drawing support for angles.
+
+There is LCDBitmap transformedBitmap that should be able to do that?
+
+----------
+
 
 idea - use the menu options for different experiments.  Some kind of 
 polymorphism (or callback) for "installing" what is getting shown.
