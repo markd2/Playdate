@@ -11,10 +11,9 @@
 // for each of them.
 DemoSample *drawingDemoSample(void);
 
+// NULL-terminated array of known samples
 DemoSample *allSamples[50];
 DemoSample *currentSample;
-
-
 
 
 static LCDFont *font;
@@ -39,32 +38,22 @@ static int update(void *userdata) {
 
 
 int eventHandler(PlaydateAPI* playdate, 
-                 PDSystemEvent event, 
+                 PDSystemEvent event,
                  uint32_t arg) {
-    if (pd == NULL) {
-        pd = playdate;
-//        installSpies();
-    }
-
+    pd = playdate;
     pd->system->logToConsole("event received %s (%x)", eventNames[event], arg);
 
     switch (event) {
     case kEventInit:
         currentSample = drawingDemoSample();
+        allSamples[0] = currentSample;
+
         pd->system->setUpdateCallback(currentSample->updateCallback, currentSample);
 
         pd->display->setRefreshRate(20);
         font = pd->graphics->loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", NULL);
         pd->graphics->setFont(font);
-        break;
 
-    case kEventInitLua:
-        break;
-
-    case kEventLock:
-        break;
-
-    case kEventUnlock:
         break;
 
     case kEventPause:
@@ -79,14 +68,7 @@ int eventHandler(PlaydateAPI* playdate,
         uninstallSpies();
         break;
 
-    case kEventKeyPressed: // arg is keycode
-        break;
-
-    case kEventKeyReleased:
-        break;
-
-    case kEventLowPower:
-        break;
+    default: break;
     }
     
     return 0;
