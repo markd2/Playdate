@@ -9,6 +9,9 @@
 
 #include "pd_api.h"
 
+static const int kSlowSpeed = 1;
+static const int kFastSpeed = 4;
+
 typedef struct Point {
     int x;
     int y;
@@ -27,6 +30,7 @@ typedef struct DrawingDemo {
     int count;
 
     Rect ellipseRect;
+    int speed;
     
 } DrawingDemo;
 
@@ -62,20 +66,22 @@ Rect clampToScreen(Rect rect) {
 
 
 static void moveShapes(DrawingDemo *demo) {
+    int speed = demo->speed;
+
     if (buttonPumperButtonIsDown(demo->pumper, kButtonLeft)) {
-        demo->ellipseRect.x--;
+        demo->ellipseRect.x -= speed;
     }
 
     if (buttonPumperButtonIsDown(demo->pumper, kButtonRight)) {
-        demo->ellipseRect.x++;
+        demo->ellipseRect.x += speed;
     }
 
     if (buttonPumperButtonIsDown(demo->pumper, kButtonUp)) {
-        demo->ellipseRect.y--;
+        demo->ellipseRect.y -= speed;
     }
 
     if (buttonPumperButtonIsDown(demo->pumper, kButtonDown)) {
-        demo->ellipseRect.y++;
+        demo->ellipseRect.y += speed;
     }
 
     demo->ellipseRect = clampToScreen(demo->ellipseRect);
@@ -100,8 +106,13 @@ static int update(void *context)  {
 } // update
 
 
-static void handleButtons(PDButtons buttons, UpDown upDown) {
-    print("buttons!  %x", buttons);
+static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
+    DrawingDemo *demo = (DrawingDemo *)context;
+
+    if (buttons & kButtonA) {
+        demo->speed = (upDown == kPressed) ? kFastSpeed : kSlowSpeed;
+    }
+
 } // handleButtons
 
 
@@ -109,10 +120,11 @@ DemoSample *drawingDemoSample(void) {
     DrawingDemo *demo = (DrawingDemo *)demoSampleNew("Drawing", kDrawing, 
                                                      update,
                                                      sizeof(DrawingDemo));
-    demo->pumper = buttonPumperNew(handleButtons);
+    demo->pumper = buttonPumperNew(handleButtons, demo);
     demo->count = 0;
 
     demo->ellipseRect = (Rect){ 0, 0, 50, 30 };
+    demo->speed = 1;
 
     return (DemoSample *)demo;
 } // drawingDemoSample
