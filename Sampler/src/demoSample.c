@@ -3,8 +3,9 @@
 
 DemoSample *demoSampleNew(const char *name,
                           DemoSampleCategory category,
-                          PDCallbackFunction updateCallback) {
-    DemoSample *moi = pdMalloc(sizeof(DemoSample));
+                          PDCallbackFunction updateCallback,
+                          size_t allocSize) {
+    DemoSample *moi = pdMalloc(allocSize);
 
     moi->name = name;
     moi->category = category;

@@ -7,18 +7,17 @@
 
 #include "pd_api.h"
 
+// prototypes of the sample-creation methods. Just so we won't have to have a header
+// for each of them.
 DemoSample *drawingDemoSample(void);
 
-
+DemoSample *allSamples[50];
 DemoSample *currentSample;
 
+
+
+
 static LCDFont *font;
-
-static const int kScreenWidth = LCD_COLUMNS;
-static const int kScreenHeight = LCD_ROWS;
-
-static const int kTextWidth = 86;
-static const int kTextHeight = 16;
 
 static const char *eventNames[] = {
     "kEventInit",
@@ -52,7 +51,7 @@ int eventHandler(PlaydateAPI* playdate,
     switch (event) {
     case kEventInit:
         currentSample = drawingDemoSample();
-        pd->system->setUpdateCallback(currentSample->updateCallback, NULL);
+        pd->system->setUpdateCallback(currentSample->updateCallback, currentSample);
 
         pd->display->setRefreshRate(20);
         font = pd->graphics->loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", NULL);

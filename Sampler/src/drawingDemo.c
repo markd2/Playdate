@@ -9,16 +9,28 @@
 
 #include "pd_api.h"
 
-static int blah;
+typedef struct DrawingDemo {
+    DemoSample isa;
+    int count;
+} DrawingDemo;
+
 
 static int update(void *context)  {
-    print("update %d", blah++);
+    DrawingDemo *demo = (DrawingDemo *)context;
+
+    demo->count++;
+    print("Snorgle %d", demo->count);
+
     return 1;
+
 } // update
 
 
 DemoSample *drawingDemoSample(void) {
-    return demoSampleNew("Drawing", kDrawing, update);
+    DrawingDemo *demo = (DrawingDemo *)demoSampleNew("Drawing", kDrawing, update, sizeof(DrawingDemo));
+    demo->count = 0;
+
+    return (DemoSample *)demo;
 } // drawingDemoSample
 
 
