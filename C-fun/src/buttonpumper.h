@@ -38,6 +38,7 @@ void buttonPumperDelete(ButtonPumper *pumper);
 // last pump.
 //
 // Use like:
+//     PDButtons pushed, released;
 //     pd->system->getButtonState(NULL, &pushed, &released);
 //     buttonPumperPump(pumper, pushed, released);
 //

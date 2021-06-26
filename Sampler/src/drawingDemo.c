@@ -11,7 +11,9 @@
 
 typedef struct DrawingDemo {
     DemoSample isa;
+    ButtonPumper *pumper;
     int count;
+    
 } DrawingDemo;
 
 
@@ -19,15 +21,26 @@ static int update(void *context)  {
     DrawingDemo *demo = (DrawingDemo *)context;
 
     demo->count++;
-    print("Snorgle %d", demo->count);
+
+    PDButtons pushed, released;
+    pd->system->getButtonState(NULL, &pushed, &released);
+    buttonPumperPump(demo->pumper, pushed, released);
 
     return 1;
 
 } // update
 
 
+static void handleButtons(PDButtons buttons, UpDown upDown) {
+    print("buttons!  %x", buttons);
+} // handleButtons
+
+
 DemoSample *drawingDemoSample(void) {
-    DrawingDemo *demo = (DrawingDemo *)demoSampleNew("Drawing", kDrawing, update, sizeof(DrawingDemo));
+    DrawingDemo *demo = (DrawingDemo *)demoSampleNew("Drawing", kDrawing, 
+                                                     update,
+                                                     sizeof(DrawingDemo));
+    demo->pumper = buttonPumperNew(handleButtons);
     demo->count = 0;
 
     return (DemoSample *)demo;
