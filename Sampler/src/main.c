@@ -10,6 +10,7 @@
 // prototypes of the sample-creation methods. Just so we won't have to have a header
 // for each of them.
 DemoSample *drawingDemoSample(void);
+DemoSample *bitmapDemoSample(void);
 
 // NULL-terminated array of known samples
 DemoSample *allSamples[50];
@@ -44,9 +45,13 @@ int eventHandler(PlaydateAPI* playdate,
     pd->system->logToConsole("event received %s (%x)", eventNames[event], arg);
 
     switch (event) {
-    case kEventInit:
-        currentSample = drawingDemoSample();
-        allSamples[0] = currentSample;
+    case kEventInit: {
+        DemoSample *drawingSample = drawingDemoSample();
+        DemoSample *bitmapSample = bitmapDemoSample();
+        allSamples[0] = bitmapSample;
+        allSamples[1] = drawingSample;
+
+        currentSample = allSamples[0];
 
         pd->system->setUpdateCallback(currentSample->updateCallback, currentSample);
 
@@ -55,6 +60,7 @@ int eventHandler(PlaydateAPI* playdate,
         pd->graphics->setFont(font);
 
         break;
+    }
 
     case kEventPause:
 //        setupMenu();

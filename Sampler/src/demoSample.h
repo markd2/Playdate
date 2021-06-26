@@ -3,6 +3,7 @@
 
 typedef enum DemoSampleCategory {
     kDrawing,
+    kBitmap,
     kSprint,
     kSynth
 } DemoSampleCategory;
