@@ -39,7 +39,8 @@ static void drawShapes(DrawingDemo *demo) {
     
     int lineWidth = 2;
     float startAngle = demo->ellipseAngle;
-    float endAngle = 0.0;
+    float endAngle = (pd->system->isCrankDocked()) ? 0 : ((int)startAngle + 180) % 360;
+
     LCDColor color = kColorBlack;
     pd->graphics->drawEllipse(demo->ellipseRect.x, demo->ellipseRect.y,
                               demo->ellipseRect.width, demo->ellipseRect.height,
