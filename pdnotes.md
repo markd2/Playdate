@@ -1002,6 +1002,33 @@ Also needing to figure out how to do a library kind of thing.  (like memory)
 
 oh bummer, a new version THAT I CAN'T GET :'-(
 
+----------
+
+in doing the Sampler, getting crashes on reload. Took a tour into hooking
+into kEventTerminate to clean up, but I'm guessing there's no need to - the OS
+will just wipe the stack/heap clean, reset all OS services, and launch the new game.
+
+The `pd` substrucutres (like `system`) all have their pointers clearned by that point
+
+```
+(lldb) print *pd->system
+print *pd->system
+(const playdate_sys) $5 = {
+  realloc = 0x0000000000000000
+  formatString = 0x0000000000000000
+  logToConsole = 0x0000000000000000
+```
+
+So trying to do `free` (via realloc) through that will ... not work.
+
+hrm, even on the reinit, all that stuff in null.
+
+really not understanding it.  Do the existing C samples reload twice?
+(c-fun did reload).  And SpriteGame reloads.
+
+OK, so why is this stuff dying
+
+LUCKILY doing it to myself.  uninstallSpies. need to observe the installed flag.
 
 ----------
 
