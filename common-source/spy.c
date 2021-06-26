@@ -4,10 +4,17 @@
 
 #include "pd_api.h"
 
+static int s_installed = 0;
+
+
 static struct playdate_sys originalSystem;
 
 void uninstallSpies(void) {
-    *((struct playdate_sys *)pd->system) = originalSystem;
+    if (s_installed) {
+        *((struct playdate_sys *)pd->system) = originalSystem;
+        s_installed = 0;
+    }
+    
 } // uninstallSpies
 
 
@@ -202,9 +209,8 @@ static int _getReduceFlashing(void) {
 void installSpies(void) {
 
     // prevent multiple installs - end up with infinite recursion.
-    static int installed = 0;
-    if (installed) return;
-    installed = 1;
+    if (s_installed) return;
+    s_installed = 1;
 
     originalSystem = *pd->system;
     
