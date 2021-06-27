@@ -7,14 +7,14 @@
 
 #include "pd_api.h"
 
-typedef struct BitmapDemo {
+typedef struct SynthDemo {
     DemoSample isa;
     ButtonPumper *pumper;
-} BitmapDemo;
+} SynthDemo;
 
 
 static int update(void *context)  {
-    BitmapDemo *demo = (BitmapDemo *)context;
+    SynthDemo *demo = (SynthDemo *)context;
 
     PDButtons pushed, released;
     pd->system->getButtonState(NULL, &pushed, &released);
@@ -22,7 +22,7 @@ static int update(void *context)  {
 
     pd->graphics->clear(kColorWhite);
 
-    const char *snorgle = "snorgle bitmap";
+    const char *snorgle = "snorgle synth";
     pd->graphics->drawText(snorgle, strlen(snorgle), kASCIIEncoding, 30, kScreenHeight / 2);
 
     return 1;
@@ -34,10 +34,10 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
 } // handleButtons
 
 
-DemoSample *bitmapDemoSample(void) {
-    BitmapDemo *demo = (BitmapDemo *)demoSampleNew("Bitmap", kBitmap,
-                                                     update,
-                                                     sizeof(BitmapDemo));
+DemoSample *synthDemoSample(void) {
+    SynthDemo *demo = (SynthDemo *)demoSampleNew("Synth", kSynth,
+                                                 update,
+                                                 sizeof(SynthDemo));
     demo->pumper = buttonPumperNew(handleButtons, demo);
 
     return (DemoSample *)demo;

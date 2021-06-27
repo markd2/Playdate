@@ -11,10 +11,13 @@
 // for each of them.
 DemoSample *drawingDemoSample(void);
 DemoSample *bitmapDemoSample(void);
+DemoSample *fontDemoSample(void);
+DemoSample *tableDemoSample(void);
+DemoSample *synthDemoSample(void);
 
 // NULL-terminated array of known samples
 DemoSample *allSamples[50];
-DemoSample *currentSample;
+int currentIndex = 0;
 
 
 static LCDFont *font;
@@ -38,12 +41,10 @@ static int update(void *userdata) {
 } // update
 
 
-void selectDemo(DemoSample *sample) {
-    if (sample == currentSample) return;
-
-    currentSample = sample;
+void selectDemo(int sampleIndex) {
+    DemoSample *currentSample = allSamples[sampleIndex];
     pd->system->setUpdateCallback(currentSample->updateCallback, currentSample);
-
+    currentIndex = sampleIndex;
 } // selectDemo
 
 
@@ -53,8 +54,9 @@ PDMenuItem *menuItem;
 void menuItemCallback(void *userdata) {
     int chosenOption = pd->system->getMenuItemValue(menuItem);
 
-    print("CHOOSENING %d", chosenOption);
-    selectDemo(allSamples[chosenOption]);
+    if (chosenOption != currentIndex) {
+        selectDemo(chosenOption);
+    }
 
     menuItem = NULL;
 } // menuItemCallback
@@ -92,10 +94,17 @@ int eventHandler(PlaydateAPI* playdate,
     case kEventInit: {
         DemoSample *drawingSample = drawingDemoSample();
         DemoSample *bitmapSample = bitmapDemoSample();
+        DemoSample *fontSample = fontDemoSample();
+        DemoSample *tableSample = tableDemoSample();
+        DemoSample *synthSample = synthDemoSample();
+
         allSamples[0] = bitmapSample;
         allSamples[1] = drawingSample;
+        allSamples[2] = fontSample;
+        allSamples[3] = tableSample;
+        allSamples[4] = synthSample;
 
-        selectDemo(allSamples[0]);
+        selectDemo(0);
 
         pd->display->setRefreshRate(20);
         font = pd->graphics->loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", NULL);
