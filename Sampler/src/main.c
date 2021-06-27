@@ -9,16 +9,16 @@
 
 // prototypes of the sample-creation methods. Just so we won't have to have a header
 // for each of them.
-DemoSample *drawingDemoSample(void);
 DemoSample *bitmapDemoSample(void);
+DemoSample *drawingDemoSample(void);
 DemoSample *fontDemoSample(void);
 DemoSample *tableDemoSample(void);
 DemoSample *synthDemoSample(void);
 
 // NULL-terminated array of known samples
 DemoSample *allSamples[50];
-int currentIndex = 0;
-
+int sampleCount;
+int currentIndex;
 
 static LCDFont *font;
 
@@ -53,9 +53,10 @@ PDMenuItem *menuItem;
 // kinda lame the userdata isn't the userdate we set initially.
 void menuItemCallback(void *userdata) {
     int chosenOption = pd->system->getMenuItemValue(menuItem);
+    int effectiveOption = (currentIndex + chosenOption) % sampleCount;
 
-    if (chosenOption != currentIndex) {
-        selectDemo(chosenOption);
+    if (effectiveOption != currentIndex) {
+        selectDemo(effectiveOption);
     }
 
     menuItem = NULL;
@@ -66,21 +67,15 @@ static void setupMenu(void) {
     pd->system->removeAllMenuItems();
 
     const char *options[50] = { 0 };
-    DemoSample **scan, **stop;
-    scan = allSamples;
-    stop = scan + sizeof(allSamples) / sizeof(*allSamples);
 
-    int count = 0;
-    while (scan < stop) {
-        if (*scan == NULL) break;
-        options[count] = (*scan)->name;
-
-        count++;
-        scan++;
+    for (int i = 0; i < sampleCount; i++) {
+        int biasedIndex = (currentIndex + i) % sampleCount;
+        options[i] = allSamples[biasedIndex]->name;
     }
 
-    menuItem = pd->system->addOptionsMenuItem("Demos", options, count,
+    menuItem = pd->system->addOptionsMenuItem("Demos", options, sampleCount,
                                               menuItemCallback, "userdata?");
+    
 } // setupMenu
 
 
@@ -92,8 +87,8 @@ int eventHandler(PlaydateAPI* playdate,
 
     switch (event) {
     case kEventInit: {
-        DemoSample *drawingSample = drawingDemoSample();
         DemoSample *bitmapSample = bitmapDemoSample();
+        DemoSample *drawingSample = drawingDemoSample();
         DemoSample *fontSample = fontDemoSample();
         DemoSample *tableSample = tableDemoSample();
         DemoSample *synthSample = synthDemoSample();
@@ -103,6 +98,8 @@ int eventHandler(PlaydateAPI* playdate,
         allSamples[2] = fontSample;
         allSamples[3] = tableSample;
         allSamples[4] = synthSample;
+
+        sampleCount = 5;
 
         selectDemo(0);
 
