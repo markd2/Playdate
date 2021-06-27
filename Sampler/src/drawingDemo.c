@@ -6,6 +6,7 @@
 #include "demoSample.h"
 #include "buttonpumper.h"
 #include "globals.h"
+#include "patterns.h"
 
 #include "pd_api.h"
 
@@ -41,6 +42,8 @@ static LCDPattern basketWeavePattern;
 static uintptr_t patterns[] = {
     (uintptr_t)fillPattern,
     (uintptr_t)basketWeavePattern,
+    (uintptr_t)bubblePattern,
+    (uintptr_t)failwafflePattern,
     (uintptr_t)kColorBlack,
     (uintptr_t)kColorWhite
 };
@@ -217,7 +220,7 @@ static Triangle triangleAt(Point centeredAt, int size, int rotation) {
 
 static void drawShapes(DrawingDemo *demo) {
     pd->graphics->clear(kColorWhite);
-    
+
     int lineWidth = 2;
     float startAngle = demo->ellipseAngle;
     float endAngle = (pd->system->isCrankDocked()) ? 0 : ((int)startAngle + 180) % 360;
