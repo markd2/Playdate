@@ -9,12 +9,16 @@
 
 // prototypes of the sample-creation methods. Just so we won't have to have a header
 // for each of them.
+DemoSample *bitmapDemoSample(void);
 DemoSample *drawingDemoSample(void);
+DemoSample *fontDemoSample(void);
+DemoSample *tableDemoSample(void);
+DemoSample *synthDemoSample(void);
 
 // NULL-terminated array of known samples
 DemoSample *allSamples[50];
-DemoSample *currentSample;
-
+int sampleCount;
+int currentIndex;
 
 static LCDFont *font;
 
@@ -37,6 +41,44 @@ static int update(void *userdata) {
 } // update
 
 
+void selectDemo(int sampleIndex) {
+    DemoSample *currentSample = allSamples[sampleIndex];
+    pd->system->setUpdateCallback(currentSample->updateCallback, currentSample);
+    currentIndex = sampleIndex;
+} // selectDemo
+
+
+PDMenuItem *menuItem;
+
+// kinda lame the userdata isn't the userdate we set initially.
+void menuItemCallback(void *userdata) {
+    int chosenOption = pd->system->getMenuItemValue(menuItem);
+    int effectiveOption = (currentIndex + chosenOption) % sampleCount;
+
+    if (effectiveOption != currentIndex) {
+        selectDemo(effectiveOption);
+    }
+
+    menuItem = NULL;
+} // menuItemCallback
+
+
+static void setupMenu(void) {
+    pd->system->removeAllMenuItems();
+
+    const char *options[50] = { 0 };
+
+    for (int i = 0; i < sampleCount; i++) {
+        int biasedIndex = (currentIndex + i) % sampleCount;
+        options[i] = allSamples[biasedIndex]->name;
+    }
+
+    menuItem = pd->system->addOptionsMenuItem("Demos", options, sampleCount,
+                                              menuItemCallback, "userdata?");
+    
+} // setupMenu
+
+
 int eventHandler(PlaydateAPI* playdate, 
                  PDSystemEvent event,
                  uint32_t arg) {
@@ -44,20 +86,32 @@ int eventHandler(PlaydateAPI* playdate,
     pd->system->logToConsole("event received %s (%x)", eventNames[event], arg);
 
     switch (event) {
-    case kEventInit:
-        currentSample = drawingDemoSample();
-        allSamples[0] = currentSample;
+    case kEventInit: {
+        DemoSample *bitmapSample = bitmapDemoSample();
+        DemoSample *drawingSample = drawingDemoSample();
+        DemoSample *fontSample = fontDemoSample();
+        DemoSample *tableSample = tableDemoSample();
+        DemoSample *synthSample = synthDemoSample();
 
-        pd->system->setUpdateCallback(currentSample->updateCallback, currentSample);
+        allSamples[0] = bitmapSample;
+        allSamples[1] = drawingSample;
+        allSamples[2] = fontSample;
+        allSamples[3] = tableSample;
+        allSamples[4] = synthSample;
+
+        sampleCount = 5;
+
+        selectDemo(0);
 
         pd->display->setRefreshRate(20);
         font = pd->graphics->loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", NULL);
         pd->graphics->setFont(font);
 
         break;
+    }
 
     case kEventPause:
-//        setupMenu();
+        setupMenu();
         break;
 
     case kEventResume:
