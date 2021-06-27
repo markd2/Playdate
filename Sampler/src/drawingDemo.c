@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h> // sin
+#include <limits.h> // INT_MAX
 
 #include "demoSample.h"
 #include "buttonpumper.h"
@@ -45,7 +46,6 @@ typedef struct Triangle {
 } Triangle;
 
 
-
 float degreesToRadians(float degrees) {
     float radians = (M_PI * degrees) / 180.0;
     return radians;
@@ -58,21 +58,112 @@ Point pointPlus(Point thing1, Point thing2) {
 } // pointPlus
 
 
+Rect clampRectToScreen(Rect rect) {
+    if (rect.x < 0) rect.x = 0;
+    if (rect.y < 0) rect.y = 0;
+
+    if (rect.x + rect.width > kScreenWidth) {
+        rect.x = kScreenWidth - rect.width;
+    }
+
+    if (rect.y + rect.height > kScreenHeight) {
+        rect.y = kScreenHeight - rect.height;
+    }
+
+    return rect;
+
+} // clampRectToScreen
+
+#if !defined(MAX)
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#endif
+
+#if !defined(MIN)
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+#endif
+
+
+Point clampPointToScreen(Point point) {
+    int x = MAX(point.x, 0);
+    x = MIN(x, kScreenWidth);
+
+    int y = MAX(point.y, 0);
+    y = MIN(y, kScreenHeight);
+
+    return (Point){ x, y };
+    
+} // clampPointToScreen
+
+
+Triangle clampTriangleToScreen(Triangle triangle) {
+
+    // Horizontal
+    int maxX = 0;
+    maxX = MAX(maxX, triangle.p1.x);
+    maxX = MAX(maxX, triangle.p2.x);
+    maxX = MAX(maxX, triangle.p3.x);
+
+    if (maxX >= kScreenWidth) {
+        int diff = maxX - kScreenWidth;
+        triangle.p1.x -= diff;
+        triangle.p2.x -= diff;
+        triangle.p3.x -= diff;
+    }
+
+    int minX = INT_MAX;
+    minX = MIN(minX, triangle.p1.x);
+    minX = MIN(minX, triangle.p2.x);
+    minX = MIN(minX, triangle.p3.x);
+
+    if (minX < 0) {
+        int diff = abs(minX);
+        triangle.p1.x += diff;
+        triangle.p2.x += diff;
+        triangle.p3.x += diff;
+    }
+
+    // Vertical
+    int maxY = 0;
+    maxY = MAX(maxY, triangle.p1.y);
+    maxY = MAX(maxY, triangle.p2.y);
+    maxY = MAX(maxY, triangle.p3.y);
+
+    if (maxY >= kScreenHeight) {
+        int diff = maxY - kScreenHeight;
+        triangle.p1.y -= diff;
+        triangle.p2.y -= diff;
+        triangle.p3.y -= diff;
+    }
+
+    int minY = INT_MAX;
+    minY = MIN(minY, triangle.p1.y);
+    minY = MIN(minY, triangle.p2.y);
+    minY = MIN(minY, triangle.p3.y);
+
+    if (minY < 0) {
+        int diff = abs(minY);
+        triangle.p1.y += diff;
+        triangle.p2.y += diff;
+        triangle.p3.y += diff;
+    }
+
+    return triangle;
+
+} // clampTriangleToScreen
+
+
 static Triangle triangleAt(Point centeredAt, int size, int rotation) {
     Triangle triangle;
 
     float angle;
 
     angle = degreesToRadians(rotation);
-    print("angle 1 %f", angle);
     triangle.p1 = (Point) { cos(angle) * size, sin(angle) * size };
 
     angle = degreesToRadians(rotation + 120);
-    print("angle 2 %f", angle);
     triangle.p2 = (Point) { cos(angle) * size, sin(angle) * size };
 
     angle = degreesToRadians(rotation + 240);
-    print("angle 3 %f", angle);
     triangle.p3 = (Point) { cos(angle) * size, sin(angle) * size };
 
     triangle.p1 = pointPlus(triangle.p1, centeredAt);    
@@ -99,33 +190,13 @@ static void drawShapes(DrawingDemo *demo) {
     Triangle triangle = triangleAt(demo->triangleCenterPoint, demo->triangleSize,
                                    demo->triangleAngle);
 
-    print("%f %f   %f %f   %f %f",
-          triangle.p1.x, triangle.p1.y,
-          triangle.p2.x, triangle.p2.y,
-          triangle.p3.x, triangle.p3.y);
-        
-    pd->graphics->fillTriangle(triangle.p1.x, triangle.p1.y,
-                               triangle.p2.x, triangle.p2.y,
-                               triangle.p3.x, triangle.p3.y,
+    Triangle clampedTriangle = clampTriangleToScreen(triangle);
+
+    pd->graphics->fillTriangle(clampedTriangle.p1.x, clampedTriangle.p1.y,
+                               clampedTriangle.p2.x, clampedTriangle.p2.y,
+                               clampedTriangle.p3.x, clampedTriangle.p3.y,
                                color);
 } // drawShapes
-
-
-Rect clampToScreen(Rect rect) {
-    if (rect.x < 0) rect.x = 0;
-    if (rect.y < 0) rect.y = 0;
-
-    if (rect.x + rect.width > kScreenWidth) {
-        rect.x = kScreenWidth - rect.width;
-    }
-
-    if (rect.y + rect.height > kScreenHeight) {
-        rect.y = kScreenHeight - rect.height;
-    }
-
-    return rect;
-
-} // clampToScreen
 
 
 static void moveShapes(DrawingDemo *demo) {
@@ -133,21 +204,26 @@ static void moveShapes(DrawingDemo *demo) {
 
     if (buttonPumperButtonIsDown(demo->pumper, kButtonLeft)) {
         demo->ellipseRect.x -= speed;
+        demo->triangleCenterPoint.y -= speed;
     }
 
     if (buttonPumperButtonIsDown(demo->pumper, kButtonRight)) {
         demo->ellipseRect.x += speed;
+        demo->triangleCenterPoint.y += speed;
     }
 
     if (buttonPumperButtonIsDown(demo->pumper, kButtonUp)) {
         demo->ellipseRect.y -= speed;
+        demo->triangleCenterPoint.x -= speed;
     }
 
     if (buttonPumperButtonIsDown(demo->pumper, kButtonDown)) {
         demo->ellipseRect.y += speed;
+        demo->triangleCenterPoint.x += speed;
     }
 
-    demo->ellipseRect = clampToScreen(demo->ellipseRect);
+    demo->ellipseRect = clampRectToScreen(demo->ellipseRect);
+    demo->triangleCenterPoint = clampPointToScreen(demo->triangleCenterPoint);
 
     demo->triangleAngle = pd->system->getCrankAngle();
 
@@ -200,7 +276,7 @@ DemoSample *drawingDemoSample(void) {
     demo->ellipseAngle = 0;
 
     demo->triangleCenterPoint = (Point){ kScreenWidth / 2, kScreenHeight / 2 };
-    demo->triangleSize = 20;
+    demo->triangleSize = 24;
     demo->triangleAngle = 0;
 
     demo->speed = 1;
