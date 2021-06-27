@@ -87,14 +87,14 @@ int eventHandler(PlaydateAPI* playdate,
 
     switch (event) {
     case kEventInit: {
-        DemoSample *bitmapSample = bitmapDemoSample();
         DemoSample *drawingSample = drawingDemoSample();
+        DemoSample *bitmapSample = bitmapDemoSample();
         DemoSample *fontSample = fontDemoSample();
         DemoSample *tableSample = tableDemoSample();
         DemoSample *synthSample = synthDemoSample();
 
-        allSamples[0] = bitmapSample;
-        allSamples[1] = drawingSample;
+        allSamples[0] = drawingSample;
+        allSamples[1] = bitmapSample;
         allSamples[2] = fontSample;
         allSamples[3] = tableSample;
         allSamples[4] = synthSample;
