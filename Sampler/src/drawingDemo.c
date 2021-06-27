@@ -36,6 +36,13 @@ static LCDPattern fillPattern = {
     0b00001111,
 };
 
+static uintptr_t patterns[] = {
+    (uintptr_t)fillPattern,
+    (uintptr_t)kColorBlack,
+    (uintptr_t)kColorWhite
+};
+static int currentPatternIndex;
+
 typedef struct Point {
     int x;
     int y;
@@ -300,6 +307,11 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
         demo->speed = (upDown == kPressed) ? kFastSpeed : kSlowSpeed;
     }
 
+    if (buttons & kButtonB && upDown == kPressed) {
+        currentPatternIndex = (currentPatternIndex + 1) % (sizeof(patterns) / sizeof(*patterns));
+        demo->fillColor = patterns[currentPatternIndex];
+    }
+
 } // handleButtons
 
 
@@ -319,7 +331,7 @@ DemoSample *drawingDemoSample(void) {
 
     demo->filledRect = (Rect){ 0, kScreenHeight - kFilledRectangleHeight,
         kScreenWidth, kFilledRectangleHeight};
-    demo->fillColor = (uintptr_t)fillPattern;
+    demo->fillColor = patterns[currentPatternIndex];
 
     demo->speed = 1;
 
