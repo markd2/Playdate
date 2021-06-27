@@ -142,8 +142,8 @@ void drawInfoString(DrawingDemo *demo) {
     const int kLeading = 17;
 
     static char *texts[] = {
-        "dpad: move  (a): speed up ",
-        "(b): change pattern",
+        "dpad: move  (a) speed up ",
+        "(b) change pattern",
         "crank: angles"
     };
     static int textLen[3];
@@ -234,7 +234,7 @@ DemoSample *drawingDemoSample(void) {
     demo->pumper = buttonPumperNew(handleButtons, demo);
     demo->count = 0;
 
-    demo->ellipseRect = (Rect){ 10, 60, 50, 30 };
+    demo->ellipseRect = (Rect){ 10, 60, 80, 30 };
     demo->ellipseAngle = 0;
 
     demo->triangleCenterPoint = (Point){ kScreenWidth / 2, kScreenHeight / 2 };
