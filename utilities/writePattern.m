@@ -5,6 +5,7 @@
 int main() {
     // Basket weave
     unsigned char buffer[] = {
+        // pattern
         0b11111000,
         0b01110100,
         0b00100010,
@@ -14,14 +15,15 @@ int main() {
         0b00100010,
         0b01110001,
 
-        0xFF,
-        0xFF,
-        0xFF,
-        0xFF,
-        0xFF,
-        0xFF,
-        0xFF,
-        0xFF,
+        // mask
+        0b00000111,
+        0b10001011,
+        0b11011101,
+        0b10111000,
+        0b01110000,
+        0b11101000,
+        0b11011101,
+        0b10001110,
     };
 
     int fd = open("basket-weave.pattern", O_CREAT | O_WRONLY, 0664);
