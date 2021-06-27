@@ -36,8 +36,11 @@ static LCDPattern fillPattern = {
     0b00001111,
 };
 
+static LCDPattern basketWeavePattern;
+
 static uintptr_t patterns[] = {
     (uintptr_t)fillPattern,
+    (uintptr_t)basketWeavePattern,
     (uintptr_t)kColorBlack,
     (uintptr_t)kColorWhite
 };
@@ -315,6 +318,18 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
 } // handleButtons
 
 
+static void loadPatterns(void) {
+    SDFile *file = pd->file->open("patterns/basket-weave.pattern", kFileRead);
+    if (file == NULL) {
+        print("could not open - %s", pd->file->geterr());
+        return;
+    }
+
+    pd->file->read(file, basketWeavePattern, sizeof(basketWeavePattern));
+
+} // loadPatterns
+
+
 DemoSample *drawingDemoSample(void) {
     DrawingDemo *demo = (DrawingDemo *)demoSampleNew("Drawing", kDrawing, 
                                                      update,
@@ -332,6 +347,8 @@ DemoSample *drawingDemoSample(void) {
     demo->filledRect = (Rect){ 0, kScreenHeight - kFilledRectangleHeight,
         kScreenWidth, kFilledRectangleHeight};
     demo->fillColor = patterns[currentPatternIndex];
+
+    loadPatterns();
 
     demo->speed = 1;
 
