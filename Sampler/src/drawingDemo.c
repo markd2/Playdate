@@ -14,6 +14,8 @@ static const int kFastSpeed = 4;
 
 static const int kFilledRectangleHeight = 30;
 
+static LCDFont *font;
+
 static LCDPattern fillPattern = {
     // pattern
     0b01010101,
@@ -136,6 +138,34 @@ static void moveShapes(DrawingDemo *demo) {
 } // moveShapes
 
 
+void drawInfoString(DrawingDemo *demo) {
+    const int kLeading = 17;
+
+    static char *texts[] = {
+        "dpad: move  (a): speed up ",
+        "(b): change pattern",
+        "crank: angles"
+    };
+    static int textLen[3];
+    int count = sizeof(texts) / sizeof(*texts);
+
+    if (textLen[0] == 0) {
+        for (int i = 0; i < count; i++) {
+            textLen[i] = strlen(texts[i]);
+        }
+    }
+
+    int y = 0;
+
+    pd->graphics->setFont(font);
+    for (int i = 0; i < count; i++) {
+        pd->graphics->drawText(texts[i], textLen[i], kASCIIEncoding, 5, y);
+        y += kLeading;
+    }
+
+} // drawInfoString
+
+
 static int update(void *context)  {
     DrawingDemo *demo = (DrawingDemo *)context;
 
@@ -155,6 +185,8 @@ static int update(void *context)  {
 
     moveShapes(demo);
     drawShapes(demo);
+
+    drawInfoString(demo);
 
     return 1;
 
@@ -192,10 +224,17 @@ DemoSample *drawingDemoSample(void) {
     DrawingDemo *demo = (DrawingDemo *)demoSampleNew("Drawing", kDrawing, 
                                                      update,
                                                      sizeof(DrawingDemo));
+    const char *errorText;
+    // font = pd->graphics->loadFont("font/font-Bitmore-Medieval-Outlined.pft", &errorText);
+    font = pd->graphics->loadFont("font/Sasser-Small-Caps", &errorText);
+    if (errorText != NULL) {
+        print("couldn't make font %s", errorText);
+    }
+
     demo->pumper = buttonPumperNew(handleButtons, demo);
     demo->count = 0;
 
-    demo->ellipseRect = (Rect){ 0, 0, 50, 30 };
+    demo->ellipseRect = (Rect){ 10, 60, 50, 30 };
     demo->ellipseAngle = 0;
 
     demo->triangleCenterPoint = (Point){ kScreenWidth / 2, kScreenHeight / 2 };
