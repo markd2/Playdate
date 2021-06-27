@@ -1070,6 +1070,32 @@ There is LCDBitmap transformedBitmap that should be able to do that?
 
 ----------
 
+Custom fonts!
+
+The SDK has some .fnt files.  Copy those into $PROJECT/Source/font, e.g. 
+e.g. font-Bitmore-Medieval-Outlined.fnt
+
+but getting this error
+
+error: font/font-Bitmore-Medieval-Outlined.fnt should either have matching image table png/gif or encoded image data in the file
+
+ah, need the png as well
+
+./Resources/Fonts/Bitmore/font-Bitmore-Medieval-Outlined-table-9-13.png
+
+So copying those to Source/font, load with
+
+```
+    const char *errorText;
+    font = pd->graphics->loadFont("font/font-Bitmore-Medieval-Outlined.pft", &errorText);
+    if (errorText != NULL) {
+        print("couldn't make font %s", errorText);
+    }
+```
+
+
+----------
+
 
 idea - use the menu options for different experiments.  Some kind of 
 polymorphism (or callback) for "installing" what is getting shown.
