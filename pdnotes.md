@@ -1083,3 +1083,4 @@ Rehearsal Buddy - if can do FFT on the mic, have a tuner.  The crank would be co
 for changing a metronome. Use the synths to make sounds that can cut through various
 ensembles.
 
+something to play with blendmodes
