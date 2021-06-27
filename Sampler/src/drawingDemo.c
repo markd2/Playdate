@@ -12,6 +12,8 @@
 static const int kSlowSpeed = 1;
 static const int kFastSpeed = 4;
 
+static const int kFilledRectangleHeight = 30;
+
 typedef struct Point {
     int x;
     int y;
@@ -29,13 +31,19 @@ typedef struct DrawingDemo {
     ButtonPumper *pumper;
     int count;
 
+    // Dpad moves. Button A faster.  Crank chooses arc to draw.
     Rect ellipseRect;
     int ellipseAngle;
     int speed;
 
+    // Dpad moves center.  Button A faster.  Crank rotates triangle.
     Point triangleCenterPoint;
     int triangleSize;
     int triangleAngle;
+
+    // Button B to change fills.
+    Rect filledRect;
+    LCDColor fillColor;
     
 } DrawingDemo;
 
@@ -196,6 +204,14 @@ static void drawShapes(DrawingDemo *demo) {
                                clampedTriangle.p2.x, clampedTriangle.p2.y,
                                clampedTriangle.p3.x, clampedTriangle.p3.y,
                                color);
+
+    pd->graphics->fillRect(demo->filledRect.x, demo->filledRect.y,
+                           demo->filledRect.width, demo->filledRect.height,
+                           demo->fillColor);
+
+    pd->graphics->drawRect(demo->filledRect.x, demo->filledRect.y,
+                           demo->filledRect.width, demo->filledRect.height,
+                           kColorBlack);
 } // drawShapes
 
 
@@ -278,6 +294,10 @@ DemoSample *drawingDemoSample(void) {
     demo->triangleCenterPoint = (Point){ kScreenWidth / 2, kScreenHeight / 2 };
     demo->triangleSize = 24;
     demo->triangleAngle = 0;
+
+    demo->filledRect = (Rect){ 0, kScreenHeight - kFilledRectangleHeight,
+        kScreenWidth, kFilledRectangleHeight};
+    demo->fillColor = kColorWhite;
 
     demo->speed = 1;
 
