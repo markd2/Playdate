@@ -306,7 +306,39 @@ supporting types
 
 LCDColor - solid color or a pattern
   - color is black/white/clear/XOR
-  - pattern is a uint8_t[16]  (not square. interesting)
+  - pattern is a uint8_t[16]  ~(not square. interesting)~  8 rows pattern, 8 rows mask.
+
+Ooh, and there's binary literals.
+
+```
+static LCDPattern fillPattern = {
+    // pattern
+    0b01010101,
+    0b10101010,
+    0b01010101,
+    0b10101010,
+    0b01010101,
+    0b10101010,
+    0b01010101,
+    0b10101010,
+
+    // mask
+    0b11110000,
+    0b11110000,
+    0b11110000,
+    0b11110000,
+    0b00001111,
+    0b00001111,
+    0b00001111,
+    0b00001111,
+};
+```
+
+and assign
+
+```
+LCDColor color = (uintptr_t)fillPattern;
+```
 
 LCDRect - left/right/top/bottom.  right/bottom not inclusive
 PDRect - x/y/width/height

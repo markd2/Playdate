@@ -14,6 +14,28 @@ static const int kFastSpeed = 4;
 
 static const int kFilledRectangleHeight = 30;
 
+static LCDPattern fillPattern = {
+    // pattern
+    0b01010101,
+    0b10101010,
+    0b01010101,
+    0b10101010,
+    0b01010101,
+    0b10101010,
+    0b01010101,
+    0b10101010,
+
+    // mask
+    0b11110000,
+    0b11110000,
+    0b11110000,
+    0b11110000,
+    0b00001111,
+    0b00001111,
+    0b00001111,
+    0b00001111,
+};
+
 typedef struct Point {
     int x;
     int y;
@@ -297,7 +319,7 @@ DemoSample *drawingDemoSample(void) {
 
     demo->filledRect = (Rect){ 0, kScreenHeight - kFilledRectangleHeight,
         kScreenWidth, kFilledRectangleHeight};
-    demo->fillColor = kColorWhite;
+    demo->fillColor = (uintptr_t)fillPattern;
 
     demo->speed = 1;
 
