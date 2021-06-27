@@ -1,3 +1,12 @@
+// Drawing demo, for "Geometry" functions
+//
+// Does this stuff:
+//  - draws an ellipse. If cranking happens, draws arc
+//  - draws a triangle that rotates with the crank, using manual trig to calculate points
+//    - using bespoke geometry functions
+//  - fills in a rectangle with various patterns, including one loaded from the filesytem
+//  - loads a custom font (Cabel) from the app bundle
+
 #include <stdio.h>
 #include <stdlib.h>
 
