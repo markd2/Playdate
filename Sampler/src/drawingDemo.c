@@ -44,6 +44,9 @@ static uintptr_t patterns[] = {
     (uintptr_t)basketWeavePattern,
     (uintptr_t)bubblePattern,
     (uintptr_t)failwafflePattern,
+    (uintptr_t)rickrackPattern,
+    (uintptr_t)percent50Pattern,
+    (uintptr_t)wavyPattern,
     (uintptr_t)kColorBlack,
     (uintptr_t)kColorWhite
 };
