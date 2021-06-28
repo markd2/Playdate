@@ -1093,9 +1093,39 @@ So copying those to Source/font, load with
     }
 ```
 
+----------
+
+MacPaint - for 8x8 patterns
+
+https://archive.org/details/mac_Paint_2
 
 ----------
 
+bitmap things to play with
+
+- load from disk
+- getting bitmap data (data pointer)
+- bitmap flip
+- drawing scaled bitmap
+- check mask collision
+- transform bitmap
+  - has rotation
+  - maybe button+dpad to change scale
+  - that'll give some more sophisticated combos and see how the pumper works
+- draw mode
+  - maybe another option menu for the draw mode
+  - or maybe another-button+dpad
+  - asking the sample for a menu
+    - make sure draw modes work for those images
+  - or maybe the crank
+- maybe nothing moves, but dpad tweedles different scenarios for a bitmap being drawn
+  on top and underneath various patterns.
+- drawing on black and white
+- stencil
+
+
+
+----------
 
 idea - use the menu options for different experiments.  Some kind of 
 polymorphism (or callback) for "installing" what is getting shown.
