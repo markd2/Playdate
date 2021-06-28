@@ -90,6 +90,34 @@ Rect centerSpanInRect(int width, int height, Rect rect) {
 } // centerSpanInRect
 
 
+static void dumpBitmapAsASCII(int width, int height, 
+                              int rowBytes, uint8_t *data) {
+    char line[width + 1];
+
+    line[width] = 0;
+
+    uint8_t *rowScan;
+
+    // kind of lazy, not properly handling a partial last byte.
+    int stride = width / 8;
+
+    for (int y = 0; y < height; y++) {
+        uint8_t *rowScan = data + y * rowBytes;
+        uint8_t *rowStop = rowScan + stride;
+
+        char *lineScan = line;
+        while (rowScan < rowStop) {
+            for (int shift = 7; shift >= 0; shift--) {
+                *lineScan++ = (*rowScan >> shift) & 0x01 ? '.' : '*';
+            }
+
+            rowScan++;
+        }
+        print(line);
+    }
+} // dump BitmapAsASCII
+
+
 static void drawShapes(BitmapDemo *demo) {
     fillRect(kTopLeftQuadrant, kColorBlack);
     fillRect(kTopRightQuadrant, kColorWhite);
@@ -219,6 +247,21 @@ DemoSample *bitmapDemoSample(void) {
     }
 
     setDrawModeIndex(demo, 0);
+
+    // Dump the image to the console - be sure to show it and embiggen.
+    int kittyWidth, kittyHeight;
+    int rowBytes;
+    int hasMask;
+    uint8_t *data;
+    pd->graphics->getBitmapData(demo->kitty, &kittyWidth, &kittyHeight, &rowBytes, &hasMask, &data);
+
+    dumpBitmapAsASCII(kittyWidth, kittyHeight, rowBytes, data);
+
+    if (hasMask) {
+        print("----");
+        dumpBitmapAsASCII(kittyWidth, kittyHeight, rowBytes, data + rowBytes * kittyHeight);
+    }
+        
 
     return (DemoSample *)demo;
 } // drawingDemoSample
