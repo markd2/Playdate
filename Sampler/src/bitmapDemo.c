@@ -11,11 +11,33 @@
 
 #include "pd_api.h"
 
+typedef struct DrawMode {
+    char *name;
+    LCDBitmapDrawMode drawMode;
+} DrawMode;
+
+
+static DrawMode drawModes[] = {
+    { "Copy",             kDrawModeCopy },
+    { "WhiteTransparent", kDrawModeWhiteTransparent },
+    { "BlackTransparent", kDrawModeBlackTransparent },
+    { "FillWhite",        kDrawModeFillWhite },
+    { "FillBlack",        kDrawModeFillBlack },
+    { "XOR",              kDrawModeXOR },
+    { "NXOR",             kDrawModeNXOR },
+    { "Inverted",         kDrawModeInverted }
+};
+static int kDrawModeCount = sizeof(drawModes) / sizeof(*drawModes);
+static int currentDrawMode;
+
+
 typedef struct BitmapDemo {
     DemoSample isa;
     ButtonPumper *pumper;
 
     LCDBitmap *kitty;
+
+    int currentDrawModeIndex;
 
     LCDFont *statusBarFont;
     char *statusMessage;
@@ -86,7 +108,7 @@ static void drawShapes(BitmapDemo *demo) {
 
     Rect rect;
 
-    pd->graphics->setDrawMode(kDrawModeNXOR);
+    pd->graphics->setDrawMode(drawModes[demo->currentDrawModeIndex].drawMode);
 
     rect = centerSpanInRect(kittyWidth, kittyHeight, kTopLeftQuadrant);
     pd->graphics->drawBitmap(demo->kitty, rect.x, rect.y, kBitmapUnflipped);
@@ -114,7 +136,17 @@ static void setStatusMessage(BitmapDemo *demo, char *message) {
 } // setStatusMessage
 
 
+static void setDrawModeIndex(BitmapDemo *demo, int modeIndex) {
+    DrawMode *mode = &drawModes[modeIndex];
+    setStatusMessage(demo, mode->name);
+    demo->currentDrawModeIndex = modeIndex;
+
+} // setDrawModeIndex
+
+
 static void drawStatusBar(BitmapDemo *demo) {
+    pd->graphics->setDrawMode(kDrawModeCopy);
+
     pd->graphics->setFont(demo->statusBarFont);
     pd->graphics->drawText(demo->statusMessage, demo->statusMessageLength, kASCIIEncoding,
                            3, kScreenHeight - kStatusBarHeight + 3);
@@ -138,7 +170,10 @@ static int update(void *context)  {
     const char *snorgle = "snorgle bitmap";
     pd->graphics->drawText(snorgle, strlen(snorgle), kASCIIEncoding, 30, kScreenHeight / 2);
 
-    drawShapes(demo);
+    pd->graphics->pushContext(NULL); {
+        drawShapes(demo);
+    } pd->graphics->popContext();
+
     drawStatusBar(demo);
 
     return 1;
@@ -146,6 +181,21 @@ static int update(void *context)  {
 
 
 static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
+    BitmapDemo *demo = (BitmapDemo *)context;
+
+    // pump
+    if (buttons == kButtonUp && upDown == kPressed) {
+        int newIndex = demo->currentDrawModeIndex + 1;
+        setDrawModeIndex(demo, newIndex % kDrawModeCount);
+    }
+
+    if (buttons == kButtonDown && upDown == kPressed) {
+        int newIndex = demo->currentDrawModeIndex - 1;
+        if (newIndex == -1) {
+            newIndex = kDrawModeCount - 1;
+        }
+        setDrawModeIndex(demo, newIndex);
+    }
 
 } // handleButtons
 
@@ -168,7 +218,7 @@ DemoSample *bitmapDemoSample(void) {
         print("could not load font: %s", error);
     }
 
-    setStatusMessage(demo, "chooby");
+    setDrawModeIndex(demo, 0);
 
     return (DemoSample *)demo;
 } // drawingDemoSample
