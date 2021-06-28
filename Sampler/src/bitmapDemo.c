@@ -7,6 +7,7 @@
 #include "buttonpumper.h"
 #include "globals.h"
 #include "geometry.h"
+#include "patterns.h"
 
 #include "pd_api.h"
 
@@ -70,8 +71,8 @@ Rect centerSpanInRect(int width, int height, Rect rect) {
 static void drawShapes(BitmapDemo *demo) {
     fillRect(kTopLeftQuadrant, kColorBlack);
     fillRect(kTopRightQuadrant, kColorWhite);
-    fillRect(kBottomLeftQuadrant, kColorWhite);
-    fillRect(kBottomRightQuadrant, kColorBlack);
+    fillRect(kBottomLeftQuadrant, (LCDColor)percent50Pattern);
+    fillRect(kBottomRightQuadrant, (LCDColor)bubblePattern);
 
     int kittyWidth, kittyHeight;
     int rowBytes;
@@ -121,7 +122,6 @@ static void drawStatusBar(BitmapDemo *demo) {
     int lineWidth = 2;
     pd->graphics->drawLine(0, kScreenHeight - kStatusBarHeight,
                            kScreenWidth, kScreenHeight - kStatusBarHeight, lineWidth, kColorBlack);
-
     
 } // drawStatusBar
 
