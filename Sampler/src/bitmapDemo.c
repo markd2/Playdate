@@ -1,3 +1,5 @@
+// Kitty art courtesy of publicdomainvectors.org
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -11,6 +13,9 @@
 typedef struct BitmapDemo {
     DemoSample isa;
     ButtonPumper *pumper;
+
+    LCDBitmap *kitty;
+    
 } BitmapDemo;
 
 
@@ -36,11 +41,32 @@ static void fillRect(Rect rect, LCDColor color) {
     pd->graphics->fillRect(rect.x, rect.y, rect.width, rect.height, color);
 } // fillRect
 
-static void drawShapes(void) {
+
+Rect centerSpanInRect(int width, int height, Rect rect) {
+    return rect;
+} // centerSpanInRect
+
+
+static void drawShapes(BitmapDemo *demo) {
     fillRect(kTopLeftQuadrant, kColorBlack);
     fillRect(kTopRightQuadrant, kColorWhite);
     fillRect(kBottomLeftQuadrant, kColorWhite);
     fillRect(kBottomRightQuadrant, kColorBlack);
+
+    int kittyWidth, kittyHeight;
+    int rowBytes;
+    int hasMask;
+    uint8_t *data;
+    pd->graphics->getBitmapData(demo->kitty, &kittyWidth, &kittyHeight, &rowBytes, &hasMask, &data);
+    print("kitty width %d  height %d  rowBytes %d  hasMask %d",
+          kittyWidth, kittyHeight, rowBytes, hasMask);
+
+    Rect rect;
+
+    rect = centerSpanInRect(kittyWidth, kittyHeight, kTopLeftQuadrant);
+    int flip = 0;
+    pd->graphics->drawBitmap(demo->kitty, rect.x, rect.y, flip);
+
 } // drawShapes
 
 
@@ -56,7 +82,7 @@ static int update(void *context)  {
     const char *snorgle = "snorgle bitmap";
     pd->graphics->drawText(snorgle, strlen(snorgle), kASCIIEncoding, 30, kScreenHeight / 2);
 
-    drawShapes();
+    drawShapes(demo);
 
     return 1;
 } // update
@@ -72,6 +98,13 @@ DemoSample *bitmapDemoSample(void) {
                                                      update,
                                                      sizeof(BitmapDemo));
     demo->pumper = buttonPumperNew(handleButtons, demo);
+
+    const char *error;
+    LCDBitmap *kitty = pd->graphics->loadBitmap("images/vector-kitty", &error);
+    if (kitty == NULL) {
+        print("could not load kitty image: %s", error);
+    }
+    demo->kitty = kitty;
 
     return (DemoSample *)demo;
 } // drawingDemoSample
