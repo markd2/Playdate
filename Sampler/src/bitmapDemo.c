@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "demoSample.h"
 #include "buttonpumper.h"
@@ -18,14 +19,14 @@ typedef struct DrawMode {
 
 
 static DrawMode drawModes[] = {
-    { "Copy",             kDrawModeCopy },
-    { "WhiteTransparent", kDrawModeWhiteTransparent },
-    { "BlackTransparent", kDrawModeBlackTransparent },
-    { "FillWhite",        kDrawModeFillWhite },
-    { "FillBlack",        kDrawModeFillBlack },
-    { "XOR",              kDrawModeXOR },
-    { "NXOR",             kDrawModeNXOR },
-    { "Inverted",         kDrawModeInverted }
+    { "(^v) Copy",              kDrawModeCopy },
+    { "(^v) White Transparent", kDrawModeWhiteTransparent },
+    { "(^v) Black Transparent", kDrawModeBlackTransparent },
+    { "(^v) Fill White",        kDrawModeFillWhite },
+    { "(^v) Fill Black",        kDrawModeFillBlack },
+    { "(^v) XOR",               kDrawModeXOR },
+    { "(^v) NXOR",              kDrawModeNXOR },
+    { "(^v) Inverted",          kDrawModeInverted }
 };
 static int kDrawModeCount = sizeof(drawModes) / sizeof(*drawModes);
 static int currentDrawMode;
@@ -36,12 +37,18 @@ typedef struct BitmapDemo {
     ButtonPumper *pumper;
 
     LCDBitmap *kitty;
+    LCDBitmap *heart;
+
+    bool showStencil;
 
     int currentDrawModeIndex;
 
     LCDFont *statusBarFont;
     char *statusMessage;
     int statusMessageLength;
+
+    char *secondStatusMessage;
+    int secondStatusMessageLength;
     
 } BitmapDemo;
 
@@ -119,6 +126,17 @@ static void dumpBitmapAsASCII(int width, int height,
 
 
 static void drawShapes(BitmapDemo *demo) {
+
+    if (demo->showStencil) {
+        pd->graphics->clear(kColorWhite);
+
+        int height = kQuadrantHeight * 2;
+        for (int y = 0; y < height; y += 7) {
+            pd->graphics->drawLine(0, y, kScreenWidth, y, 1, kColorBlack);
+        }
+        pd->graphics->setStencil(demo->heart);
+    }
+
     fillRect(kTopLeftQuadrant, kColorBlack);
     fillRect(kTopRightQuadrant, kColorWhite);
     fillRect(kBottomLeftQuadrant, (LCDColor)percent50Pattern);
@@ -174,10 +192,13 @@ static void setDrawModeIndex(BitmapDemo *demo, int modeIndex) {
 
 static void drawStatusBar(BitmapDemo *demo) {
     pd->graphics->setDrawMode(kDrawModeCopy);
-
     pd->graphics->setFont(demo->statusBarFont);
+
     pd->graphics->drawText(demo->statusMessage, demo->statusMessageLength, kASCIIEncoding,
                            3, kScreenHeight - kStatusBarHeight + 3);
+    pd->graphics->drawText(demo->secondStatusMessage, demo->secondStatusMessageLength, kASCIIEncoding,
+                           kScreenWidth / 2.0, kScreenHeight - kStatusBarHeight + 3);
+    
 
     int lineWidth = 2;
     pd->graphics->drawLine(0, kScreenHeight - kStatusBarHeight,
@@ -225,6 +246,10 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
         setDrawModeIndex(demo, newIndex);
     }
 
+    if (buttons == kButtonA && upDown == kPressed) {
+        demo->showStencil = !demo->showStencil;
+    }
+
 } // handleButtons
 
 
@@ -241,14 +266,23 @@ DemoSample *bitmapDemoSample(void) {
     }
     demo->kitty = kitty;
 
+    LCDBitmap *heart = pd->graphics->loadBitmap("images/heart", &error);
+    if (heart == NULL) {
+        print("could not load heart image: %s", error);
+    }
+    demo->heart = heart;
+
     demo->statusBarFont = pd->graphics->loadFont("font/Roobert-11-Mono-Condensed", &error);
     if (demo->statusBarFont == NULL) {
         print("could not load font: %s", error);
     }
 
+    demo->secondStatusMessage = "(A) Stencil";
+    demo->secondStatusMessageLength = strlen(demo->secondStatusMessage);
+
     setDrawModeIndex(demo, 0);
 
-    // Dump the image to the console - be sure to show it and embiggen.
+    // Dump the kitty image to the console - be sure to show it and embiggen.
     int kittyWidth, kittyHeight;
     int rowBytes;
     int hasMask;
