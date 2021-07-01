@@ -300,6 +300,16 @@ text tracking - looks like leading?  spacing between letters?
    the lua font:set/get tracking is talking about spacing between letters
    lua also has leading as well. (spacing between lines)
 
+  (yep, definitely spacing)
+```
+    int tracking = 10;
+    int width = pd->graphics->getTextWidth(font, text, textlen, kASCIIEncoding, tracking);
+    width -= tracking;  // in case like drawing into a bitmap
+
+        pd->graphics->setTextTracking(tracking);
+        pd->graphics->drawText(text, textlen, kASCIIEncoding, 0, 0);
+```
+
 ----------
 
 supporting types

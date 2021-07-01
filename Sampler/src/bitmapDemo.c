@@ -289,11 +289,11 @@ DemoSample *bitmapDemoSample(void) {
     uint8_t *data;
     pd->graphics->getBitmapData(demo->kitty, &kittyWidth, &kittyHeight, &rowBytes, &hasMask, &data);
 
-    dumpBitmapAsASCII(kittyWidth, kittyHeight, rowBytes, data);
+//    dumpBitmapAsASCII(kittyWidth, kittyHeight, rowBytes, data);
 
     if (hasMask) {
         print("----");
-        dumpBitmapAsASCII(kittyWidth, kittyHeight, rowBytes, data + rowBytes * kittyHeight);
+//        dumpBitmapAsASCII(kittyWidth, kittyHeight, rowBytes, data + rowBytes * kittyHeight);
     }
         
 
