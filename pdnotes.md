@@ -1119,7 +1119,8 @@ X - bitmap flip
   - has rotation
   - maybe button+dpad to change scale
   - that'll give some more sophisticated combos and see how the pumper works
-- draw mode
+  - maybe put into another sample, transform / scaling / collisions.
+X draw mode
   - maybe another option menu for the draw mode
   - or maybe another-button+dpad
   - asking the sample for a menu
@@ -1128,7 +1129,7 @@ X - bitmap flip
 - maybe nothing moves, but dpad tweedles different scenarios for a bitmap being drawn
   on top and underneath various patterns.
 - drawing on black and white
-- stencil
+X stencil
 
 
 
