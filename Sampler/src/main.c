@@ -10,10 +10,10 @@
 // prototypes of the sample-creation methods. Just so we won't have to have a header
 // for each of them.
 DemoSample *bitmapDemoSample(void);
+DemoSample *moreBitmapDemoSample(void);
 DemoSample *drawingDemoSample(void);
 DemoSample *fontDemoSample(void);
 DemoSample *tableDemoSample(void);
-DemoSample *tilemapDemoSample(void);
 DemoSample *synthDemoSample(void);
 
 // NULL-terminated array of known samples
@@ -90,20 +90,21 @@ int eventHandler(PlaydateAPI* playdate,
     case kEventInit: {
         DemoSample *drawingSample = drawingDemoSample();
         DemoSample *bitmapSample = bitmapDemoSample();
+        DemoSample *moreBitmapSample = moreBitmapDemoSample();
         DemoSample *fontSample = fontDemoSample();
         DemoSample *tableSample = tableDemoSample();
-        DemoSample *tilemapSample = tableDemoSample();
         DemoSample *synthSample = synthDemoSample();
 
         allSamples[0] = drawingSample;
         allSamples[1] = bitmapSample;
-        allSamples[2] = fontSample;
-        allSamples[3] = tableSample;
-        allSamples[4] = synthSample;
+        allSamples[2] = moreBitmapSample;
+        allSamples[3] = fontSample;
+        allSamples[4] = tableSample;
+        allSamples[5] = synthSample;
 
-        sampleCount = 5;
+        sampleCount = 6;
 
-        selectDemo(1);
+        selectDemo(2);
 
         pd->display->setRefreshRate(20);
         font = pd->graphics->loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", NULL);
