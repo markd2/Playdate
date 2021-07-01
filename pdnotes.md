@@ -500,6 +500,7 @@ getTag - gets the tag
 setDrawMode - the drawMode
 setImageFlip - flips (the four-way)
 setStencil - stencil to be set on the frame buffer before the sprite is drawn
+    (white shows through, black blocks)
 setClipRext - sets clip rect for the sprite drawing (not sure that actually means)
 clearClipRect
 setClipRectsInRange - given a rect, startZ and endZ (inclusive). - sets clipping rectangle
@@ -1101,11 +1102,17 @@ https://archive.org/details/mac_Paint_2
 
 ----------
 
+Draw mode is just for images (and fonts, which are images)
+
+stencil - white pixels show, black pixels block (like layer mask)
+
+----------
+
 bitmap things to play with
 
-- load from disk
-- getting bitmap data (data pointer)
-- bitmap flip
+X - load from disk
+X - getting bitmap data (data pointer)
+X - bitmap flip
 - drawing scaled bitmap
 - check mask collision
 - transform bitmap
@@ -1139,4 +1146,7 @@ Rehearsal Buddy - if can do FFT on the mic, have a tuner.  The crank would be co
 for changing a metronome. Use the synths to make sounds that can cut through various
 ensembles.
 
-something to play with blendmodes
+[X] something to play with blendmodes
+
+something to play with just updating affected rows (c.f. gingerbeard in the discord june 28)
+

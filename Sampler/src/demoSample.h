@@ -7,7 +7,6 @@ typedef enum DemoSampleCategory {
     kFont,
     kSprite,
     kSynth,
-    kTable
 } DemoSampleCategory;
 
 // To use, embed this as the first field of your structure.

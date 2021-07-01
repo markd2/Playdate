@@ -13,6 +13,7 @@ DemoSample *bitmapDemoSample(void);
 DemoSample *drawingDemoSample(void);
 DemoSample *fontDemoSample(void);
 DemoSample *tableDemoSample(void);
+DemoSample *tilemapDemoSample(void);
 DemoSample *synthDemoSample(void);
 
 // NULL-terminated array of known samples
@@ -91,6 +92,7 @@ int eventHandler(PlaydateAPI* playdate,
         DemoSample *bitmapSample = bitmapDemoSample();
         DemoSample *fontSample = fontDemoSample();
         DemoSample *tableSample = tableDemoSample();
+        DemoSample *tilemapSample = tableDemoSample();
         DemoSample *synthSample = synthDemoSample();
 
         allSamples[0] = drawingSample;
