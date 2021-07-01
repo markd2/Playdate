@@ -7,14 +7,14 @@
 
 #include "pd_api.h"
 
-typedef struct TableDemo {
+typedef struct TilemapDemo {
     DemoSample isa;
     ButtonPumper *pumper;
-} TableDemo;
+} TilemapDemo;
 
 
 static int update(void *context)  {
-    TableDemo *demo = (TableDemo *)context;
+    TilemapDemo *demo = (TilemapDemo *)context;
 
     PDButtons pushed, released;
     pd->system->getButtonState(NULL, &pushed, &released);
@@ -22,7 +22,7 @@ static int update(void *context)  {
 
     pd->graphics->clear(kColorWhite);
 
-    const char *snorgle = "snorgle table";
+    const char *snorgle = "snorgle tilemap";
     pd->graphics->drawText(snorgle, strlen(snorgle), kASCIIEncoding, 30, kScreenHeight / 2);
 
     return 1;
@@ -34,10 +34,10 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
 } // handleButtons
 
 
-DemoSample *tableDemoSample(void) {
-    TableDemo *demo = (TableDemo *)demoSampleNew("Table", kBitmap,
-                                                 update,
-                                                 sizeof(TableDemo));
+DemoSample *tilemapDemoSample(void) {
+    TilemapDemo *demo = (TilemapDemo *)demoSampleNew("Tilemap", kBitmap,
+                                                     update,
+                                                     sizeof(TilemapDemo));
     demo->pumper = buttonPumperNew(handleButtons, demo);
 
     return (DemoSample *)demo;

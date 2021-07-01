@@ -5,3 +5,5 @@ extern LCDPattern failwafflePattern;
 extern LCDPattern rickrackPattern;
 extern LCDPattern percent50Pattern;
 extern LCDPattern wavyPattern;
+
+extern LCDPattern basketWeavePatternOpen;

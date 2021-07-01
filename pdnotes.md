@@ -500,6 +500,7 @@ getTag - gets the tag
 setDrawMode - the drawMode
 setImageFlip - flips (the four-way)
 setStencil - stencil to be set on the frame buffer before the sprite is drawn
+    (white shows through, black blocks)
 setClipRext - sets clip rect for the sprite drawing (not sure that actually means)
 clearClipRect
 setClipRectsInRange - given a rect, startZ and endZ (inclusive). - sets clipping rectangle
@@ -1093,9 +1094,46 @@ So copying those to Source/font, load with
     }
 ```
 
+----------
+
+MacPaint - for 8x8 patterns
+
+https://archive.org/details/mac_Paint_2
 
 ----------
 
+Draw mode is just for images (and fonts, which are images)
+
+stencil - white pixels show, black pixels block (like layer mask)
+
+----------
+
+bitmap things to play with
+
+X - load from disk
+X - getting bitmap data (data pointer)
+X - bitmap flip
+- drawing scaled bitmap
+- check mask collision
+- transform bitmap
+  - has rotation
+  - maybe button+dpad to change scale
+  - that'll give some more sophisticated combos and see how the pumper works
+  - maybe put into another sample, transform / scaling / collisions.
+X draw mode
+  - maybe another option menu for the draw mode
+  - or maybe another-button+dpad
+  - asking the sample for a menu
+    - make sure draw modes work for those images
+  - or maybe the crank
+- maybe nothing moves, but dpad tweedles different scenarios for a bitmap being drawn
+  on top and underneath various patterns.
+- drawing on black and white
+X stencil
+
+
+
+----------
 
 idea - use the menu options for different experiments.  Some kind of 
 polymorphism (or callback) for "installing" what is getting shown.
@@ -1109,4 +1147,7 @@ Rehearsal Buddy - if can do FFT on the mic, have a tuner.  The crank would be co
 for changing a metronome. Use the synths to make sounds that can cut through various
 ensembles.
 
-something to play with blendmodes
+[X] something to play with blendmodes
+
+something to play with just updating affected rows (c.f. gingerbeard in the discord june 28)
+
