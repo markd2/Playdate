@@ -1124,10 +1124,10 @@ X - load from disk
 X - getting bitmap data (data pointer)
 X - bitmap flip
 X - drawing scaled bitmap
- - check mask collision
-- transform bitmap
+X - check mask collision
+X- transform bitmap
   - has rotation
-  - maybe button+dpad to change scale
+  > maybe button+dpad to change scale
   - that'll give some more sophisticated combos and see how the pumper works
   - maybe put into another sample, transform / scaling / collisions.
 X draw mode
