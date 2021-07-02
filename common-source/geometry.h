@@ -1,4 +1,7 @@
 #include <stdlib.h>
+#include <stdbool.h>
+
+#include "pd_api.h"
 
 #if !defined(MAX)
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
@@ -33,3 +36,9 @@ float degreesToRadians(float degrees);
 Rect clampRectToScreen(Rect rect);
 Point clampPointToScreen(Point point);
 Triangle clampTriangleToScreen(Triangle triangle);
+
+bool rectsIntersect(Rect thing1, Rect thing2);
+void fillRect(Rect rect, LCDColor color);
+void frameRect(Rect rect, LCDColor color);
+
+

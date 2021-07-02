@@ -69,6 +69,7 @@ static Bouncer *bouncerNew(LCDBitmap *bitmap, int x, int y, int xIncrement, int 
 
     pd->graphics->getBitmapData(bitmap, &bouncer->width, &bouncer->height,
                                 NULL, NULL, NULL);
+    bouncer->colliding = false;
 
     bouncer->timer = timerNew("bouncer", timerIntervalMs, bouncer, moveBouncer);
     return bouncer;
@@ -133,6 +134,9 @@ static void drawShapes(MoreBitmapDemo *demo) {
     for (int i = 0; i < kBouncerCount; i++) {
         Bouncer *bouncer = demo->bouncers[i];
         pd->graphics->drawBitmap(bouncer->image, bouncer->x, bouncer->y, kBitmapUnflipped);
+        if (bouncer->colliding) {
+            frameRect(bouncerRect(bouncer), kColorBlack);
+        }
     }
 } // drawShapes
 
@@ -156,8 +160,39 @@ static void mungeTimer(void *context) {
 } // mungeTimer
 
 
+// totally naive O(N^2) comparisons
+static void checkCollisions(MoreBitmapDemo *demo) {
+    for (int i = 0; i < kBouncerCount; i++) {
+        demo->bouncers[i]->colliding = false;
+    }
+
+    for (int i = 0; i < kBouncerCount; i++) {
+        Bouncer *anchor = demo->bouncers[i];
+        Rect anchorRect = bouncerRect(anchor);
+
+        for (int j = 0; j < kBouncerCount; j++) {
+            if (i == j) continue;
+
+            Bouncer *inner = demo->bouncers[j];
+            if (inner->colliding) continue;
+
+            // first see if rects intersect
+            Rect innerRect = bouncerRect(inner);
+            if (rectsIntersect(anchorRect, innerRect)) {
+                anchor->colliding = true;
+                inner->colliding = true;
+                break;
+            }
+        }
+    }
+    
+} // checkCollisions
+
+
 static int update(void *context)  {
     MoreBitmapDemo *demo = (MoreBitmapDemo *)context;
+
+    checkCollisions(demo);
 
     PDButtons pushed, released;
     pd->system->getButtonState(NULL, &pushed, &released);
