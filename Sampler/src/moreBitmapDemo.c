@@ -19,7 +19,7 @@ const float maxScaleY = 3.0;
 
 typedef struct Bouncer Bouncer;
 
-#define kBouncerCount 10
+#define kBouncerCount 20
 
 typedef struct MoreBitmapDemo {
     DemoSample isa;
@@ -179,9 +179,28 @@ static void checkCollisions(MoreBitmapDemo *demo) {
             // first see if rects intersect
             Rect innerRect = bouncerRect(inner);
             if (rectsIntersect(anchorRect, innerRect)) {
-                anchor->colliding = true;
-                inner->colliding = true;
-                break;
+
+                // now for the cool stuff
+                int hit1 = pd->graphics->checkMaskCollision(anchor->image,
+                                                            anchor->x, anchor->y,
+                                                            kBitmapUnflipped,
+                                                            inner->image,
+                                                            inner->x, inner->y,
+                                                            kBitmapUnflipped,
+                                                            rectToLCDRect(bouncerRect(anchor)));
+
+                int hit2 = pd->graphics->checkMaskCollision(anchor->image,
+                                                            anchor->x, anchor->y,
+                                                            kBitmapUnflipped,
+                                                            inner->image,
+                                                            inner->x, inner->y,
+                                                            kBitmapUnflipped,
+                                                            rectToLCDRect(bouncerRect(inner)));
+                if (hit1 || hit2) {
+                    anchor->colliding = true;
+                    inner->colliding = true;
+                    break;
+                }
             }
         }
     }

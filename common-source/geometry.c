@@ -181,4 +181,6 @@ void frameRect(Rect rect, LCDColor color) {
 } // fillRect
 
 
-
+LCDRect rectToLCDRect(Rect rect) {
+    return (LCDRect){ rect.x, rect.y, rect.x + rect.width, rect.y + rect.height };
+} // rectToLCDRect
