@@ -171,6 +171,25 @@ bool rectsIntersect(Rect thing1, Rect thing2) {
 } // rectsIntersect
 
 
+Rect rectUnion(Rect thing1, Rect thing2) {
+    Point thing1TopLeft = rectTopLeft(thing1);
+    Point thing1BottomRight = rectBottomRight(thing1);
+    
+    Point thing2TopLeft = rectTopLeft(thing2);
+    Point thing2BottomRight = rectBottomRight(thing2);
+
+    int minX = MIN(thing1TopLeft.x, thing2BottomRight.x);
+    int maxX = MAX(thing1TopLeft.x, thing2BottomRight.x);
+
+    int minY = MIN(thing1TopLeft.y, thing2BottomRight.y);
+    int maxY = MAX(thing1TopLeft.y, thing2BottomRight.y);
+
+    Rect rect = (Rect){ minX, minY, maxX - minX, maxY - minY };
+    return rect;
+
+} // rectUnion
+
+
 void fillRect(Rect rect, LCDColor color) {
     pd->graphics->fillRect(rect.x, rect.y, rect.width, rect.height, color);
 } // fillRect

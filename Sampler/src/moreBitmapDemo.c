@@ -180,23 +180,17 @@ static void checkCollisions(MoreBitmapDemo *demo) {
             Rect innerRect = bouncerRect(inner);
             if (rectsIntersect(anchorRect, innerRect)) {
 
-                // now for the cool stuff
-                int hit1 = pd->graphics->checkMaskCollision(anchor->image,
-                                                            anchor->x, anchor->y,
-                                                            kBitmapUnflipped,
-                                                            inner->image,
-                                                            inner->x, inner->y,
-                                                            kBitmapUnflipped,
-                                                            rectToLCDRect(bouncerRect(anchor)));
+                Rect unionRect = rectUnion(anchorRect, innerRect);
 
-                int hit2 = pd->graphics->checkMaskCollision(anchor->image,
+                // now for the cool stuff
+                bool hit = pd->graphics->checkMaskCollision(anchor->image,
                                                             anchor->x, anchor->y,
                                                             kBitmapUnflipped,
                                                             inner->image,
                                                             inner->x, inner->y,
                                                             kBitmapUnflipped,
-                                                            rectToLCDRect(bouncerRect(inner)));
-                if (hit1 || hit2) {
+                                                            rectToLCDRect(unionRect));
+                if (hit) {
                     anchor->colliding = true;
                     inner->colliding = true;
                     break;
