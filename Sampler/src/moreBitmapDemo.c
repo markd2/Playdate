@@ -33,10 +33,6 @@ typedef struct MoreBitmapDemo {
     LCDBitmap *scaledWorldLabel;
     Timer *worldScaleTimer;
 
-    LCDBitmap *circuitImage;
-    int circuitX;
-    int circuitY;
-
     Bouncer *bouncers[kBouncerCount];
 
 } MoreBitmapDemo;
@@ -100,8 +96,8 @@ static void bouncerMove(Bouncer *bouncer) {
         bouncer->xIncrement *= -1;
     }
 
-    if (bouncer->x > kScreenWidth) {
-        bouncer->x = kScreenWidth;
+    if (bouncer->x + bouncer->width > kScreenWidth) {
+        bouncer->x = kScreenWidth - bouncer->width;
         bouncer->xIncrement *= -1;
     }
     
@@ -110,8 +106,8 @@ static void bouncerMove(Bouncer *bouncer) {
         bouncer->yIncrement *= -1;
     }
 
-    if (bouncer->y > kScreenWidth) {
-        bouncer->y = kScreenWidth;
+    if (bouncer->y + bouncer->height > kScreenHeight) {
+        bouncer->y = kScreenHeight - bouncer->height;
         bouncer->yIncrement *= -1;
     }
 
@@ -133,7 +129,6 @@ static void drawShapes(MoreBitmapDemo *demo) {
                                    demo->worldScaleX, demo->worldScaleY);
     pd->graphics->drawScaledBitmap(demo->scaledWorldLabel, 0, 0,
                                    demo->worldScaleX, 1.0);
-    pd->graphics->drawBitmap(demo->circuitImage, demo->circuitX, demo->circuitY, kBitmapUnflipped);
 
     for (int i = 0; i < kBouncerCount; i++) {
         Bouncer *bouncer = demo->bouncers[i];
@@ -159,15 +154,6 @@ static void mungeTimer(void *context) {
     MoreBitmapDemo *demo = context;
     mungeShapes(demo);
 } // mungeTimer
-
-
-static void moveCircuit(void *context) {
-    MoreBitmapDemo *demo = context;
-
-    demo->circuitX += 1;
-    demo->circuitY += 2;
-
-} // moveCircuit
 
 
 static int update(void *context)  {
@@ -240,32 +226,28 @@ DemoSample *moreBitmapDemoSample(void) {
     demo->worldScaleYIncrement = 0.05;
     demo->scaledWorldLabel = makeScaledWorldLabel();
 
+    demo->worldScaleTimer = timerNew("world timer", (1.0 / 10.0) * kMilliseconds, demo, mungeTimer);
+
     LCDBitmap *circuit = pd->graphics->loadBitmap("images/circuit-pad", &error);
     if (circuit == NULL) {
         print("could not load circuit image: %s", error);
     }
-    demo->circuitImage = circuit;
-
-    demo->worldScaleTimer = timerNew("world timer", (1.0 / 10.0) * kMilliseconds, demo, mungeTimer);
-    demo->circuitX = kScreenWidth / 2;
-    demo->circuitY = kScreenHeight / 2;
 
     int circuitWidth;
     int circuitHeight;
-    pd->graphics->getBitmapData(demo->circuitImage, &circuitWidth, &circuitHeight,
-                                NULL, NULL, NULL);
+    pd->graphics->getBitmapData(circuit, &circuitWidth, &circuitHeight, NULL, NULL, NULL);
 
     for (int i = 0; i < kBouncerCount; i++) {
         int x = rand() % (kScreenWidth - circuitWidth);
-        int y = rand() % (kScreenWidth - circuitHeight);
+        int y = rand() % (kScreenHeight - circuitHeight);
 
         int xSign = rand() % 2 ? -1 : 1;
         int ySign = rand() % 2 ? -1 : 1;
         
-        int xSpeed = rand() % 2 + 1;
-        int ySpeed = rand() % 3 + 1;
+        int xSpeed = rand() % 3 + 1;
+        int ySpeed = rand() % 4 + 1;
 
-        float timerSpeed = (rand() % 20) / 20.0;
+        float timerSpeed = (rand() % 10) / 20.0;
     
         Bouncer *bouncer = bouncerNew(circuit, x, y, xSpeed * xSign, ySpeed * ySign,
                                       timerSpeed * kMilliseconds);
