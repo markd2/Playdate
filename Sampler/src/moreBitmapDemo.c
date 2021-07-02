@@ -216,6 +216,7 @@ static int update(void *context)  {
     timerPump(pd->system->getCurrentTimeMilliseconds());
 
     drawShapes(demo);
+    pd->system->drawFPS(0, kScreenHeight - 17);
 
     return 1;
 } // update
@@ -296,13 +297,17 @@ DemoSample *moreBitmapDemoSample(void) {
         int ySpeed = rand() % 4 + 1;
 
         float timerSpeed = (rand() % 10) / 20.0;
+        
+        float rotation = rand() % 360;
+        const int scale = 1.0;
+        int allocedSize;
+        LCDBitmap *bitmap = pd->graphics->transformedBitmap(circuit, rotation, scale, scale,
+                                                            &allocedSize);
     
-        Bouncer *bouncer = bouncerNew(circuit, x, y, xSpeed * xSign, ySpeed * ySign,
+        Bouncer *bouncer = bouncerNew(bitmap, x, y, xSpeed * xSign, ySpeed * ySign,
                                       timerSpeed * kMilliseconds);
         demo->bouncers[i] = bouncer;
     }
 
     return (DemoSample *)demo;
 } // drawingDemoSample
-
-

@@ -5,7 +5,7 @@
 
 const int kMilliseconds = 1000;
 
-#define kMaxTimers 100g
+#define kMaxTimers 100
 static Timer *timers[kMaxTimers];
 
 static int timerCount;
