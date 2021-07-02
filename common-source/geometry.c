@@ -128,3 +128,78 @@ Triangle triangleAt(Point centeredAt, int size, int rotation) {
 } // triangleAt
 
 
+Point rectTopLeft(Rect rect) {
+    return (Point){ rect.x, rect.y };
+} // rectTopleft
+
+
+Point rectBottomRight(Rect rect) {
+    return (Point){ rect.x + rect.width, rect.y + rect.height };
+} // rectBottomRight
+
+
+bool rectsIntersect(Rect thing1, Rect thing2) {
+    Point thing1TopLeft = rectTopLeft(thing1);
+    Point thing1BottomRight = rectBottomRight(thing1);
+    
+    Point thing2TopLeft = rectTopLeft(thing2);
+    Point thing2BottomRight = rectBottomRight(thing2);
+
+    // if either is a line, then defining it can't intersect.
+    if (thing1TopLeft.x == thing1BottomRight.x
+        || thing1TopLeft.y == thing1BottomRight.y
+        || thing2TopLeft.x == thing2BottomRight.x
+        || thing2TopLeft.y == thing2BottomRight.y) {
+        return false;
+    }
+
+    // see if one rectangle is totally to the left of the other
+    if (thing1BottomRight.x < thing2TopLeft.x
+        || thing2BottomRight.x < thing1TopLeft.x) {
+        return false;
+    }
+    
+    // see if one rectangle is totally above the other
+    if (thing1BottomRight.y < thing2TopLeft.y
+        || thing2BottomRight.y < thing1TopLeft.y) {
+        return false;
+    }
+
+    // otherwise, they must intersect
+
+    return true;
+} // rectsIntersect
+
+
+Rect rectUnion(Rect thing1, Rect thing2) {
+    Point thing1TopLeft = rectTopLeft(thing1);
+    Point thing1BottomRight = rectBottomRight(thing1);
+    
+    Point thing2TopLeft = rectTopLeft(thing2);
+    Point thing2BottomRight = rectBottomRight(thing2);
+
+    int minX = MIN(thing1TopLeft.x, thing2BottomRight.x);
+    int maxX = MAX(thing1TopLeft.x, thing2BottomRight.x);
+
+    int minY = MIN(thing1TopLeft.y, thing2BottomRight.y);
+    int maxY = MAX(thing1TopLeft.y, thing2BottomRight.y);
+
+    Rect rect = (Rect){ minX, minY, maxX - minX, maxY - minY };
+    return rect;
+
+} // rectUnion
+
+
+void fillRect(Rect rect, LCDColor color) {
+    pd->graphics->fillRect(rect.x, rect.y, rect.width, rect.height, color);
+} // fillRect
+
+
+void frameRect(Rect rect, LCDColor color) {
+    pd->graphics->drawRect(rect.x, rect.y, rect.width, rect.height, color);
+} // fillRect
+
+
+LCDRect rectToLCDRect(Rect rect) {
+    return (LCDRect){ rect.x, rect.y, rect.x + rect.width, rect.y + rect.height };
+} // rectToLCDRect

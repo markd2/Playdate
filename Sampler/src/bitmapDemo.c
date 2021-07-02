@@ -74,16 +74,6 @@ const Rect kBottomRightQuadrant = (Rect){
 };
 
 
-static void fillRect(Rect rect, LCDColor color) {
-    pd->graphics->fillRect(rect.x, rect.y, rect.width, rect.height, color);
-} // fillRect
-
-
-static void frameRect(Rect rect, LCDColor color) {
-    pd->graphics->drawRect(rect.x, rect.y, rect.width, rect.height, color);
-} // fillRect
-
-
 Rect centerSpanInRect(int width, int height, Rect rect) {
     int widthPad = (rect.width - width) / 2;
     int heightPad = (rect.height - height) / 2;
@@ -289,11 +279,11 @@ DemoSample *bitmapDemoSample(void) {
     uint8_t *data;
     pd->graphics->getBitmapData(demo->kitty, &kittyWidth, &kittyHeight, &rowBytes, &hasMask, &data);
 
-    dumpBitmapAsASCII(kittyWidth, kittyHeight, rowBytes, data);
+//    dumpBitmapAsASCII(kittyWidth, kittyHeight, rowBytes, data);
 
     if (hasMask) {
         print("----");
-        dumpBitmapAsASCII(kittyWidth, kittyHeight, rowBytes, data + rowBytes * kittyHeight);
+//        dumpBitmapAsASCII(kittyWidth, kittyHeight, rowBytes, data + rowBytes * kittyHeight);
     }
         
 

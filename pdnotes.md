@@ -300,6 +300,16 @@ text tracking - looks like leading?  spacing between letters?
    the lua font:set/get tracking is talking about spacing between letters
    lua also has leading as well. (spacing between lines)
 
+  (yep, definitely spacing)
+```
+    int tracking = 10;
+    int width = pd->graphics->getTextWidth(font, text, textlen, kASCIIEncoding, tracking);
+    width -= tracking;  // in case like drawing into a bitmap
+
+        pd->graphics->setTextTracking(tracking);
+        pd->graphics->drawText(text, textlen, kASCIIEncoding, 0, 0);
+```
+
 ----------
 
 supporting types
@@ -1113,11 +1123,11 @@ bitmap things to play with
 X - load from disk
 X - getting bitmap data (data pointer)
 X - bitmap flip
-- drawing scaled bitmap
-- check mask collision
-- transform bitmap
+X - drawing scaled bitmap
+X - check mask collision
+X- transform bitmap
   - has rotation
-  - maybe button+dpad to change scale
+  > maybe button+dpad to change scale
   - that'll give some more sophisticated combos and see how the pumper works
   - maybe put into another sample, transform / scaling / collisions.
 X draw mode
@@ -1126,9 +1136,9 @@ X draw mode
   - asking the sample for a menu
     - make sure draw modes work for those images
   - or maybe the crank
-- maybe nothing moves, but dpad tweedles different scenarios for a bitmap being drawn
+X maybe nothing moves, but dpad tweedles different scenarios for a bitmap being drawn
   on top and underneath various patterns.
-- drawing on black and white
+X drawing on black and white
 X stencil
 
 

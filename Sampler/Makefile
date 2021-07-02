@@ -15,9 +15,9 @@ VPATH += src:../common-source
 
 # List C source files here
 
-LIB_SRC = ../common-source/buttonpumper.c ../common-source/memory.c ../common-source/globals.c ../common-source/spy.c ../common-source/patterns.c ../common-source/geometry.c
+LIB_SRC = ../common-source/buttonpumper.c ../common-source/memory.c ../common-source/globals.c ../common-source/spy.c ../common-source/patterns.c ../common-source/geometry.c ../common-source/timer.c
 
-SRC = src/main.c $(LIB_SRC) src/demoSample.c src/drawingDemo.c src/bitmapDemo.c src/fontDemo.c src/tableDemo.c src/synthDemo.c src/tilemapDemo.c
+SRC = src/main.c $(LIB_SRC) src/demoSample.c src/drawingDemo.c src/bitmapDemo.c src/fontDemo.c src/tableDemo.c src/synthDemo.c src/moreBitmapDemo.c
 
 # List all user directories here
 UINCDIR = ../common-source
