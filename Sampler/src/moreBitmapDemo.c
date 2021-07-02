@@ -17,6 +17,9 @@ const float maxScaleX = 2.0;
 const float minScaleY = 0.2;
 const float maxScaleY = 3.0;
 
+typedef struct Bouncer Bouncer;
+
+#define kBouncerCount 10
 
 typedef struct MoreBitmapDemo {
     DemoSample isa;
@@ -34,9 +37,95 @@ typedef struct MoreBitmapDemo {
     int circuitX;
     int circuitY;
 
-    Timer *circuitTimer;
+    Bouncer *bouncers[kBouncerCount];
 
 } MoreBitmapDemo;
+
+// ----------
+
+typedef struct Bouncer {
+    LCDBitmap *image;
+    int x;
+    int y;
+    int xIncrement;
+    int yIncrement;
+
+    int width;
+    int height;
+
+    bool colliding;
+
+    Timer *timer;
+} Bouncer;
+
+static void moveBouncer(void *context);
+
+// Assumes bitmap is going to stick around.
+static Bouncer *bouncerNew(LCDBitmap *bitmap, int x, int y, int xIncrement, int yIncrement,
+                           int timerIntervalMs) {
+    Bouncer *bouncer = pdMalloc(sizeof(Bouncer));
+
+    bouncer->image = bitmap;
+    bouncer->x = x;
+    bouncer->y = y;
+    bouncer->xIncrement = xIncrement;
+    bouncer->yIncrement = yIncrement;
+
+    pd->graphics->getBitmapData(bitmap, &bouncer->width, &bouncer->height,
+                                NULL, NULL, NULL);
+
+    bouncer->timer = timerNew("bouncer", timerIntervalMs, bouncer, moveBouncer);
+    return bouncer;
+} // bouncerNew
+
+
+
+static void bouncerDelete(Bouncer *bouncer) {
+    timerDelete(bouncer->timer);
+    pdFree(bouncer);
+} // bouncerDelete
+
+
+static Rect bouncerRect(Bouncer *bouncer) {
+    return (Rect){ bouncer->x, bouncer->y, bouncer->width, bouncer->height };
+} // bouncerRect
+
+
+static void bouncerMove(Bouncer *bouncer) {
+    bouncer->x += bouncer->xIncrement;
+    bouncer->y += bouncer->yIncrement;
+
+    if (bouncer->x < 0) {
+        bouncer->x = 0;
+        bouncer->xIncrement *= -1;
+    }
+
+    if (bouncer->x > kScreenWidth) {
+        bouncer->x = kScreenWidth;
+        bouncer->xIncrement *= -1;
+    }
+    
+    if (bouncer->y < 0) {
+        bouncer->y = 0;
+        bouncer->yIncrement *= -1;
+    }
+
+    if (bouncer->y > kScreenWidth) {
+        bouncer->y = kScreenWidth;
+        bouncer->yIncrement *= -1;
+    }
+
+} // bouncerMove
+
+
+static void moveBouncer(void *context) {
+    Bouncer *bouncer = context;
+    bouncerMove(bouncer);
+} // moveBouncer
+
+
+
+// ----------
 
 
 static void drawShapes(MoreBitmapDemo *demo) {
@@ -45,6 +134,11 @@ static void drawShapes(MoreBitmapDemo *demo) {
     pd->graphics->drawScaledBitmap(demo->scaledWorldLabel, 0, 0,
                                    demo->worldScaleX, 1.0);
     pd->graphics->drawBitmap(demo->circuitImage, demo->circuitX, demo->circuitY, kBitmapUnflipped);
+
+    for (int i = 0; i < kBouncerCount; i++) {
+        Bouncer *bouncer = demo->bouncers[i];
+        pd->graphics->drawBitmap(bouncer->image, bouncer->x, bouncer->y, kBitmapUnflipped);
+    }
 } // drawShapes
 
 
@@ -153,9 +247,30 @@ DemoSample *moreBitmapDemoSample(void) {
     demo->circuitImage = circuit;
 
     demo->worldScaleTimer = timerNew("world timer", (1.0 / 10.0) * kMilliseconds, demo, mungeTimer);
-    demo->circuitTimer = timerNew("circuit timer", (5.0 / 10.0) * kMilliseconds, demo, moveCircuit);
     demo->circuitX = kScreenWidth / 2;
     demo->circuitY = kScreenHeight / 2;
+
+    int circuitWidth;
+    int circuitHeight;
+    pd->graphics->getBitmapData(demo->circuitImage, &circuitWidth, &circuitHeight,
+                                NULL, NULL, NULL);
+
+    for (int i = 0; i < kBouncerCount; i++) {
+        int x = rand() % (kScreenWidth - circuitWidth);
+        int y = rand() % (kScreenWidth - circuitHeight);
+
+        int xSign = rand() % 2 ? -1 : 1;
+        int ySign = rand() % 2 ? -1 : 1;
+        
+        int xSpeed = rand() % 2 + 1;
+        int ySpeed = rand() % 3 + 1;
+
+        float timerSpeed = (rand() % 20) / 20.0;
+    
+        Bouncer *bouncer = bouncerNew(circuit, x, y, xSpeed * xSign, ySpeed * ySign,
+                                      timerSpeed * kMilliseconds);
+        demo->bouncers[i] = bouncer;
+    }
 
     return (DemoSample *)demo;
 } // drawingDemoSample
