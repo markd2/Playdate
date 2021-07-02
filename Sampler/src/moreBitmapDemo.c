@@ -8,6 +8,7 @@
 #include "geometry.h"
 #include "patterns.h"
 #include "memory.h"
+#include "timer.h"
 
 #include "pd_api.h"
 
@@ -15,52 +16,6 @@ const float minScaleX = 0.5;
 const float maxScaleX = 2.0;
 const float minScaleY = 0.2;
 const float maxScaleY = 3.0;
-
-
-// ----------
-
-static int kMilliseconds = 1000;
-
-typedef struct Timer {
-    char *name;
-    int msInterval;
-    int lastFire;
-
-    void *context;
-    void (*callback)(void *context);
-} Timer;
-
-
-Timer *timerNew(char *name, int msInterval, void *context, void (*callback)(void *context)) {
-    Timer *timer = pdMalloc(sizeof(Timer));
-    timer->name = name;
-    timer->msInterval = msInterval;
-    timer->lastFire = 0;
-    timer->context = context;
-    timer->callback = callback;
-
-    // add to global pool of timers, and have a single pumper
-
-    return timer;
-} // timerNew
-
-
-void timerDelete(Timer *timer) {
-    pdFree(timer);
-} // timerDelegate
-
-
-void timerPump(Timer *timer, int currentTime) {
-    int nextFire = timer->lastFire + timer->msInterval;
-    if (nextFire < currentTime) {
-        timer->callback(timer->context);
-        timer->lastFire = currentTime;
-    }
-} // timerPump
-
-// ----------
-
-
 
 
 typedef struct MoreBitmapDemo {
@@ -116,9 +71,7 @@ static int update(void *context)  {
 
     pd->graphics->clear(kColorWhite);
 
-    timerPump(demo->worldScaleTimer, pd->system->getCurrentTimeMilliseconds());
-
-//    mungeShapes(demo);
+    timerPump(pd->system->getCurrentTimeMilliseconds());
 
     drawShapes(demo);
 
