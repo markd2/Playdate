@@ -23,6 +23,11 @@ typedef struct Bouncer Bouncer;
 
 typedef struct MoreBitmapDemo {
     DemoSample isa;
+
+    LCDFont *font;
+    char *label;
+    int labelLength;
+
     ButtonPumper *pumper;
 
     LCDBitmap *worldImage;
@@ -216,7 +221,10 @@ static int update(void *context)  {
     timerPump(pd->system->getCurrentTimeMilliseconds());
 
     drawShapes(demo);
-    pd->system->drawFPS(0, kScreenHeight - 17);
+    pd->system->drawFPS(0, kScreenHeight - 14);
+
+    pd->graphics->setFont(demo->font);
+    pd->graphics->drawText(demo->label, demo->labelLength, kASCIIEncoding, 30, kScreenHeight - 17);
 
     return 1;
 } // update
@@ -227,16 +235,10 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
 } // handleButtons
 
 
-static LCDBitmap *makeScaledWorldLabel(void) {
+static LCDBitmap *makeScaledWorldLabel(LCDFont *font) {
+
     const char *text = "scaled";
     int textlen = strlen(text);
-
-    const char *errorText;
-    LCDFont *font = pd->graphics->loadFont("font/Sasser-Small-Caps", &errorText);
-    if (font == NULL) {
-        print("could not load font. %s", errorText);
-        return NULL;
-    }
 
     int tracking = 5;
     int width = pd->graphics->getTextWidth(font, text, textlen, kASCIIEncoding, tracking);
@@ -263,6 +265,15 @@ DemoSample *moreBitmapDemoSample(void) {
     demo->pumper = buttonPumperNew(handleButtons, demo);
 
     const char *error;
+    char *fontname = "font/Sasser-Small-Caps";
+    demo->font = pd->graphics->loadFont(fontname, &error);
+    if (demo->font == NULL) {
+        print("could not load font %s -  %s", fontname, error);
+        return NULL;
+    }
+
+    demo->label = "bitmap scale, rotate, hit-test";
+    demo->labelLength = strlen(demo->label);
 
     LCDBitmap *world = pd->graphics->loadBitmap("images/world", &error);
     if (world == NULL) {
@@ -273,7 +284,7 @@ DemoSample *moreBitmapDemoSample(void) {
     demo->worldScaleXIncrement = 0.1;
     demo->worldScaleY = 1.0;
     demo->worldScaleYIncrement = 0.05;
-    demo->scaledWorldLabel = makeScaledWorldLabel();
+    demo->scaledWorldLabel = makeScaledWorldLabel(demo->font);
 
     demo->worldScaleTimer = timerNew("world timer", (1.0 / 10.0) * kMilliseconds, demo, mungeTimer);
 
