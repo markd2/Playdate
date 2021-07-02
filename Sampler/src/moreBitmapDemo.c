@@ -7,6 +7,7 @@
 #include "globals.h"
 #include "geometry.h"
 #include "patterns.h"
+#include "memory.h"
 
 #include "pd_api.h"
 
@@ -14,6 +15,52 @@ const float minScaleX = 0.5;
 const float maxScaleX = 2.0;
 const float minScaleY = 0.2;
 const float maxScaleY = 3.0;
+
+
+// ----------
+
+static int kMilliseconds = 1000;
+
+typedef struct Timer {
+    char *name;
+    int msInterval;
+    int lastFire;
+
+    void *context;
+    void (*callback)(void *context);
+} Timer;
+
+
+Timer *timerNew(char *name, int msInterval, void *context, void (*callback)(void *context)) {
+    Timer *timer = pdMalloc(sizeof(Timer));
+    timer->name = name;
+    timer->msInterval = msInterval;
+    timer->lastFire = 0;
+    timer->context = context;
+    timer->callback = callback;
+
+    // add to global pool of timers, and have a single pumper
+
+    return timer;
+} // timerNew
+
+
+void timerDelete(Timer *timer) {
+    pdFree(timer);
+} // timerDelegate
+
+
+void timerPump(Timer *timer, int currentTime) {
+    int nextFire = timer->lastFire + timer->msInterval;
+    if (nextFire < currentTime) {
+        timer->callback(timer->context);
+        timer->lastFire = currentTime;
+    }
+} // timerPump
+
+// ----------
+
+
 
 
 typedef struct MoreBitmapDemo {
@@ -26,6 +73,7 @@ typedef struct MoreBitmapDemo {
     float worldScaleY;
     float worldScaleYIncrement;
     LCDBitmap *scaledWorldLabel;
+    Timer *worldScaleTimer;
 
     LCDBitmap *circuitImage;
 } MoreBitmapDemo;
@@ -53,6 +101,12 @@ static void mungeShapes(MoreBitmapDemo *demo) {
 } // mungeShapes
 
 
+static void mungeTimer(void *context) {
+    MoreBitmapDemo *demo = context;
+    mungeShapes(demo);
+} // mungeTimer
+
+
 static int update(void *context)  {
     MoreBitmapDemo *demo = (MoreBitmapDemo *)context;
 
@@ -62,7 +116,9 @@ static int update(void *context)  {
 
     pd->graphics->clear(kColorWhite);
 
-    mungeShapes(demo);
+    timerPump(demo->worldScaleTimer, pd->system->getCurrentTimeMilliseconds());
+
+//    mungeShapes(demo);
 
     drawShapes(demo);
 
@@ -118,9 +174,9 @@ DemoSample *moreBitmapDemoSample(void) {
     }
     demo->worldImage = world;
     demo->worldScaleX = 1.0;
-    demo->worldScaleXIncrement = 0.17;
+    demo->worldScaleXIncrement = 0.1;
     demo->worldScaleY = 1.0;
-    demo->worldScaleYIncrement = 0.18;
+    demo->worldScaleYIncrement = 0.05;
     demo->scaledWorldLabel = makeScaledWorldLabel();
 
     LCDBitmap *circuit = pd->graphics->loadBitmap("images/circuit-pad", &error);
@@ -128,6 +184,8 @@ DemoSample *moreBitmapDemoSample(void) {
         print("could not load circuit image: %s", error);
     }
     demo->circuitImage = circuit;
+
+    demo->worldScaleTimer = timerNew("world timer", (1.0 / 10.0) * kMilliseconds, demo, mungeTimer);
 
     return (DemoSample *)demo;
 } // drawingDemoSample
