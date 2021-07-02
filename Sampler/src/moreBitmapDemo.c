@@ -31,6 +31,11 @@ typedef struct MoreBitmapDemo {
     Timer *worldScaleTimer;
 
     LCDBitmap *circuitImage;
+    int circuitX;
+    int circuitY;
+
+    Timer *circuitTimer;
+
 } MoreBitmapDemo;
 
 
@@ -39,7 +44,7 @@ static void drawShapes(MoreBitmapDemo *demo) {
                                    demo->worldScaleX, demo->worldScaleY);
     pd->graphics->drawScaledBitmap(demo->scaledWorldLabel, 0, 0,
                                    demo->worldScaleX, 1.0);
-    pd->graphics->drawBitmap(demo->circuitImage, 50, 50, kBitmapUnflipped);
+    pd->graphics->drawBitmap(demo->circuitImage, demo->circuitX, demo->circuitY, kBitmapUnflipped);
 } // drawShapes
 
 
@@ -60,6 +65,15 @@ static void mungeTimer(void *context) {
     MoreBitmapDemo *demo = context;
     mungeShapes(demo);
 } // mungeTimer
+
+
+static void moveCircuit(void *context) {
+    MoreBitmapDemo *demo = context;
+
+    demo->circuitX += 1;
+    demo->circuitY += 2;
+
+} // moveCircuit
 
 
 static int update(void *context)  {
@@ -139,6 +153,9 @@ DemoSample *moreBitmapDemoSample(void) {
     demo->circuitImage = circuit;
 
     demo->worldScaleTimer = timerNew("world timer", (1.0 / 10.0) * kMilliseconds, demo, mungeTimer);
+    demo->circuitTimer = timerNew("circuit timer", (5.0 / 10.0) * kMilliseconds, demo, moveCircuit);
+    demo->circuitX = kScreenWidth / 2;
+    demo->circuitY = kScreenHeight / 2;
 
     return (DemoSample *)demo;
 } // drawingDemoSample
