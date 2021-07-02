@@ -1123,8 +1123,8 @@ bitmap things to play with
 X - load from disk
 X - getting bitmap data (data pointer)
 X - bitmap flip
-- drawing scaled bitmap
-- check mask collision
+X - drawing scaled bitmap
+ - check mask collision
 - transform bitmap
   - has rotation
   - maybe button+dpad to change scale
@@ -1136,9 +1136,9 @@ X draw mode
   - asking the sample for a menu
     - make sure draw modes work for those images
   - or maybe the crank
-- maybe nothing moves, but dpad tweedles different scenarios for a bitmap being drawn
+X maybe nothing moves, but dpad tweedles different scenarios for a bitmap being drawn
   on top and underneath various patterns.
-- drawing on black and white
+X drawing on black and white
 X stencil
 
 
