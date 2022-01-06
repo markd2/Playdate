@@ -312,8 +312,8 @@ DemoSample *moreBitmapDemoSample(void) {
         float rotation = rand() % 360;
         const int scale = 1.0;
         int allocedSize;
-        LCDBitmap *bitmap = pd->graphics->transformedBitmap(circuit, rotation, scale, scale,
-                                                            &allocedSize);
+        LCDBitmap *bitmap = pd->graphics->rotatedBitmap(circuit, rotation, scale, scale,
+                                                        &allocedSize);
     
         Bouncer *bouncer = bouncerNew(bitmap, x, y, xSpeed * xSign, ySpeed * ySign,
                                       timerSpeed * kMilliseconds);
