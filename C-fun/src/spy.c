@@ -7,6 +7,7 @@
 static struct playdate_sys originalSystem;
 
 void uninstallSpies(void) {
+    return;
     *((struct playdate_sys *)pd->system) = originalSystem;
 } // uninstallSpies
 
@@ -200,6 +201,7 @@ static int _getReduceFlashing(void) {
 // --------------------------------------------------
 
 void installSpies(void) {
+    return;
 
     // prevent multiple installs - end up with infinite recursion.
     static int installed = 0;
