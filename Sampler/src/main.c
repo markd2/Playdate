@@ -12,6 +12,8 @@
 DemoSample *bitmapDemoSample(void);
 DemoSample *moreBitmapDemoSample(void);
 DemoSample *drawingDemoSample(void);
+DemoSample *spriteDemoSample(void);
+
 DemoSample *fontDemoSample(void);
 DemoSample *tableDemoSample(void);
 DemoSample *synthDemoSample(void);
@@ -97,13 +99,16 @@ int eventHandler(PlaydateAPI* playdate,
         for (volatile int i = 0; i < 10000000; i++) {
             blah += constant;
         }
-    } TIMING_END
+    } TIMING_END;
+
+    pd->display->setMosaic(1, 1);
 
     switch (event) {
     case kEventInit: {
         DemoSample *drawingSample = drawingDemoSample();
         DemoSample *bitmapSample = bitmapDemoSample();
         DemoSample *moreBitmapSample = moreBitmapDemoSample();
+        DemoSample *spriteSample = spriteDemoSample();
         DemoSample *fontSample = fontDemoSample();
         DemoSample *tableSample = tableDemoSample();
         DemoSample *synthSample = synthDemoSample();
@@ -111,13 +116,14 @@ int eventHandler(PlaydateAPI* playdate,
         allSamples[0] = drawingSample;
         allSamples[1] = bitmapSample;
         allSamples[2] = moreBitmapSample;
-        allSamples[3] = fontSample;
-        allSamples[4] = tableSample;
-        allSamples[5] = synthSample;
+        allSamples[3] = spriteSample;
+        allSamples[4] = fontSample;
+        allSamples[5] = tableSample;
+        allSamples[6] = synthSample;
 
-        sampleCount = 6;
+        sampleCount = 7;
 
-        selectDemo(2);
+        selectDemo(3);
 
         pd->display->setRefreshRate(20);
         font = pd->graphics->loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", NULL);
