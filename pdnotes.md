@@ -29,6 +29,14 @@ source/         art/
 % open game.pdx
 ```
 
+### Run on device
+
+```
+% open game.pdx
+(simulator) command-L (put up sim lock screen)
+(simulator) command-U (run on device)
+```
+
 ### Random
 
 Caveman debugging in C
@@ -37,13 +45,13 @@ Caveman debugging in C
 pd->system->logToConsole("format string %d", 23);
 ```
 
-Debugging with lldb
+Debugging with lldb (simulator only)
 
 ```
 lldb ~/Developer/PlaydateSDK/bin/Playdate\ Simulator.app/Contents/MacOS/Playdate\ Simulator
 ```
 
-Location of headers
+Location of stdlib headers
 ```
 /usr/local/playdate/gcc-arm-none-eabi-9-2019-q4-major/arm-none-eabi/include/stdlib.h
 ```
@@ -61,26 +69,9 @@ int eventHandler(PlaydateAPI* playdate,
 
 with lifecycle enums.
 
-
 ----------
 
-Trying to use vsnprintf causes a link error . Just vsprintf too.
-
-```
-function `_sbrk_r':
-sbrkr.c:(.text._sbrk_r+0xc): undefined reference to `_sbrk'
-```
-
-OOH NICE 
-
-```
-int playdate->system->formatString(char **ret, const char *format, ...)
-```
-we're responsible for freeing `ret`
-
-
-
-oh well.  maybe when get a device see if it's just a weird intel linker thing.
+Handles varargs!
 
 ```
 #define debuglog(...) _debuglog(__FILE__, __LINE__, __VA_ARGS__)
@@ -89,7 +80,7 @@ void _debuglog(const char *file, int line, const char *format, ...) {
 
     va_list argList;
     va_start(argList, format);
-    vsprintf(buffer, format, argList);
+    vsnprintf(buffer, 1024, format, argList);
     va_end(argList);
     
     pd->system->logToConsole("%s:%d %s", file, line, buffer);
@@ -98,8 +89,11 @@ void _debuglog(const char *file, int line, const char *format, ...) {
 
 ----------
 
-Looks like memory allocations are automatically zeroed.
-Not documented, though.
+Looks like memory allocations have the first bytes zeroed
+- Not documented, though.
+- Simulator, most of the allocated blocks I get have zeros for the first
+  8 bytes.
+- on-device often get non-zero values in the first bytes.
 
 ----------
 
@@ -163,18 +157,6 @@ sec = pd->system->getSecondsSinceEpoch(&ms);
 
 ----------
 
-can sprintf with , but awkward.  And couldn't get a wrapper around it (no va_ version),
-and couldn't figure out __builtin_apply/_args/_return
-c.f. https://stackoverflow.com/a/61545790
-
-```
-        char *formatted;
-        pd->system->formatString(&formatted, "hello %s", "sailor");
-        // use it
-        pdFree(formatted);
-```
-
---------------------
 
 last misc function is setMenuImage.  Will need to figure out how to make an LCD Bitmap
 400x240
