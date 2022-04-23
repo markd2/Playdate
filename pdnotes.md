@@ -18,6 +18,15 @@
 * pdxinfo - metadata
    - launcher card is 350x155
    - also menu cards, launch images, etc
+
+* to tell if you're on a simulator or not
+
+```
+int IsSimulator(void) {
+    // device has long size of 4
+    return sizeof(long) == 8;
+}
+```
  
 ### Building
 
