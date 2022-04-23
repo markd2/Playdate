@@ -233,7 +233,7 @@ DemoSample *drawingDemoSample(void) {
     DrawingDemo *demo = (DrawingDemo *)demoSampleNew("Drawing", kDrawing, 
                                                      update,
                                                      sizeof(DrawingDemo));
-    const char *errorText;
+    const char *errorText = NULL;
     // font = pd->graphics->loadFont("font/font-Bitmore-Medieval-Outlined.pft", &errorText);
     font = pd->graphics->loadFont("font/Sasser-Small-Caps", &errorText);
     if (errorText != NULL) {
