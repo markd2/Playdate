@@ -3,7 +3,6 @@
 
 #include "demoSample.h"
 #include "globals.h"
-#include "spy.h"
 
 #include "pd_api.h"
 
@@ -123,7 +122,6 @@ int eventHandler(PlaydateAPI* playdate,
         break;
 
     case kEventTerminate:
-        uninstallSpies();
         break;
 
     default: break;

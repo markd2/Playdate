@@ -14,7 +14,7 @@ SDK = $(shell egrep '^\s*SDKRoot' ~/.Playdate/config | head -n 1 | cut -c9-)
 VPATH += src
 
 # List C source files here
-SRC = src/main.c src/buttonpumper.c src/memory.c src/globals.c src/spy.c
+SRC = src/main.c src/buttonpumper.c src/memory.c src/globals.c
 
 # List all user directories here
 UINCDIR = 

@@ -4,7 +4,6 @@
 #include "buttonpumper.h"
 #include "globals.h"
 #include "memory.h"
-#include "spy.h"
 
 #include "pd_api.h"
 
@@ -220,7 +219,6 @@ int eventHandler(PlaydateAPI* playdate,
                  uint32_t arg) {
     if (pd == NULL) {
         pd = playdate;
-        installSpies();
     }
 
     pd->system->logToConsole("event received %s (%x)", eventNames[event], arg);
@@ -257,7 +255,6 @@ int eventHandler(PlaydateAPI* playdate,
         break;
 
     case kEventTerminate:
-        uninstallSpies();
         break;
 
     case kEventKeyPressed: // arg is keycode
