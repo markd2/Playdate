@@ -51,7 +51,6 @@ void selectDemo(int sampleIndex) {
 
 PDMenuItem *menuItem;
 
-// kinda lame the userdata isn't the userdate we set initially.
 void menuItemCallback(void *userdata) {
     int chosenOption = pd->system->getMenuItemValue(menuItem);
     int effectiveOption = (currentIndex + chosenOption) % sampleCount;
@@ -60,6 +59,7 @@ void menuItemCallback(void *userdata) {
         selectDemo(effectiveOption);
     }
 
+    pd->system->removeMenuItem(menuItem);
     menuItem = NULL;
 } // menuItemCallback
 
@@ -75,7 +75,8 @@ static void setupMenu(void) {
     }
 
     menuItem = pd->system->addOptionsMenuItem("Demos", options, sampleCount,
-                                              menuItemCallback, "userdata?");
+                                              menuItemCallback, 
+                                              "userdata (unused here)");
     
 } // setupMenu
 
