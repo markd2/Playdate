@@ -7,7 +7,7 @@
 #include "globals.h"
 
 float degreesToRadians(float degrees) {
-    float radians = (M_PI * degrees) / 180.0;
+    float radians = ((float)M_PI * degrees) / (float)180.0;
     return radians;
 } // degreesToRadians
 
