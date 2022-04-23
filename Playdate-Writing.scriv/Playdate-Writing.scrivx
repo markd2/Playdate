@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScrivenerProject Identifier="50E1DF6E-DB4C-4E12-9B9B-BA54345719BA" Version="2.0" Creator="SCRMAC-3.2.2-14632" Device="SqueakyToy" Author="" Modified="2022-04-23 10:07:19 -0400" ModID="0D9F9C0A-DD95-402D-AF9F-DF852295A08F">
+    <Binder>
+        <BinderItem UUID="5D8E677A-EC96-43F1-B51B-B4204F069297" Type="DraftFolder" Created="2022-04-23 10:05:59 -0400" Modified="2022-04-23 10:05:59 -0400">
+            <Title>Draft</Title>
+            <MetaData>
+                <IncludeInCompile>Yes</IncludeInCompile>
+            </MetaData>
+            <Children>
+                <BinderItem UUID="08AA1F02-AC63-43AB-8FB7-9F5677D41B5A" Type="Text" Created="2022-04-23 10:05:59 -0400" Modified="2022-04-23 10:06:18 -0400">
+                    <MetaData>
+                        <IncludeInCompile>Yes</IncludeInCompile>
+                    </MetaData>
+                    <TextSettings>
+                        <TextSelection>0,0</TextSelection>
+                    </TextSettings>
+                </BinderItem>
+            </Children>
+        </BinderItem>
+        <BinderItem UUID="F499BC5A-D44A-409C-88B0-20AE83763222" Type="ResearchFolder" Created="2022-04-23 10:05:59 -0400" Modified="2022-04-23 10:05:59 -0400">
+            <Title>Research</Title>
+            <MetaData>
+                <IncludeInCompile>Yes</IncludeInCompile>
+            </MetaData>
+        </BinderItem>
+        <BinderItem UUID="5D916160-2429-4467-9CE0-A140AA94193A" Type="TrashFolder" Created="2022-04-23 10:05:59 -0400" Modified="2022-04-23 10:05:59 -0400">
+            <Title>Trash</Title>
+            <MetaData>
+                <IncludeInCompile>Yes</IncludeInCompile>
+            </MetaData>
+            <Children>
+                <BinderItem UUID="9AA0C802-BC80-4609-A845-AE2335A37657" Type="Text" Created="2022-04-23 10:06:22 -0400" Modified="2022-04-23 10:06:22 -0400">
+                    <MetaData>
+                        <IncludeInCompile>Yes</IncludeInCompile>
+                    </MetaData>
+                    <TextSettings>
+                        <TextSelection>0,0</TextSelection>
+                    </TextSettings>
+                </BinderItem>
+                <BinderItem UUID="728B7171-E8CE-4EF9-96F2-451C4BABB7F6" Type="Text" Created="2022-04-23 10:07:09 -0400" Modified="2022-04-23 10:07:19 -0400">
+                    <MetaData>
+                        <IncludeInCompile>Yes</IncludeInCompile>
+                    </MetaData>
+                    <TextSettings>
+                        <TextSelection>0,0</TextSelection>
+                    </TextSettings>
+                </BinderItem>
+            </Children>
+        </BinderItem>
+    </Binder>
+    <Collections>
+        <Collection Type="Binder" ID="80202B56-8894-4263-A762-A0F7534D7581" Color="1.0 1.0 1.0">
+            <Title>Binder</Title>
+        </Collection>
+        <Collection Type="RecentSearch" ID="AED3DE14-CD4C-4551-815C-33F39DFA1892" Color="0.922173 0.818612 0.999627">
+            <Title>Search Results</Title>
+        </Collection>
+    </Collections>
+    <SectionTypes>
+        <TypeDefinitions>
+            <Type ID="BFC954AB-62F6-4411-B0AB-1E47367B4D49">Heading</Type>
+            <Type ID="7C573918-2B69-475C-AF5B-1505BED11EE6">Sub-Heading</Type>
+            <Type ID="D7664093-926C-4A18-ACF7-360FC21742CD">Section</Type>
+        </TypeDefinitions>
+        <LevelTypes>
+            <Folders>
+                <Type>BFC954AB-62F6-4411-B0AB-1E47367B4D49</Type>
+            </Folders>
+            <Containers>
+                <Type>D7664093-926C-4A18-ACF7-360FC21742CD</Type>
+            </Containers>
+            <Files>
+                <Type>D7664093-926C-4A18-ACF7-360FC21742CD</Type>
+            </Files>
+        </LevelTypes>
+    </SectionTypes>
+    <LabelSettings>
+        <Title>Label</Title>
+        <DefaultLabelID>-1</DefaultLabelID>
+        <Labels>
+            <Label ID="-1">No Label</Label>
+            <Label ID="0" Color="0.993495 0.701227 0.732594">Red</Label>
+            <Label ID="1" Color="0.995418 0.790968 0.65239">Orange</Label>
+            <Label ID="2" Color="0.99772 0.892753 0.652574">Yellow</Label>
+            <Label ID="3" Color="0.715848 0.948734 0.697698">Green</Label>
+            <Label ID="4" Color="0.702312 0.888297 0.97426">Blue</Label>
+            <Label ID="5" Color="0.957564 0.766768 0.999625">Purple</Label>
+        </Labels>
+    </LabelSettings>
+    <StatusSettings>
+        <Title>Status</Title>
+        <DefaultStatusID>-1</DefaultStatusID>
+        <StatusItems>
+            <Status ID="-1">No Status</Status>
+            <Status ID="0">To Do</Status>
+            <Status ID="1">In Progress</Status>
+            <Status ID="2">First Draft</Status>
+            <Status ID="3">Revised Draft</Status>
+            <Status ID="4">Final Draft</Status>
+            <Status ID="5">Done</Status>
+        </StatusItems>
+    </StatusSettings>
+    <ProjectTargets Notify="No">
+        <DraftTarget Type="Words" CountIncludedOnly="Yes" CurrentCompileGroupOnly="No" Deadline="2022-04-23 10:05:59 -0400" IgnoreDeadline="Yes">0</DraftTarget>
+        <SessionTarget Type="Words" CountDraftOnly="Yes" AllowNegatives="Yes" NextResetDate="2022-04-24 01:00:00 -0400" ResetType="Time" ResetTime="00:00" DeterminedFromDeadline="No" WritingDays="" CanWriteOnDeadlineDate="No">0</SessionTarget>
+        <PreviousSession Words="8" Characters="37" Date="2022-04-23 10:05:59 -0400"/>
+    </ProjectTargets>
+    <RecentWritingHistory Date="2022-04-23 10:05:59 -0400">
+        <DraftWordCount>8</DraftWordCount>
+        <DraftCharCount>37</DraftCharCount>
+        <OtherWordCount>0</OtherWordCount>
+        <OtherCharCount>0</OtherCharCount>
+    </RecentWritingHistory>
+    <PrintSettings PaperSize="612.0,792.0" LeftMargin="72.0" RightMargin="72.0" TopMargin="90.0" BottomMargin="90.0" PaperType="na-letter" Orientation="Portrait" HorizontalPagination="Clip" VerticalPagination="Auto" ScaleFactor="1.0" HorizontallyCentered="Yes" VerticallyCentered="Yes" Collates="Yes" PagesAcross="1" PagesDown="1"/>
+</ScrivenerProject>

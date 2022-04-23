@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NotesScaleFactor</key>
+	<real>1</real>
+	<key>binderSplitFrames</key>
+	<array>
+		<string>{{0, 0}, {265, 650}}</string>
+		<string>{{266, 0}, {734, 650}}</string>
+	</array>
+	<key>bookmarksSelectionInfo</key>
+	<dict>
+		<key>08AA1F02-AC63-43AB-8FB7-9F5677D41B5A</key>
+		<dict>
+			<key>Row</key>
+			<integer>-1</integer>
+		</dict>
+		<key>728B7171-E8CE-4EF9-96F2-451C4BABB7F6</key>
+		<dict>
+			<key>Row</key>
+			<integer>-1</integer>
+		</dict>
+		<key>9AA0C802-BC80-4609-A845-AE2335A37657</key>
+		<dict>
+			<key>Row</key>
+			<integer>-1</integer>
+		</dict>
+	</dict>
+	<key>collectionsRepresentedBinderDocumentsInfo</key>
+	<dict>
+		<key>MainID</key>
+		<string></string>
+		<key>SupportingID</key>
+		<string></string>
+	</dict>
+	<key>fullScreenTextEditorSettings</key>
+	<dict>
+		<key>textScaleFactor</key>
+		<real>1.25</real>
+	</dict>
+	<key>inspectorSplitFrames</key>
+	<array>
+		<string>{{0, 0}, {409, 640}}</string>
+	</array>
+	<key>inspectorWidth</key>
+	<real>245</real>
+	<key>mainDocumentEditor.dockedQRTextSettings</key>
+	<dict>
+		<key>textScaleFactor</key>
+		<real>1</real>
+	</dict>
+	<key>mainDocumentEditor.scrollRect</key>
+	<string>{{0, 0}, {620, 564}}</string>
+	<key>mainDocumentEditor.textEditorState</key>
+	<dict>
+		<key>textScaleFactor</key>
+		<real>1</real>
+	</dict>
+	<key>mainWindowFrame</key>
+	<string>519 251 1000 678 0 0 2048 1127 </string>
+	<key>supportingDocumentEditor.dockedQRTextSettings</key>
+	<dict>
+		<key>textScaleFactor</key>
+		<real>1</real>
+	</dict>
+	<key>supportingDocumentEditor.scrollRect</key>
+	<string>{{0, 0}, {606, 294}}</string>
+	<key>supportingDocumentEditor.textEditorState</key>
+	<dict>
+		<key>textScaleFactor</key>
+		<real>1</real>
+	</dict>
+	<key>supportingDocumentViewIsCurrent</key>
+	<false/>
+</dict>
+</plist>
