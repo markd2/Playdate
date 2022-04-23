@@ -3,6 +3,7 @@
 
 #include "demoSample.h"
 #include "globals.h"
+#include "timing.h"
 
 #include "pd_api.h"
 
@@ -83,8 +84,20 @@ static void setupMenu(void) {
 int eventHandler(PlaydateAPI* playdate, 
                  PDSystemEvent event,
                  uint32_t arg) {
+    // NOTHING GOES HERE
     pd = playdate;
     pd->system->logToConsole("event received %s (%x)", eventNames[event], arg);
+
+    float blah = 3.1415;
+    volatile float constant = 0.1234;
+
+    print("sizeof %d vs %d", sizeof(float), sizeof(double));
+
+    TIMING_START {
+        for (volatile int i = 0; i < 10000000; i++) {
+            blah += constant;
+        }
+    } TIMING_END
 
     switch (event) {
     case kEventInit: {

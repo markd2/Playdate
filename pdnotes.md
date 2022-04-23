@@ -153,6 +153,8 @@ Maybe a chance for vgalaxyPolymorhpism.
 ----------
 
 added spy for `system` stuff.  Tedious, but do-able.  yay macros.
+BUT the pd struct is memory protected, so get crashes when try to
+hijack the vtable.  oh well.
 
 ----------
 
@@ -163,6 +165,48 @@ pd->system->getCurrentTimeMilliseconds());
 unsigned int sec, ms;
 sec = pd->system->getSecondsSinceEpoch(&ms);
 ```
+
+some timing macros in `timing.h`
+
+```
+#define TIMING_START do { \
+    pd->system->resetElapsedTime(); \
+    float $then = pd->system->getElapsedTime(); \
+
+
+#define TIMING_END \
+    float $now = pd->system->getElapsedTime(); \
+    print("elapsed time \(%f)", (double)($now - $then)); \
+} while(0);
+```
+
+A 100K timing loop
+
+```
+        for (volatile int i = 0; i < 100000; i++) {
+            (void)i;
+        }
+```
+
+is 0.000440, 0.000755 on an m1 Mini, an .006000 on a playdate.
+
+Adding a value to a float/double in that loop (upped to ten million loops).
+
+```
+    double blah = 3.1415;
+    volatile double constant = 0.1234;
+
+    print("sizeof %d vs %d", sizeof(float), sizeof(double));
+
+    TIMING_START {
+        for (volatile int i = 0; i < 10000000; i++) {
+            blah += constant;
+        }
+    } TIMING_END
+```
+
+that's .556 seconds (double), 0.493 (float).  Not a huge 
+difference (12%?).
 
 ----------
 
