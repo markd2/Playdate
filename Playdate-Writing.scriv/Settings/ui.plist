@@ -36,6 +36,11 @@
 			<key>Row</key>
 			<integer>-1</integer>
 		</dict>
+		<key>83179150-4522-417B-8AE5-BB710CF1BACB</key>
+		<dict>
+			<key>Row</key>
+			<integer>-1</integer>
+		</dict>
 		<key>9AA0C802-BC80-4609-A845-AE2335A37657</key>
 		<dict>
 			<key>Row</key>
@@ -70,7 +75,7 @@
 	</dict>
 	<key>inspectorSplitFrames</key>
 	<array>
-		<string>{{0, 0}, {409, 640}}</string>
+		<string>{{0, 0}, {409, 679}}</string>
 	</array>
 	<key>inspectorWidth</key>
 	<real>245</real>
@@ -93,7 +98,7 @@
 		<real>253</real>
 	</dict>
 	<key>mainDocumentEditor.scrollRect</key>
-	<string>{{0, 0}, {352, 532}}</string>
+	<string>{{0, 0}, {606, 294}}</string>
 	<key>mainDocumentEditor.textEditorState</key>
 	<dict>
 		<key>textScaleFactor</key>

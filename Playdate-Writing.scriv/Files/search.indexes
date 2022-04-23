@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SearchIndexes Version="1.0">
     <Documents>
-        <Document ID="08AA1F02-AC63-43AB-8FB7-9F5677D41B5A">
-            <Text>Hello there this is big enough to see</Text>
+        <Document ID="5FB2B3E8-2CEE-45B9-AC18-614ADF2734CB">
+            <Title>Swift(!)</Title>
+            <Text>Swift on Playdate
+
+Dude on Playdate Squad (ericLewis) claims to have gotten Swift to run on playdate (simulator)
+https://devforum.play.date/t/using-the-swift-programming-language-on-playdate/4182/12
+</Text>
         </Document>
         <Document ID="431C6BE8-DE0A-45AC-AED5-3F2189017DF2">
             <Title>Assembly</Title>
             <Text>Assembly on Playdate</Text>
         </Document>
-        <Document ID="5FB2B3E8-2CEE-45B9-AC18-614ADF2734CB">
-            <Title>Swift(!)</Title>
-            <Text>Swift on Playdate
-
-Dude on Playdate Squad (ericLewis) claims to have gotten Swift to run on playdate (simulator)</Text>
+        <Document ID="08AA1F02-AC63-43AB-8FB7-9F5677D41B5A">
+            <Text>Hello there this is big enough to see</Text>
         </Document>
         <Document ID="EC7C13EA-2184-41FD-B1A1-26231280C97F">
             <Title>Fortran</Title>
@@ -23,6 +25,15 @@ Dude on Playdate Squad (ericLewis) claims to have gotten Swift to run on playdat
             <Text>C++ on Playdate
 
 The Commodore 64 with C++ talk - https://www.youtube.com/watch?v=zBkNBP00wJE</Text>
+        </Document>
+        <Document ID="83179150-4522-417B-8AE5-BB710CF1BACB">
+            <Title>Benchmarking</Title>
+            <Text># So, how slow is this processor really?
+
+I think it's probably orders of magnitude faster than the NeXT 68030, so don't necessarily buy the "playdate CPU is really slow" antihype.
+
+Track down the MikeAsh benchmarking suite and adapt it for playdate stuffs.
+</Text>
         </Document>
     </Documents>
 </SearchIndexes>

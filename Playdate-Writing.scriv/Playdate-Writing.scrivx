@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ScrivenerProject Identifier="50E1DF6E-DB4C-4E12-9B9B-BA54345719BA" Version="2.0" Creator="SCRMAC-3.2.2-14632" Device="SqueakyToy" Author="" Modified="2022-04-23 10:40:34 -0400" ModID="8AB2A96E-0C26-4808-96F9-39AD5DB06329">
+<ScrivenerProject Identifier="50E1DF6E-DB4C-4E12-9B9B-BA54345719BA" Version="2.0" Creator="SCRMAC-3.2.2-14632" Device="SqueakyToy" Author="" Modified="2022-04-23 17:05:08 -0400" ModID="8290EAFF-025A-4DA0-ACFE-BD9FC8B1C46D">
     <Binder>
         <BinderItem UUID="5D8E677A-EC96-43F1-B51B-B4204F069297" Type="DraftFolder" Created="2022-04-23 10:05:59 -0400" Modified="2022-04-23 10:05:59 -0400">
             <Title>Draft</Title>
@@ -13,6 +13,15 @@
                     </MetaData>
                     <TextSettings>
                         <TextSelection>0,0</TextSelection>
+                    </TextSettings>
+                </BinderItem>
+                <BinderItem UUID="83179150-4522-417B-8AE5-BB710CF1BACB" Type="Text" Created="2022-04-23 17:04:01 -0400" Modified="2022-04-23 17:05:08 -0400">
+                    <Title>Benchmarking</Title>
+                    <MetaData>
+                        <IncludeInCompile>Yes</IncludeInCompile>
+                    </MetaData>
+                    <TextSettings>
+                        <TextSelection>258,0</TextSelection>
                     </TextSettings>
                 </BinderItem>
                 <BinderItem UUID="737B42DB-1B32-47EC-8FFD-6F9E6B0B35E9" Type="Folder" Created="2022-04-23 10:32:51 -0400" Modified="2022-04-23 10:32:55 -0400">
@@ -42,13 +51,13 @@
                                 <TextSelection>93,0</TextSelection>
                             </TextSettings>
                         </BinderItem>
-                        <BinderItem UUID="5FB2B3E8-2CEE-45B9-AC18-614ADF2734CB" Type="Text" Created="2022-04-23 10:33:08 -0400" Modified="2022-04-23 10:34:36 -0400">
+                        <BinderItem UUID="5FB2B3E8-2CEE-45B9-AC18-614ADF2734CB" Type="Text" Created="2022-04-23 10:33:08 -0400" Modified="2022-04-23 16:52:05 -0400">
                             <Title>Swift(!)</Title>
                             <MetaData>
                                 <IncludeInCompile>Yes</IncludeInCompile>
                             </MetaData>
                             <TextSettings>
-                                <TextSelection>112,0</TextSelection>
+                                <TextSelection>199,0</TextSelection>
                             </TextSettings>
                         </BinderItem>
                         <BinderItem UUID="EC7C13EA-2184-41FD-B1A1-26231280C97F" Type="Text" Created="2022-04-23 10:33:13 -0400" Modified="2022-04-23 10:33:31 -0400">
@@ -150,11 +159,11 @@
     <ProjectTargets Notify="No">
         <DraftTarget Type="Words" CountIncludedOnly="Yes" CurrentCompileGroupOnly="No" Deadline="2022-04-23 10:05:59 -0400" IgnoreDeadline="Yes">0</DraftTarget>
         <SessionTarget Type="Words" CountDraftOnly="Yes" AllowNegatives="Yes" NextResetDate="2022-04-24 01:00:00 -0400" ResetType="Time" ResetTime="00:00" DeterminedFromDeadline="No" WritingDays="" CanWriteOnDeadlineDate="No">0</SessionTarget>
-        <PreviousSession Words="49" Characters="299" Date="2022-04-23 10:32:43 -0400"/>
+        <PreviousSession Words="97" Characters="644" Date="2022-04-23 16:52:01 -0400"/>
     </ProjectTargets>
     <RecentWritingHistory Date="2022-04-23 10:05:59 -0400">
-        <DraftWordCount>49</DraftWordCount>
-        <DraftCharCount>299</DraftCharCount>
+        <DraftWordCount>97</DraftWordCount>
+        <DraftCharCount>644</DraftCharCount>
         <OtherWordCount>0</OtherWordCount>
         <OtherCharCount>0</OtherCharCount>
     </RecentWritingHistory>
