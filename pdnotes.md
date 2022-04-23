@@ -269,8 +269,9 @@ Not sure what mosaic does.  Setting it seems to make the bouncing text
 disappear.
 
 From the lua docs, "Adds a mosaic effect to the display. Valid x and y
-values are between 0 and 3, inclusive.".  So should cycle back to this
-when getting more stuff on the screen
+values are between 0 and 3, inclusive.".  ~So should cycle back to this
+when getting more stuff on the screen.~  Looks like it applies a 
+chunkieness factor.  Text looks like bad 1984 mac text scaling.
 
 Also a set refresh rate
 
