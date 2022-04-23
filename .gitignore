@@ -1,5 +1,7 @@
 oopack
 
+*.o
+
 *.pdx/
 build/
 *.bin
