@@ -114,7 +114,7 @@ DemoView *fontMakeSimpleDemoView(void) {
 typedef struct WrappedDemoView {
     DemoView isa;
 
-    LCDFont *fonts[3];
+    LCDFont *fonts[6];
     int currentFontIndex;
 } WrappedDemoView;
 
@@ -159,20 +159,28 @@ DemoView *fontMakeWrappedTextDemoView(void) {
     view.isa.name = "Wrapped Demo";
     view.isa.updateCallback = wrappedDemoUpdate;
 
-    const char *errorText = NULL;
     LCDFont *font;
 
-    font = pd->graphics->loadFont("font/Roobert-11-Mono-Condensed", &errorText);
-    if (font == NULL) print("no font line %d error %s", __LINE__, errorText);
-    view.fonts[0] = font;
+    char *fontpaths[] = {
+        "font/Roobert-11-Mono-Condensed",
+        "font/font-Bitmore-Medieval-Outlined",
+        "font/Asheville-Rounded-24-px",
+        "font/font-Cuberick-Bold-Halved",
+        "font/font-Cuberick-Bold",
+        "font/font-pixieval-large-black-bold"
+    };
 
-    font = pd->graphics->loadFont("font/Sasser-Small-Caps", &errorText);
-    if (font == NULL) print("no font line %d error %s", __LINE__, errorText);
-    view.fonts[1] = font;
+    int fontCount = sizeof(fontpaths) / sizeof(*fontpaths);
+    for (int i = 0; i < fontCount; i++) {
+        const char *errorText = NULL;
 
-    font = pd->graphics->loadFont("font/font-Bitmore-Medieval-Outlined", &errorText);
-    if (font == NULL) print("no font line %d error %s", __LINE__, errorText);
-    view.fonts[2] = font;
+        char *fontpath = fontpaths[i];
+        font = pd->graphics->loadFont(fontpath, &errorText);
+        if (font == NULL) {
+            print("could not load font %s - %s", fontpath, errorText);
+        }
+        view.fonts[i] = font;
+    }
 
     view.currentFontIndex = 0;
 
