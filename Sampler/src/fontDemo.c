@@ -3,6 +3,8 @@
 
 #include "demoSample.h"
 #include "buttonpumper.h"
+#include "drawhelpers.h"
+#include "geometry.h"
 #include "globals.h"
 
 #include "pd_api.h"
@@ -120,19 +122,33 @@ typedef struct WrappedDemoView {
 
 const char *wrappedText = "Metaphysics is a restaurant where they give you a thirty-thousand-page menu and no food.\n-- Robert M. Pirsig";
 
-static int wrappedDemoUpdate(void *context) {
-    WrappedDemoView *view = (WrappedDemoView *)context;
-    pd->graphics->clear(kColorWhite);
-
+void drawWrappedString(const char *string,
+                       LCDFont *withFont, Rect inRect) {
+/*
     const char *string = view->isa.name;
     LCDFont *font = view->fonts[view->currentFontIndex];
     pd->graphics->setFont(font);
     pd->graphics->drawText(wrappedText, strlen(wrappedText),
                            kASCIIEncoding, 5, 20);
+*/
+} // drawWrappedString
+
+
+static int wrappedDemoUpdate(void *context) {
+    WrappedDemoView *view = (WrappedDemoView *)context;
+    pd->graphics->clear(kColorWhite);
+
+    Rect screen = screenRect();
+    Rect innerFrame = insetRect(screen, 5, 5);
+    Rect wrapFrame = insetRect(screen, 15, 15);
+
+    strokeRect(innerFrame, kColorBlack);
+    strokeRect(wrapFrame, kColorBlack);
 
     return 1; // update screen
     
 } // wrappedDemoUpdate
+
 
 static void wrappedTextHandleButtons(PDButtons buttons, UpDown upDown, void *context) {
     if (upDown != kPressed) return;
