@@ -12,12 +12,25 @@ TINY.  Sometimes need to get nose-to-nose with it to see small text
 Now... what to actually program it?
 
 * [ ] Still need to flesh out the Sampler with stuffs.  Now that I can see how big/small
-      things actually are
+      things actually are.
+      - [ ] Fonts - Show basic use of fonts.  Word wrapping in a box.
+            Scrolling bigger text with the crank.  Toggle between
+            justified and not.  May need the @nothings hash table for
+            scrolling and laying out a lot of text. Aim to integrate
+            into TNH.  Maybe have a CLI tool that can take a font,
+            render a bunch of letters to an image and blort out a
+            PNG and font table file.  Configurable to "just numbers
+            plus this punctation." or "all upper case" or "just 
+            !@*&!" symbols.  See if the quality is decent enough to
+            use.  Oh, also maybe do attributed strings.  Just 
+            a COUPLE of idears...
 * [ ] Timing / benchmarks for operations.  Like how is memory latency vs calculation?
       There's a ton of "use RAM not CPU" in the discord(s), but sometimes (remember the
       G5's "9th order polynomial vs one round trip to RAM" thing?  And that was over
       a decade and a half ago
-* [ ] TNH - the case makes a nice little stand.
+* [X] TNH - the case makes a nice little stand.
+      - done!  Works!  Maybe once fonts is done and we've got some
+        "here's text" jazz, we can add TNH suggestions and instructions.
 * [ ] Apple Trek - need apple ][ text font, and finish analyzing the 
       BASIC source. (any bets on when it'll be easier to re-write
       Integer BASIC than to understand AppleTrek? :-) )
