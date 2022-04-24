@@ -123,6 +123,13 @@ typedef struct WrappedDemoView {
 
 const char *wrappedText = "Metaphysics is a restaurant where they give you a thirty-thousand-page menu and no food.\n-- Robert M. Pirsig";
 
+void splunge(const char *blah, int length) {
+    char buffer[100];
+    strncpy(buffer, blah, length);
+    buffer[length] = '\000';
+    print("snorgle |%s|", buffer);
+} // splunge
+
 void drawWrappedString(const char *string,
                        LCDFont *withFont, Rect inRect) {
     pd->graphics->setFont(withFont);
@@ -135,29 +142,42 @@ void drawWrappedString(const char *string,
     const char *scan = string;
     const char *stop = string + strlen(string);
 
-    while (scan < stop) {
-        if (*scan == ' ') {
-            int width = pd->graphics->drawText(wordStart,
+    int fontHeight = pd->graphics->getFontHeight(withFont);
+
+    while (scan <= stop) {
+        if (*scan == ' ' || *scan == '\n' || scan == stop) {
+            
+            int width = pd->graphics->getTextWidth(withFont,
+                                                   wordStart,
+                                                   scan - wordStart,
+                                                   kASCIIEncoding,
+                                                   0);
+            // too long to fit? wrap.
+            if (lineLength + width > inRect.width) {
+                x = inRect.x;
+                y += fontHeight;
+                lineLength = 0;
+            }
+
+            if (*scan == '\n') {
+                x = inRect.x;
+                y += fontHeight;
+                lineLength = 0;
+            }
+
+            int width2 = pd->graphics->drawText(wordStart,
                                                scan - wordStart,
                                                kASCIIEncoding, x, y);
 
+//            splunge(wordStart, scan - wordStart);
             lineLength += width;
             x += width;
-            wordStart = scan++;
+            wordStart = ++scan;
         }
 
-        if (lineLength > inRect.width) {
-            x = inRect.x;
-            y += pd->graphics->getFontHeight(withFont);
-            lineLength = 0;
-        }
-        
         scan++;
     }
 
-
-//    pd->graphics->drawText(string, strlen(string),
-//                           kASCIIEncoding, inRect.x, inRect.y);
 } // drawWrappedString
 
 
