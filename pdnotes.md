@@ -433,6 +433,9 @@ Fonts and text
 
 drawText - text (void*), length, string encoding, at x, y.
   - default is Asheville sans 14 light is the default
+  - return value is the width of the text
+  - INTERESTING - if there's a newline, it automatically advances
+
 getFontGlyph - gets a bitmap for a given character.  Can return advance
   through an optional int pointer.
 getFontKeming - returns the keming adjustment between two characters
