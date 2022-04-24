@@ -115,6 +115,7 @@ DemoView *fontMakeSimpleDemoView(void) {
 
 typedef struct WrappedDemoView {
     DemoView isa;
+    LCDFont *textFont;
 
     LCDFont *fonts[6];
     int currentFontIndex;
@@ -124,13 +125,9 @@ const char *wrappedText = "Metaphysics is a restaurant where they give you a thi
 
 void drawWrappedString(const char *string,
                        LCDFont *withFont, Rect inRect) {
-/*
-    const char *string = view->isa.name;
-    LCDFont *font = view->fonts[view->currentFontIndex];
-    pd->graphics->setFont(font);
-    pd->graphics->drawText(wrappedText, strlen(wrappedText),
-                           kASCIIEncoding, 5, 20);
-*/
+    pd->graphics->setFont(withFont);
+    pd->graphics->drawText(string, strlen(string),
+                           kASCIIEncoding, inRect.x, inRect.y);
 } // drawWrappedString
 
 
@@ -145,8 +142,12 @@ static int wrappedDemoUpdate(void *context) {
     strokeRect(innerFrame, kColorBlack);
     strokeRect(wrapFrame, kColorBlack);
 
+    pd->graphics->setFont(view->textFont);
     Point titlePoint = { 30, 0 };
     drawCString("Wrapped Text", titlePoint);
+
+    LCDFont *font = view->fonts[view->currentFontIndex];
+    drawWrappedString(wrappedText, font, wrapFrame);
 
     return 1; // update screen
     
@@ -200,6 +201,8 @@ DemoView *fontMakeWrappedTextDemoView(void) {
         }
         view.fonts[i] = font;
     }
+
+    view.textFont = view.fonts[0];
 
     view.currentFontIndex = 0;
 
