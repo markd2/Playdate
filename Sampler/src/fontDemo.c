@@ -10,6 +10,7 @@
 typedef struct DemoView {
     const char *name;
     PDCallbackFunction *updateCallback;
+    ButtonPumperCallback *buttonCallback;
 } DemoView;
 
 DemoView *fontMakeSimpleDemoView(void);
@@ -52,6 +53,12 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
         }
     } else if (buttons == kButtonRight && upDown == kPressed) {
         fd->currentDemoViewIndex = (fd->currentDemoViewIndex + 1) % count;
+    } else {
+        DemoView *currentDemoView = fd->demoViews[fd->currentDemoViewIndex];
+
+        if (currentDemoView->buttonCallback) {
+            currentDemoView->buttonCallback(buttons, upDown, currentDemoView);
+        }
     }
 } // handleButtons
 
@@ -62,7 +69,7 @@ DemoSample *fontDemoSample(void) {
                                                sizeof(FontDemo));
     demo->pumper = buttonPumperNew(handleButtons, demo);
 
-    demo->currentDemoViewIndex = 0;
+    demo->currentDemoViewIndex = 1; // start with wrapped demo
 
     demo->demoViews[0] = fontMakeSimpleDemoView();
     demo->demoViews[1] = fontMakeWrappedTextDemoView();
@@ -97,6 +104,7 @@ DemoView *fontMakeSimpleDemoView(void) {
 
     view.isa.name = "Simple Demo";
     view.isa.updateCallback = genericCallback;
+    view.isa.buttonCallback = NULL;
 
     return (DemoView *)&view;
 } // fontMakeSimpleDemoView
@@ -105,13 +113,70 @@ DemoView *fontMakeSimpleDemoView(void) {
 
 typedef struct WrappedDemoView {
     DemoView isa;
+
+    LCDFont *fonts[3];
+    int currentFontIndex;
 } WrappedDemoView;
+
+const char *wrappedText = "Metaphysics is a restaurant where they give you a thirty-thousand-page menu and no food.\n-- Robert M. Pirsig";
+
+static int wrappedDemoUpdate(void *context) {
+    WrappedDemoView *view = (WrappedDemoView *)context;
+    pd->graphics->clear(kColorWhite);
+
+    const char *string = view->isa.name;
+    LCDFont *font = view->fonts[view->currentFontIndex];
+    pd->graphics->setFont(font);
+    pd->graphics->drawText(wrappedText, strlen(wrappedText),
+                           kASCIIEncoding, 5, 20);
+
+    return 1; // update screen
+    
+} // wrappedDemoUpdate
+
+static void wrappedTextHandleButtons(PDButtons buttons, UpDown upDown, void *context) {
+    if (upDown != kPressed) return;
+
+    WrappedDemoView *view = (WrappedDemoView *)context;
+
+    int count = sizeof(view->fonts) / sizeof(*view->fonts);
+
+    if (buttons == kButtonUp) {
+        view->currentFontIndex = (view->currentFontIndex + 1) % count;
+        
+    } else if (buttons == kButtonDown) {
+        view->currentFontIndex = view->currentFontIndex - 1;
+        if (view->currentFontIndex < 0) {
+            view->currentFontIndex = count - 1;
+        }
+    }
+} // wrappedTextHandleButtons
+
 
 DemoView *fontMakeWrappedTextDemoView(void) {
     static WrappedDemoView view;
 
     view.isa.name = "Wrapped Demo";
-    view.isa.updateCallback = genericCallback;
+    view.isa.updateCallback = wrappedDemoUpdate;
+
+    const char *errorText = NULL;
+    LCDFont *font;
+
+    font = pd->graphics->loadFont("font/Roobert-11-Mono-Condensed", &errorText);
+    if (font == NULL) print("no font line %d error %s", __LINE__, errorText);
+    view.fonts[0] = font;
+
+    font = pd->graphics->loadFont("font/Sasser-Small-Caps", &errorText);
+    if (font == NULL) print("no font line %d error %s", __LINE__, errorText);
+    view.fonts[1] = font;
+
+    font = pd->graphics->loadFont("font/font-Bitmore-Medieval-Outlined", &errorText);
+    if (font == NULL) print("no font line %d error %s", __LINE__, errorText);
+    view.fonts[2] = font;
+
+    view.currentFontIndex = 0;
+
+    view.isa.buttonCallback = wrappedTextHandleButtons;
 
     return (DemoView *)&view;
 } // fontMakeWrappedTextDemoView
@@ -128,6 +193,7 @@ DemoView *fontMakeScrollingTextDemoView(void) {
 
     view.isa.name = "Scrolling Demo";
     view.isa.updateCallback = genericCallback;
+    view.isa.buttonCallback = NULL;
 
     return (DemoView *)&view;
 } // fontMakeScrollingTextDemoView
