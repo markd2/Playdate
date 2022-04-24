@@ -18,6 +18,12 @@ Point pointPlus(Point thing1, Point thing2) {
 } // pointPlus
 
 
+Rect screenRect(void) {
+    Rect rect = { 0, 0, kScreenWidth, kScreenHeight };
+    return rect;
+} // screenRect;
+
+
 Rect clampRectToScreen(Rect rect) {
     if (rect.x < 0) rect.x = 0;
     if (rect.y < 0) rect.y = 0;
@@ -103,6 +109,18 @@ Triangle clampTriangleToScreen(Triangle triangle) {
 
 } // clampTriangleToScreen
 
+
+Rect insetRect(Rect source, int xInset, int yInset) {
+    Rect rect = source;
+
+    rect.x += xInset;
+    rect.width -= 2 * xInset;
+    rect.y += yInset;
+    rect.height -= 2 * yInset;
+
+    return rect;
+
+} // insetRect
 
 
 Triangle triangleAt(Point centeredAt, int size, int rotation) {

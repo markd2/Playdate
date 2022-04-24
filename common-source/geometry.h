@@ -1,3 +1,6 @@
+#ifndef BORK_GEOMETRY_H
+#define BORK_GEOMETRY_H
+
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -33,9 +36,11 @@ Triangle triangleAt(Point centeredAt, int size, int rotation);
 
 float degreesToRadians(float degrees);
 
+Rect screenRect(void);
 Rect clampRectToScreen(Rect rect);
 Point clampPointToScreen(Point point);
 Triangle clampTriangleToScreen(Triangle triangle);
+Rect insetRect(Rect source, int xInset, int yInset);
 
 bool rectsIntersect(Rect thing1, Rect thing2);
 void fillRect(Rect rect, LCDColor color);
@@ -44,4 +49,4 @@ Rect rectUnion(Rect thing1, Rect thing2);
 
 LCDRect rectToLCDRect(Rect rect);
 
-
+#endif // BORK_GEOMETRY_H
