@@ -1,7 +1,9 @@
 #ifndef BORK_PATTERNS_H
 #define BORK_PATTERNS_H
 
+#ifndef PLAYDATEAPI_H
 #include "pd_api.h"
+#endif
 
 extern LCDPattern bubblePattern;
 extern LCDPattern failwafflePattern;

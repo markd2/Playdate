@@ -4,8 +4,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#ifndef PLAYDATEAPI_H
 #include "pd_api.h"
-
+#endif
 
 // --------------------------------------------------
 // Support types

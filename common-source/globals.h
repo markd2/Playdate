@@ -1,7 +1,9 @@
 #ifndef BORK_GLOBALS_H
 #define BORK_GLOBALS_H
 
+#ifndef PLAYDATEAPI_H
 #include "pd_api.h"
+#endif
 
 #define print pd->system->logToConsole 
 #define kScreenWidth LCD_COLUMNS

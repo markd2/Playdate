@@ -3,7 +3,9 @@
 
 #include <stdlib.h>
 
+#ifndef PLAYDATEAPI_H
 #include "pd_api.h"
+#endif
 
 #include "geometry.h"
 

@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#ifndef PLAYDATEAPI_H
 #include "pd_api.h"
+#endif
 
 #if !defined(MAX)
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
