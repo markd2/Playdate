@@ -8,6 +8,13 @@
 
 ButtonPumper *pumper;
 
+typedef enum {
+    kStateIdle,
+    kStateTiming
+} TNHState;
+
+static TNHState currentState = kStateIdle;
+
 static const char *eventNames[] = {
     "kEventInit",
     "kEventInitLua",
@@ -21,9 +28,29 @@ static const char *eventNames[] = {
     "kEventLowPower"
 };
 
+static void draw(const char *string) {
+    // kind of heavyweight
+    pd->graphics->clear(kColorWhite);
+
+    int textWidth = pd->graphics->drawText(string, strlen(string), 
+                                           kASCIIEncoding, 30, kScreenHeight / 2);
+    (void)textWidth;
+} // draw
+
 static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
     if (buttons == kButtonA && upDown == kPressed) {
         print("BUTTON A - STARTING");
+        
+        if (currentState == kStateIdle) {
+            currentState= kStateTiming;
+            draw("timing");
+            
+        } else if (currentState == kStateTiming) {
+            currentState = kStateIdle;
+            draw("idle");
+        }
+
+        print("  current state %d", currentState);
     }
 } // handleButtons
 
