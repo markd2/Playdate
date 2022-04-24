@@ -6,7 +6,9 @@
 
 #include "pd_api.h"
 
-ButtonPumper *pumper;
+
+static LCDFont *clockFont;
+static ButtonPumper *pumper;
 
 typedef enum {
     kStateIdle,
@@ -29,18 +31,24 @@ static const char *eventNames[] = {
     "kEventLowPower"
 };
 
-static const int kHorizontalDrawingOffset = 70;
 static const int kVerticalDrawingOffset = kScreenHeight / 2 - 50;
 
 static void draw(const char *string) {
     // kind of heavyweight
     pd->graphics->clear(kColorWhite);
 
-    int textWidth = pd->graphics->drawText(string, strlen(string), 
-                                           kASCIIEncoding, 
-                                           kHorizontalDrawingOffset,
-                                           kVerticalDrawingOffset);
-    (void)textWidth;
+    int textWidth = pd->graphics->getTextWidth(clockFont,
+                                               string, strlen(string),
+                                               kASCIIEncoding, 0);
+    int centeringX = (kScreenWidth - textWidth) / 2.0;
+
+    print("LUB %d", centeringX);
+
+    pd->graphics->setFont(clockFont);
+    pd->graphics->drawText(string, strlen(string), 
+                           kASCIIEncoding, 
+                           centeringX,
+                           kVerticalDrawingOffset);
 } // draw
 
 
@@ -103,9 +111,9 @@ int eventHandler(PlaydateAPI* playdate,
         pd->display->setRefreshRate(2);
         
         const char *errorText = NULL;
-        LCDFont *font = pd->graphics->loadFont("font/Mikodacs-Clock",
+        clockFont = pd->graphics->loadFont("font/Mikodacs-Clock",
                                                &errorText);
-        pd->graphics->setFont(font);
+        pd->graphics->setFont(clockFont);
 
         pd->system->setUpdateCallback(update, NULL);
         pumper = buttonPumperNew(handleButtons, NULL);
