@@ -29,12 +29,17 @@ static const char *eventNames[] = {
     "kEventLowPower"
 };
 
+static const int kHorizontalDrawingOffset = 70;
+static const int kVerticalDrawingOffset = kScreenHeight / 2 - 50;
+
 static void draw(const char *string) {
     // kind of heavyweight
     pd->graphics->clear(kColorWhite);
 
     int textWidth = pd->graphics->drawText(string, strlen(string), 
-                                           kASCIIEncoding, 30, kScreenHeight / 2);
+                                           kASCIIEncoding, 
+                                           kHorizontalDrawingOffset,
+                                           kVerticalDrawingOffset);
     (void)textWidth;
 } // draw
 
