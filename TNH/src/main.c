@@ -96,11 +96,13 @@ int eventHandler(PlaydateAPI* playdate,
     switch (event) {
     case kEventInit: {
         pd->display->setRefreshRate(2);
-        LCDFont *font = pd->graphics->loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", NULL);
+        
+        const char *errorText = NULL;
+        LCDFont *font = pd->graphics->loadFont("font/Mikodacs-Clock",
+                                               &errorText);
         pd->graphics->setFont(font);
 
         pd->system->setUpdateCallback(update, NULL);
-
         pumper = buttonPumperNew(handleButtons, NULL);
 
         break;
