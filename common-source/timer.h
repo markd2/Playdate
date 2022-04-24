@@ -1,3 +1,6 @@
+#ifndef BORK_TIMER_H
+#define BORK_TIMER_H
+
 #include <stdlib.h>
 
 
@@ -39,3 +42,4 @@ struct Timer {
 };
 
 
+#endif // BORK_TIMER_H

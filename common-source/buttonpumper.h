@@ -1,3 +1,6 @@
+#ifndef BORK_BUTTONPUMPER_H
+#define BORK_BUTTONPUMPER_H
+
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -58,3 +61,4 @@ struct ButtonPumper {
     void *_context;
 };
 
+#endif // BORK_BUTTONPUMPER_H

@@ -1,3 +1,6 @@
+#ifndef BORK_GLOBALS_H
+#define BORK_GLOBALS_H
+
 #include "pd_api.h"
 
 #define print pd->system->logToConsole 
@@ -6,3 +9,4 @@
 
 extern PlaydateAPI *pd;
 
+#endif // BORK_GLOBALS_H
