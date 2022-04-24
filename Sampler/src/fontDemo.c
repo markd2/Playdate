@@ -126,8 +126,38 @@ const char *wrappedText = "Metaphysics is a restaurant where they give you a thi
 void drawWrappedString(const char *string,
                        LCDFont *withFont, Rect inRect) {
     pd->graphics->setFont(withFont);
-    pd->graphics->drawText(string, strlen(string),
-                           kASCIIEncoding, inRect.x, inRect.y);
+
+    int lineLength = 0;
+    int x = inRect.x;
+    int y = inRect.y;
+
+    const char *wordStart = string;
+    const char *scan = string;
+    const char *stop = string + strlen(string);
+
+    while (scan < stop) {
+        if (*scan == ' ') {
+            int width = pd->graphics->drawText(wordStart,
+                                               scan - wordStart,
+                                               kASCIIEncoding, x, y);
+
+            lineLength += width;
+            x += width;
+            wordStart = scan++;
+        }
+
+        if (lineLength > inRect.width) {
+            x = inRect.x;
+            y += pd->graphics->getFontHeight(withFont);
+            lineLength = 0;
+        }
+        
+        scan++;
+    }
+
+
+//    pd->graphics->drawText(string, strlen(string),
+//                           kASCIIEncoding, inRect.x, inRect.y);
 } // drawWrappedString
 
 
