@@ -18,3 +18,7 @@ Now... what to actually program it?
       G5's "9th order polynomial vs one round trip to RAM" thing?  And that was over
       a decade and a half ago
 * [ ] TNH - the case makes a nice little stand.
+* [ ] Apple Trek - need apple ][ text font, and finish analyzing the 
+      BASIC source. (any bets on when it'll be easier to re-write
+      Integer BASIC than to understand AppleTrek? :-) )
+* [ ] Papillion - butterflies, butterflies everywhere
