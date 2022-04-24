@@ -21,32 +21,38 @@ typedef struct FontDemo {
     DemoSample isa;
     ButtonPumper *pumper;
 
-    DemoView *currentDemoView;
+    DemoView *demoViews[3];
+    int currentDemoViewIndex;
 } FontDemo;
 
 
 static int update(void *context)  {
-    
-    FontDemo *demo = (FontDemo *)context;
-    return demo->currentDemoView->updateCallback(demo->currentDemoView);
 
-#if 0
+    FontDemo *fontDemo = (FontDemo *)context;
+
     PDButtons pushed, released;
     pd->system->getButtonState(NULL, &pushed, &released);
-    buttonPumperPump(demo->pumper, pushed, released);
+    buttonPumperPump(fontDemo->pumper, pushed, released);
+    
+    DemoView *demoPane = fontDemo->demoViews[fontDemo->currentDemoViewIndex];
+    return demoPane->updateCallback(demoPane);
 
-    pd->graphics->clear(kColorWhite);
-
-    const char *snorgle = "snorgle font";
-    pd->graphics->drawText(snorgle, strlen(snorgle), kASCIIEncoding, 30, kScreenHeight / 2);
-
-    return 1;
-#endif
 } // update
 
 
 static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
+    FontDemo *fd = (FontDemo *)context;
 
+    int count = sizeof(fd->demoViews) / sizeof(*fd->demoViews);
+
+    if (buttons == kButtonLeft && upDown == kPressed) {
+        fd->currentDemoViewIndex = fd->currentDemoViewIndex - 1;
+        if (fd->currentDemoViewIndex < 0) {
+            fd->currentDemoViewIndex = count - 1;
+        }
+    } else if (buttons == kButtonRight && upDown == kPressed) {
+        fd->currentDemoViewIndex = (fd->currentDemoViewIndex + 1) % count;
+    }
 } // handleButtons
 
 
@@ -56,7 +62,12 @@ DemoSample *fontDemoSample(void) {
                                                sizeof(FontDemo));
     demo->pumper = buttonPumperNew(handleButtons, demo);
 
-    demo->currentDemoView = fontMakeSimpleDemoView();
+    demo->currentDemoViewIndex = 0;
+
+    demo->demoViews[0] = fontMakeSimpleDemoView();
+    demo->demoViews[1] = fontMakeWrappedTextDemoView();
+    demo->demoViews[2] = fontMakeScrollingTextDemoView();
+    // if you add another to this, go visit the FontDemo struct
 
     return (DemoSample *)demo;
 } // drawingDemoSample
