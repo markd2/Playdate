@@ -145,6 +145,9 @@ static int wrappedDemoUpdate(void *context) {
     strokeRect(innerFrame, kColorBlack);
     strokeRect(wrapFrame, kColorBlack);
 
+    Point titlePoint = { 30, 0 };
+    drawCString("Wrapped Text", titlePoint);
+
     return 1; // update screen
     
 } // wrappedDemoUpdate
