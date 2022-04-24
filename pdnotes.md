@@ -206,7 +206,8 @@ Adding a value to a float/double in that loop (upped to ten million loops).
 ```
 
 that's .556 seconds (double), 0.493 (float).  Not a huge 
-difference (12%?).
+difference (12%?).  Even though the docs say double is "extremely slow",
+so probably something wrong with the methodology.
 
 ----------
 
