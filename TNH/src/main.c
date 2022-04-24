@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "buttonpumper.h"
 #include "globals.h"
 
 #include "pd_api.h"
+
+ButtonPumper *pumper;
 
 static const char *eventNames[] = {
     "kEventInit",
@@ -18,11 +21,28 @@ static const char *eventNames[] = {
     "kEventLowPower"
 };
 
+static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
+    if (buttons == kButtonA && upDown == kPressed) {
+        print("BUTTON A - STARTING");
+    }
+} // handleButtons
+
+
+static int updateDisplay(void) {
+    return 1;
+} // updateDisplay
+
+
+// --------------------------------------------------
+
 // Return 1 to update the display, 0 to not update it
 static int update(void *userdata) {
-    print("SNORGLE");
-    return 1;
+    PDButtons pushed, released;
+    pd->system->getButtonState(NULL, &pushed, &released);
+    buttonPumperPump(pumper, pushed, released);
+    return updateDisplay();
 } // update
+
 
 int eventHandler(PlaydateAPI* playdate, 
                  PDSystemEvent event,
@@ -38,6 +58,8 @@ int eventHandler(PlaydateAPI* playdate,
         pd->graphics->setFont(font);
 
         pd->system->setUpdateCallback(update, NULL);
+
+        pumper = buttonPumperNew(handleButtons, NULL);
 
         break;
     }
