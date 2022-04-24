@@ -8,6 +8,7 @@
 
 
 static LCDFont *clockFont;
+static LCDFont *textFont;
 static ButtonPumper *pumper;
 
 typedef enum {
@@ -17,6 +18,9 @@ typedef enum {
 
 static TNHState currentState = kStateIdle;
 static unsigned int startTime = 0;
+
+static const int kAlertThreshold = 30 * 60;  // 30 minutes
+static FilePlayer *thresholdSound;
 
 static const char *eventNames[] = {
     "kEventInit",
@@ -33,18 +37,16 @@ static const char *eventNames[] = {
 
 static const int kVerticalDrawingOffset = kScreenHeight / 2 - 50;
 
-static void draw(const char *string) {
+static void draw(LCDFont *font, const char *string) {
     // kind of heavyweight
     pd->graphics->clear(kColorWhite);
 
-    int textWidth = pd->graphics->getTextWidth(clockFont,
+    int textWidth = pd->graphics->getTextWidth(font,
                                                string, strlen(string),
                                                kASCIIEncoding, 0);
     int centeringX = (kScreenWidth - textWidth) / 2.0;
 
-    print("LUB %d", centeringX);
-
-    pd->graphics->setFont(clockFont);
+    pd->graphics->setFont(font);
     pd->graphics->drawText(string, strlen(string), 
                            kASCIIEncoding, 
                            centeringX,
@@ -58,12 +60,10 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
         
         if (currentState == kStateIdle) {
             currentState= kStateTiming;
-            draw("timing");
             startTime = pd->system->getSecondsSinceEpoch(NULL);
             
         } else if (currentState == kStateTiming) {
             currentState = kStateIdle;
-            draw("idle");
         }
 
         print("  current state %d", currentState);
@@ -82,7 +82,13 @@ static int updateDisplay(void) {
         char buffer[20];
         snprintf(buffer, sizeof(buffer), "%02d:%02d", minutes, seconds);
         print(buffer);
-        draw(buffer);
+        draw(clockFont, buffer);
+
+        if (elapsedTime == kAlertThreshold) {
+            pd->sound->fileplayer->play(thresholdSound, 1);
+        }
+    } else {
+        draw(textFont, "Focus on Starting!");
     }
     return 1;
 } // updateDisplay
@@ -113,11 +119,27 @@ int eventHandler(PlaydateAPI* playdate,
         const char *errorText = NULL;
         clockFont = pd->graphics->loadFont("font/Mikodacs-Clock",
                                                &errorText);
-        pd->graphics->setFont(clockFont);
+        if (clockFont == NULL) {
+            print("no clock font");
+        }
+        errorText = NULL;
+        textFont = pd->graphics->loadFont("font/Roobert-24-Medium",
+                                          &errorText);
+        if (textFont == NULL) {
+            print("no text font");
+        }
 
         pd->system->setUpdateCallback(update, NULL);
         pumper = buttonPumperNew(handleButtons, NULL);
 
+        thresholdSound = pd->sound->fileplayer->newPlayer();
+
+        int exists = pd->sound->fileplayer->loadIntoPlayer(thresholdSound, "sound/coin");
+        if (!exists) {
+            print("  SNORGLE NO SOUND FILE FOUND");
+        }
+
+//        pd->system->setCrankSoundsDisabled(1);  // turn off sound
         break;
     }
 
