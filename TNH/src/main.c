@@ -14,6 +14,7 @@ typedef enum {
 } TNHState;
 
 static TNHState currentState = kStateIdle;
+static unsigned int startTime = 0;
 
 static const char *eventNames[] = {
     "kEventInit",
@@ -37,6 +38,7 @@ static void draw(const char *string) {
     (void)textWidth;
 } // draw
 
+
 static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
     if (buttons == kButtonA && upDown == kPressed) {
         print("BUTTON A - STARTING");
@@ -44,6 +46,7 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
         if (currentState == kStateIdle) {
             currentState= kStateTiming;
             draw("timing");
+            startTime = pd->system->getSecondsSinceEpoch(NULL);
             
         } else if (currentState == kStateTiming) {
             currentState = kStateIdle;
@@ -56,6 +59,18 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
 
 
 static int updateDisplay(void) {
+    if (currentState == kStateTiming) {
+        unsigned int now = pd->system->getSecondsSinceEpoch(NULL);
+        unsigned int elapsedTime = now - startTime;
+
+        int minutes = elapsedTime / 60;
+        int seconds = elapsedTime % 60;
+
+        char buffer[20];
+        snprintf(buffer, sizeof(buffer), "%02d:%02d", minutes, seconds);
+        print(buffer);
+        draw(buffer);
+    }
     return 1;
 } // updateDisplay
 
