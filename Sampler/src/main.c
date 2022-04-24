@@ -39,6 +39,7 @@ static const char *eventNames[] = {
 };
 
 
+// Return 1 to update the display, 0 to not update it
 static int update(void *userdata) {
     return 1;
 } // update
@@ -100,8 +101,6 @@ int eventHandler(PlaydateAPI* playdate,
             blah += constant;
         }
     } TIMING_END;
-
-    pd->display->setMosaic(1, 1);
 
     switch (event) {
     case kEventInit: {
