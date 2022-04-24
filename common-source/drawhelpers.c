@@ -7,3 +7,10 @@ void strokeRect(Rect rect, LCDColor withColor) {
                            rect.width, rect.height,
                            withColor);
 } // strokeRect
+
+
+void drawCString(const char *string, Point at) {
+    pd->graphics->drawText(string, strlen(string),
+                           kASCIIEncoding, at.x, at.y);
+} // drawCString
+

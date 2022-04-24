@@ -11,4 +11,7 @@
 
 void strokeRect(Rect rect, LCDColor withColor);
 
+// need a takes-font and clear-background-to-color version too.
+void drawCString(const char *string, Point at);
+
 #endif // BORK_DRAWHELPERS_H
