@@ -144,6 +144,9 @@ void drawWrappedString(const char *string,
 
     int fontHeight = pd->graphics->getFontHeight(withFont);
 
+    int spaceWidth = pd->graphics->getTextWidth(withFont, " ", 1,
+                                                kASCIIEncoding, 0);
+
     while (scan <= stop) {
         if (*scan == ' ' || *scan == '\n' || scan == stop) {
             
@@ -159,20 +162,26 @@ void drawWrappedString(const char *string,
                 lineLength = 0;
             }
 
+            int width2 = pd->graphics->drawText(wordStart,
+                                               scan - wordStart,
+                                               kASCIIEncoding, x, y);
+
+
+//            splunge(wordStart, scan - wordStart);
+            lineLength += width;
+            x += width;
+
             if (*scan == '\n') {
                 x = inRect.x;
                 y += fontHeight;
                 lineLength = 0;
             }
 
-            int width2 = pd->graphics->drawText(wordStart,
-                                               scan - wordStart,
-                                               kASCIIEncoding, x, y);
-
-//            splunge(wordStart, scan - wordStart);
-            lineLength += width;
-            x += width;
             wordStart = ++scan;
+
+            x += spaceWidth;
+            lineLength += spaceWidth;
+
         }
 
         scan++;
