@@ -27,6 +27,8 @@ DemoView *fontMakeSimpleDemoView(void);
 DemoView *fontMakeWrappedTextDemoView(void);
 DemoView *fontMakeScrollingTextDemoView(void);
 
+typedef struct { char *key; int value; } WordWidthHash;
+
 
 typedef struct FontDemo {
     DemoSample isa;
@@ -37,7 +39,6 @@ typedef struct FontDemo {
 
 } FontDemo;
 
-struct { char *key; int value; } *hash = NULL;
 
 static int update(void *context)  {
     FontDemo *fontDemo = (FontDemo *)context;
@@ -127,7 +128,11 @@ typedef struct WrappedDemoView {
     LCDFont *textFont;
 
     LCDFont *fonts[6];
+    WordWidthHash *wordWidthHashes[6];
+
     int currentFontIndex;
+
+
 } WrappedDemoView;
 
 const char *wrappedText = "Metaphysics is a restaurant where they give you a thirty-thousand-page menu and no food.\n-- Robert M. Pirsig";
@@ -135,7 +140,8 @@ const char *wrappedText = "Metaphysics is a restaurant where they give you a thi
 // Performance is pretty adequate - couldn't see a reduction of
 // FPS when wrapping double the pirsig string.
 void drawWrappedString(const char *string,
-                       LCDFont *withFont, Rect inRect) {
+                       LCDFont *withFont, Rect inRect,
+                       WordWidthHash **wordWidthHash) {
     pd->graphics->setFont(withFont);
 
     int lineLength = 0;
@@ -150,14 +156,26 @@ void drawWrappedString(const char *string,
 
     int spaceWidth = pd->graphics->getTextWidth(withFont, " ", 1,
                                                 kASCIIEncoding, 0);
+    char buffer[100];
+
     while (scan <= stop) {
         if (*scan == ' ' || *scan == '\n' || scan == stop) {
-            
-            int width = pd->graphics->getTextWidth(withFont,
+            int wordLength = scan - wordStart;
+
+            strncpy(buffer, wordStart, wordLength);
+            buffer[wordLength] = '\000';
+
+            int width = shget(*wordWidthHash, buffer);
+            if (width == 0) {
+                width = pd->graphics->getTextWidth(withFont,
                                                    wordStart,
-                                                   scan - wordStart,
+                                                   wordLength,
                                                    kASCIIEncoding,
                                                    0);
+                shput(*wordWidthHash, buffer, width);
+                int spoonflongle = shget(*wordWidthHash, buffer);
+            }
+
             // too long to fit? wrap.
             if (lineLength + width > inRect.width) {
                 x = inRect.x;
@@ -205,7 +223,8 @@ static int wrappedDemoUpdate(void *context) {
     drawCString("Wrapped Text", titlePoint);
 
     LCDFont *font = view->fonts[view->currentFontIndex];
-    drawWrappedString(wrappedText, font, wrapFrame);
+    drawWrappedString(wrappedText, font, wrapFrame,
+                      &view->wordWidthHashes[view->currentFontIndex]);
 
     pd->system->drawFPS(30, kScreenHeight - 20);
 
@@ -268,21 +287,14 @@ DemoView *fontMakeWrappedTextDemoView(void) {
 
     view.isa.buttonCallback = wrappedTextHandleButtons;
 
-    sh_new_arena(hash);
+    for (int i = 0; i < sizeof(view.wordWidthHashes) / sizeof(*view.wordWidthHashes); i++) {
+        view.wordWidthHashes[i] = NULL;
+        sh_new_arena(view.wordWidthHashes[i]);
 
-    char buffer[20];
-    strcpy(buffer, "hello");
-    shput(hash, buffer, 5);
-    strcpy(buffer, "greeble");
-    shput(hash, buffer, 8);
-
-    strcpy(buffer, "");
-    shput(hash, buffer, 0);
-
-    print("hash 1 %d", shget(hash, "hello"));
-    print("hash 2 %d", shget(hash, "greeble"));
-    print("hash 3 %d", shget(hash, ""));
-    print("hash 4 %d", shget(hash, "snorgle"));
+        // Make sure an initial allocation for the hash table is made
+        // before passing it around.
+        shput(view.wordWidthHashes[i], "prime", 0);
+    }
 
     return (DemoView *)&view;
 } // fontMakeWrappedTextDemoView
