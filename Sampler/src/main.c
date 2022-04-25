@@ -124,7 +124,7 @@ int eventHandler(PlaydateAPI* playdate,
 
         selectDemo(4);
 
-        pd->display->setRefreshRate(20);
+        pd->display->setRefreshRate(60);
         font = pd->graphics->loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", NULL);
         pd->graphics->setFont(font);
 
