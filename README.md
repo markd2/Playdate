@@ -14,7 +14,7 @@ Now... what to actually program it?
 * [ ] Still need to flesh out the Sampler with stuffs.  Now that I can see how big/small
       things actually are.
       - [ ] Fonts - Show basic use of fonts.  
-            - Word wrapping in a box.
+            X Word wrapping in a box.
             - Scrolling bigger text with the crank. 
             - Toggle between justified and not.  
             - May need the @nothings hash table for scrolling and wrapping out a lot of text (say for accessibility larger type)
