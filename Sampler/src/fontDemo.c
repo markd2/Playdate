@@ -37,10 +37,7 @@ typedef struct FontDemo {
 
 } FontDemo;
 
-
-typedef struct { char *key; int value; } HashKey;
-HashKey *hash = NULL;
-
+struct { char *key; int value; } *hash = NULL;
 
 static int update(void *context)  {
     FontDemo *fontDemo = (FontDemo *)context;
