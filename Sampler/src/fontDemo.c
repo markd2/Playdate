@@ -123,13 +123,8 @@ typedef struct WrappedDemoView {
 
 const char *wrappedText = "Metaphysics is a restaurant where they give you a thirty-thousand-page menu and no food.\n-- Robert M. Pirsig";
 
-void splunge(const char *blah, int length) {
-    char buffer[100];
-    strncpy(buffer, blah, length);
-    buffer[length] = '\000';
-    print("snorgle |%s|", buffer);
-} // splunge
-
+// Performance is pretty adequate - couldn't see a reduction of
+// FPS when wrapping double the pirsig string.
 void drawWrappedString(const char *string,
                        LCDFont *withFont, Rect inRect) {
     pd->graphics->setFont(withFont);
@@ -146,7 +141,6 @@ void drawWrappedString(const char *string,
 
     int spaceWidth = pd->graphics->getTextWidth(withFont, " ", 1,
                                                 kASCIIEncoding, 0);
-
     while (scan <= stop) {
         if (*scan == ' ' || *scan == '\n' || scan == stop) {
             
@@ -165,9 +159,6 @@ void drawWrappedString(const char *string,
             int width2 = pd->graphics->drawText(wordStart,
                                                scan - wordStart,
                                                kASCIIEncoding, x, y);
-
-
-//            splunge(wordStart, scan - wordStart);
             lineLength += width;
             x += width;
 
@@ -181,7 +172,6 @@ void drawWrappedString(const char *string,
 
             x += spaceWidth;
             lineLength += spaceWidth;
-
         }
 
         scan++;
@@ -207,6 +197,8 @@ static int wrappedDemoUpdate(void *context) {
 
     LCDFont *font = view->fonts[view->currentFontIndex];
     drawWrappedString(wrappedText, font, wrapFrame);
+
+    pd->system->drawFPS(30, kScreenHeight - 20);
 
     return 1; // update screen
     
