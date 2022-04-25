@@ -20,7 +20,7 @@ LIB_SRC = ../common-source/buttonpumper.c ../common-source/memory.c ../common-so
 SRC = src/main.c $(LIB_SRC) src/demoSample.c src/drawingDemo.c src/bitmapDemo.c src/fontDemo.c src/tableDemo.c src/synthDemo.c src/moreBitmapDemo.c src/spriteDemo.c
 
 # List all user directories here
-UINCDIR = ../common-source
+UINCDIR = ../common-source ../third-party
 
 # List user asm files
 UASRC = 
