@@ -7,6 +7,7 @@
 #include "drawhelpers.h"
 #include "geometry.h"
 #include "globals.h"
+#include "memory.h"
 
 #include "pd_api.h"
 #include "stb_ds.h"
@@ -131,6 +132,8 @@ typedef struct WrappedDemoView {
 
 const char *wrappedText = "Metaphysics is a restaurant where they give you a thirty-thousand-page menu and no food.\n-- Robert M. Pirsig";
 
+const char *warAndPeace;
+
 // Performance is pretty adequate - couldn't see a reduction of
 // FPS when wrapping double the pirsig string.
 void drawWrappedString(const char *string,
@@ -217,7 +220,9 @@ static int wrappedDemoUpdate(void *context) {
     drawCString("Wrapped Text", titlePoint);
 
     LCDFont *font = view->fonts[view->currentFontIndex];
-    drawWrappedString(wrappedText, font, wrapFrame,
+//    drawWrappedString(wrappedText, font, wrapFrame,
+//                      &view->wordWidthHashes[view->currentFontIndex]);
+    drawWrappedString(warAndPeace, font, wrapFrame,
                       &view->wordWidthHashes[view->currentFontIndex]);
 
     pd->system->drawFPS(30, kScreenHeight - 20);
@@ -289,6 +294,19 @@ DemoView *fontMakeWrappedTextDemoView(void) {
         // before passing it around.
         shput(view.wordWidthHashes[i], "prime", 0);
     }
+
+    FileStat stat;
+    // pd->file->stat("text/war-and-peace.txt", &stat);
+    pd->file->stat("text/war-and-peace-short.txt", &stat);
+    
+    // SDFile *file = pd->file->open("text/war-and-peace.txt", kFileRead);
+    SDFile *file = pd->file->open("text/war-and-peace-short.txt", kFileRead);
+    char *buffer = pdMalloc(stat.size + 1);
+    pd->file->read(file, buffer, stat.size);
+    pd->file->close(file);
+    buffer[stat.size] = '\000';
+    
+    warAndPeace = buffer;
 
     return (DemoView *)&view;
 } // fontMakeWrappedTextDemoView
