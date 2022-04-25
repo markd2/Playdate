@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "demoSample.h"
 #include "buttonpumper.h"
@@ -8,6 +9,13 @@
 #include "globals.h"
 
 #include "pd_api.h"
+
+#define STB_DS_IMPLEMENTATION
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+#pragma GCC diagnostic ignored "-Wshift-count-overflow"
+#include "stb_ds.h"
+#pragma GCC diagnostic pop
 
 typedef struct DemoView {
     const char *name;
@@ -26,11 +34,15 @@ typedef struct FontDemo {
 
     DemoView *demoViews[3];
     int currentDemoViewIndex;
+
 } FontDemo;
 
 
-static int update(void *context)  {
+typedef struct { char *key; int value; } HashKey;
+HashKey *hash = NULL;
 
+
+static int update(void *context)  {
     FontDemo *fontDemo = (FontDemo *)context;
 
     PDButtons pushed, released;
@@ -258,6 +270,22 @@ DemoView *fontMakeWrappedTextDemoView(void) {
     view.currentFontIndex = 0;
 
     view.isa.buttonCallback = wrappedTextHandleButtons;
+
+    sh_new_arena(hash);
+
+    char buffer[20];
+    strcpy(buffer, "hello");
+    shput(hash, buffer, 5);
+    strcpy(buffer, "greeble");
+    shput(hash, buffer, 8);
+
+    strcpy(buffer, "");
+    shput(hash, buffer, 0);
+
+    print("hash 1 %d", shget(hash, "hello"));
+    print("hash 2 %d", shget(hash, "greeble"));
+    print("hash 3 %d", shget(hash, ""));
+    print("hash 4 %d", shget(hash, "snorgle"));
 
     return (DemoView *)&view;
 } // fontMakeWrappedTextDemoView
