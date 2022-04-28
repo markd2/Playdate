@@ -118,6 +118,7 @@ DemoView *fontMakeSimpleDemoView(void) {
 
 // --------------------------------------------------
 
+static const int kMaxCrankMargin = 200;
 typedef struct WrappedDemoView {
     DemoView isa;
     LCDFont *textFont;
@@ -127,10 +128,11 @@ typedef struct WrappedDemoView {
 
     int currentFontIndex;
 
+    int crankMargin;
 
 } WrappedDemoView;
 
-const char *wrappedText = "Metaphysics is a restaurant where they give you a thirty-thousand-page menu and no food.\n-- Robert M. Pirsig";
+const char *wrappedText = "Once upon a midnight dreary, while I pondered, weak and weary, Over many a quaint and curious volume of forgotten lore-\n  While I nodded, nearly napping, suddenly there came a tapping, As of some one gently rapping, rapping at my chamber door.\n\"'Tis some visitor,\" I muttered, \"tapping at my chamber door-\n      Only this and nothing more.\"";
 
 const char *warAndPeace;
 
@@ -180,9 +182,15 @@ void drawWrappedString(const char *string,
                 lineLength = 0;
             }
 
+            // overflew the rectangle?  Done!
+            if (y > inRect.y + inRect.height - fontHeight) {
+                break;
+            }
+
+            // draw
             int width2 = pd->graphics->drawText(wordStart,
-                                               scan - wordStart,
-                                               kASCIIEncoding, x, y);
+                                                scan - wordStart,
+                                                kASCIIEncoding, x, y);
             lineLength += width;
             x += width;
 
@@ -212,7 +220,26 @@ static int wrappedDemoUpdate(void *context) {
     Rect innerFrame = insetRect(screen, 5, 5);
     Rect wrapFrame = insetRect(screen, 15, 15);
 
+    float crankValue = pd->system->getCrankChange();
+
+    if (crankValue > 7.0f) {
+        view->crankMargin += 10;
+    } else if (crankValue > 3.5f) {
+        view->crankMargin += 5;
+    } else if (crankValue > 0.0f) {
+        view->crankMargin += 1;
+    } else if (crankValue < -7.0f) {
+        view->crankMargin -= 10;
+    } else if (crankValue < -3.5f) {
+        view->crankMargin -= 5;
+    } else if (crankValue < 0.0f) {
+        view->crankMargin -= 1;
+    }
+    view->crankMargin = MAX(view->crankMargin, 0);
+    view->crankMargin = MIN(view->crankMargin, kMaxCrankMargin);
+
     strokeRect(innerFrame, kColorBlack);
+    wrapFrame.width -= view->crankMargin;
     strokeRect(wrapFrame, kColorBlack);
 
     pd->graphics->setFont(view->textFont);
@@ -220,10 +247,10 @@ static int wrappedDemoUpdate(void *context) {
     drawCString("Wrapped Text", titlePoint);
 
     LCDFont *font = view->fonts[view->currentFontIndex];
-//    drawWrappedString(wrappedText, font, wrapFrame,
-//                      &view->wordWidthHashes[view->currentFontIndex]);
-    drawWrappedString(warAndPeace, font, wrapFrame,
+    drawWrappedString(wrappedText, font, wrapFrame,
                       &view->wordWidthHashes[view->currentFontIndex]);
+//    drawWrappedString(warAndPeace, font, wrapFrame,
+//                      &view->wordWidthHashes[view->currentFontIndex]);
 
     pd->system->drawFPS(30, kScreenHeight - 20);
 
@@ -283,6 +310,7 @@ DemoView *fontMakeWrappedTextDemoView(void) {
     view.textFont = view.fonts[0];
 
     view.currentFontIndex = 0;
+    view.crankMargin = 0;
 
     view.isa.buttonCallback = wrappedTextHandleButtons;
 
