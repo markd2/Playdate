@@ -37,6 +37,7 @@ typedef struct Triangle {
 Triangle triangleAt(Point centeredAt, int size, int rotation);
 
 float degreesToRadians(float degrees);
+float radiansToDegrees(float degrees);
 
 Rect screenRect(void);
 Rect clampRectToScreen(Rect rect);

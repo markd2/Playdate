@@ -12,6 +12,12 @@ float degreesToRadians(float degrees) {
 } // degreesToRadians
 
 
+float radiansToDegrees(float radians) {
+    float degrees = radians * ((float)M_PI * 180);
+    return degrees;
+} // radiansToDegrees
+
+
 Point pointPlus(Point thing1, Point thing2) {
     Point point = (Point) { thing1.x + thing2.x, thing1.y + thing2.y };
     return point;
