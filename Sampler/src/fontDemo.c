@@ -76,7 +76,7 @@ DemoSample *fontDemoSample(void) {
                                                sizeof(FontDemo));
     demo->pumper = buttonPumperNew(handleButtons, demo);
 
-    demo->currentDemoViewIndex = 1; // start with wrapped demo
+    demo->currentDemoViewIndex = 2; // start with scrolling text demo
 
     demo->demoViews[0] = fontMakeSimpleDemoView();
     demo->demoViews[1] = fontMakeWrappedTextDemoView();
@@ -133,8 +133,6 @@ typedef struct WrappedDemoView {
 } WrappedDemoView;
 
 const char *wrappedText = "Once upon a midnight dreary, while I pondered, weak and weary, Over many a quaint and curious volume of forgotten lore-\n  While I nodded, nearly napping, suddenly there came a tapping, As of some one gently rapping, rapping at my chamber door.\n\"'Tis some visitor,\" I muttered, \"tapping at my chamber door-\n      Only this and nothing more.\"";
-
-const char *warAndPeace;
 
 // Performance is pretty adequate - couldn't see a reduction of
 // FPS when wrapping double the pirsig string.
@@ -323,19 +321,7 @@ DemoView *fontMakeWrappedTextDemoView(void) {
         shput(view.wordWidthHashes[i], "prime", 0);
     }
 
-    FileStat stat;
-    // pd->file->stat("text/war-and-peace.txt", &stat);
-    pd->file->stat("text/war-and-peace-short.txt", &stat);
     
-    // SDFile *file = pd->file->open("text/war-and-peace.txt", kFileRead);
-    SDFile *file = pd->file->open("text/war-and-peace-short.txt", kFileRead);
-    char *buffer = pdMalloc(stat.size + 1);
-    pd->file->read(file, buffer, stat.size);
-    pd->file->close(file);
-    buffer[stat.size] = '\000';
-    
-    warAndPeace = buffer;
-
     return (DemoView *)&view;
 } // fontMakeWrappedTextDemoView
 
@@ -344,7 +330,17 @@ DemoView *fontMakeWrappedTextDemoView(void) {
 
 typedef struct ScrollingDemoView {
     DemoView isa;
+
+    const char *warAndPeace;
+    WordWidthHash *wordWidthHash;
+
+    LCDFont *textFont;
+
 } ScrollingDemoView;
+
+
+void measureTexts(ScrollingDemoView *view) {
+} // measureTexts
 
 DemoView *fontMakeScrollingTextDemoView(void) {
     static ScrollingDemoView view;
@@ -353,5 +349,32 @@ DemoView *fontMakeScrollingTextDemoView(void) {
     view.isa.updateCallback = genericCallback;
     view.isa.buttonCallback = NULL;
 
+    view.wordWidthHash = NULL;
+    sh_new_arena(view.wordWidthHash);
+
+    // Make sure an initial allocation for the hash table is made
+    // before passing it around.
+    shput(view.wordWidthHash, "prime", 0);
+
+    // SDFile *file = pd->file->open("text/war-and-peace.txt", kFileRead);
+    SDFile *file = pd->file->open("text/war-and-peace-short.txt", kFileRead);
+    FileStat stat;
+    char *buffer = pdMalloc(stat.size + 1);
+    pd->file->read(file, buffer, stat.size);
+    pd->file->close(file);
+    buffer[stat.size] = '\000';
+    
+    view.warAndPeace = buffer;
+
+    const char *errorText = NULL;
+    const char *fontpath = "font/font-Cuberick-Bold";
+    view.textFont = pd->graphics->loadFont(fontpath, &errorText);
+    if (view.textFont == NULL) {
+        print("could not load font %s - %s", fontpath, errorText);
+    }
+
+    measureTexts(&view);
+
     return (DemoView *)&view;
 } // fontMakeScrollingTextDemoView
+
