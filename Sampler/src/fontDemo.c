@@ -1,13 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h> // for isspace
 
-#include "demoSample.h"
 #include "buttonpumper.h"
+#include "demoSample.h"
 #include "drawhelpers.h"
 #include "geometry.h"
 #include "globals.h"
 #include "memory.h"
+#include "timing.h"
 
 #include "pd_api.h"
 #include "stb_ds.h"
@@ -338,9 +340,57 @@ typedef struct ScrollingDemoView {
 
 } ScrollingDemoView;
 
+typedef struct WordPosition {
+    const char *wordStart;
+    int length;
+} WordPosition;
+
+int wordPositionEnd = 0;
+WordPosition wordPositions[570000]; // W&P has 65201 words via wc
+
+int breakWords(ScrollingDemoView *view) {
+
+    const char *string = view->warAndPeace;
+    const char *word = string;
+
+    while (true) {
+        if (*word == 0) break;
+        if (wordPositionEnd >= sizeof(wordPositions) / sizeof(*wordPositions)) {
+            print("Blew past end of words at position %d",
+                  word - string);
+            return wordPositionEnd;
+        }
+
+        // suck up spaces
+        while (*word != 0 && isspace((int)*word)) word++;
+
+        wordPositions[wordPositionEnd].wordStart = word;
+        while (*word != 0 && !isspace((int)*word)) word++;
+        wordPositions[wordPositionEnd].length = word - wordPositions[wordPositionEnd].wordStart;
+        wordPositionEnd++;
+    }
+
+    return wordPositionEnd;
+} // breakWords
 
 void measureTexts(ScrollingDemoView *view) {
+    int blah;
+    TIMING_START;
+    blah = breakWords(view);
+    TIMING_END;
+
+    print("found %d words", blah);
+
+    /* timings
+     * just scan through W&P
+     *  - 0.175 (3x in a row)
+     * counting words
+     *  - 0.477 (3x in a row)
+     *          (m1mini takes .0446, so only an order of magnitude faster?)
+     */
+
 } // measureTexts
+
 
 DemoView *fontMakeScrollingTextDemoView(void) {
     static ScrollingDemoView view;
@@ -356,9 +406,13 @@ DemoView *fontMakeScrollingTextDemoView(void) {
     // before passing it around.
     shput(view.wordWidthHash, "prime", 0);
 
-    // SDFile *file = pd->file->open("text/war-and-peace.txt", kFileRead);
-    SDFile *file = pd->file->open("text/war-and-peace-short.txt", kFileRead);
+    const char *filename = "text/war-and-peace.txt";
+//    const char *filename = "text/war-and-peace-short.txt";
+    SDFile *file = pd->file->open(filename, kFileRead);
+
     FileStat stat;
+    pd->file->stat(filename, &stat);
+
     char *buffer = pdMalloc(stat.size + 1);
     pd->file->read(file, buffer, stat.size);
     pd->file->close(file);
