@@ -337,16 +337,58 @@ typedef struct ScrollingDemoView {
     WordWidthHash *wordWidthHash;
 
     LCDFont *textFont;
+    
+    int crankMargin;
 
 } ScrollingDemoView;
 
 
+int scrollingDemoViewCallback(void *userdata) {
+    ScrollingDemoView *view = (ScrollingDemoView *)userdata;
+    pd->graphics->clear(kColorWhite);
+
+    Rect screen = screenRect();
+    Rect innerFrame = insetRect(screen, 5, 5);
+    Rect wrapFrame = insetRect(screen, 15, 15);
+
+    float crankValue = pd->system->getCrankChange();
+
+    if (crankValue > 7.0f) {
+        view->crankMargin += 10;
+    } else if (crankValue > 3.5f) {
+        view->crankMargin += 5;
+    } else if (crankValue > 0.0f) {
+        view->crankMargin += 1;
+    } else if (crankValue < -7.0f) {
+        view->crankMargin -= 10;
+    } else if (crankValue < -3.5f) {
+        view->crankMargin -= 5;
+    } else if (crankValue < 0.0f) {
+        view->crankMargin -= 1;
+    }
+    view->crankMargin = MAX(view->crankMargin, 0);
+    view->crankMargin = MIN(view->crankMargin, kMaxCrankMargin);
+
+    strokeRect(innerFrame, kColorBlack);
+    wrapFrame.width -= view->crankMargin;
+    strokeRect(wrapFrame, kColorBlack);
+
+    pd->graphics->setFont(view->textFont);
+    Point titlePoint = { 30, 0 };
+    drawCString("Scrolling Text", titlePoint);
+
+    pd->system->drawFPS(30, kScreenHeight - 20);
+
+    return 1;
+
+} // scrollingDemoViewCallback
+
 
 DemoView *fontMakeScrollingTextDemoView(void) {
-    static ScrollingDemoView view;
+    static ScrollingDemoView view = { 0 };
 
     view.isa.name = "Scrolling Demo";
-    view.isa.updateCallback = genericCallback;
+    view.isa.updateCallback = scrollingDemoViewCallback;
     view.isa.buttonCallback = NULL;
 
     view.wordWidthHash = NULL;
@@ -376,8 +418,6 @@ DemoView *fontMakeScrollingTextDemoView(void) {
     if (view.textFont == NULL) {
         print("could not load font %s - %s", fontpath, errorText);
     }
-
-    measureTexts(&view);
 
     return (DemoView *)&view;
 } // fontMakeScrollingTextDemoView
