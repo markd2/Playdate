@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h> // for isspace
+#include <stdbool.h>
 
 #include "buttonpumper.h"
 #include "demoSample.h"
@@ -333,13 +333,13 @@ DemoView *fontMakeWrappedTextDemoView(void) {
 typedef struct ScrollingDemoView {
     DemoView isa;
 
+    bool isDirty;
+
     const char *warAndPeace;
     WordWidthHash *wordWidthHash;
 
     LCDFont *textFont;
     
-    int crankMargin;
-
     int currentTopLine;
 
 } ScrollingDemoView;
@@ -451,34 +451,44 @@ void drawWrappedStringFromTopLine(const char *string,
 } // drawWrappedStringFromTopLine
 
 
-int scrollingDemoViewCallback(void *userdata) {
+int scrollingDemoViewUpdate(void *userdata) {
     ScrollingDemoView *view = (ScrollingDemoView *)userdata;
-    pd->graphics->clear(kColorWhite);
-
     Rect screen = screenRect();
     Rect innerFrame = insetRect(screen, 5, 5);
     Rect wrapFrame = insetRect(screen, 15, 15);
 
     float crankValue = pd->system->getCrankChange();
 
-    if (crankValue > 7.0f) {
-        view->crankMargin += 10;
-    } else if (crankValue > 3.5f) {
-        view->crankMargin += 5;
-    } else if (crankValue > 0.0f) {
-        view->crankMargin += 1;
-    } else if (crankValue < -7.0f) {
-        view->crankMargin -= 10;
-    } else if (crankValue < -3.5f) {
-        view->crankMargin -= 5;
-    } else if (crankValue < 0.0f) {
-        view->crankMargin -= 1;
+    if (crankValue != 0.0f) {
+        print("crank value %f", (double)crankValue);
     }
-    view->crankMargin = MAX(view->crankMargin, 0);
-    view->crankMargin = MIN(view->crankMargin, kMaxCrankMargin);
+    if (crankValue > 7.0f) {
+        view->currentTopLine += 11;
+        view->isDirty = true;
+    } else if (crankValue > 3.5f) {
+        view->currentTopLine += 5;
+        view->isDirty = true;
+    } else if (crankValue > 0.0f) {
+        view->currentTopLine += 1;
+        view->isDirty = true;
+    } else if (crankValue < -7.0f) {
+        view->currentTopLine -= 11;
+        view->isDirty = true;
+    } else if (crankValue < -3.5f) {
+        view->currentTopLine -= 5;
+        view->isDirty = true;
+    } else if (crankValue < 0.0f) {
+        view->currentTopLine -= 1;
+        view->isDirty = true;
+    }
+    view->currentTopLine = MAX(view->currentTopLine, 0);
+
+    if (!view->isDirty) return 1;
+    view->isDirty = false;
+
+    pd->graphics->clear(kColorWhite);
 
     strokeRect(innerFrame, kColorBlack);
-    wrapFrame.width -= view->crankMargin;
     strokeRect(wrapFrame, kColorBlack);
 
     pd->graphics->setFont(view->textFont);
@@ -494,14 +504,14 @@ int scrollingDemoViewCallback(void *userdata) {
     drawWrappedStringFromTopLine(topLine, font, wrapFrame,
                                  view->currentTopLine,
                                  &view->wordWidthHash);
-    dumpTopLinePositions();    
-    print("---------");
+//    dumpTopLinePositions();    
+//    print("---------");
 
     pd->system->drawFPS(30, kScreenHeight - 20);
 
     return 1;
 
-} // scrollingDemoViewCallback
+} // scrollingDemoViewUpdate
 
 
 static void scrollingDemoHandleButtons(PDButtons buttons, UpDown upDown, void *context) {
@@ -512,8 +522,11 @@ static void scrollingDemoHandleButtons(PDButtons buttons, UpDown upDown, void *c
     if (buttons == kButtonUp) {
         view->currentTopLine--;
         if (view->currentTopLine < 0) view->currentTopLine = 0;
+
+        view->isDirty = true;
     } else if (buttons == kButtonDown) {
         view->currentTopLine++;
+        view->isDirty = true;
     }
     print("%d", view->currentTopLine);
     
@@ -524,7 +537,7 @@ DemoView *fontMakeScrollingTextDemoView(void) {
     static ScrollingDemoView view = { 0 };
 
     view.isa.name = "Scrolling Demo";
-    view.isa.updateCallback = scrollingDemoViewCallback;
+    view.isa.updateCallback = scrollingDemoViewUpdate;
     view.isa.buttonCallback = scrollingDemoHandleButtons;
 
     view.wordWidthHash = NULL;
@@ -553,6 +566,8 @@ DemoView *fontMakeScrollingTextDemoView(void) {
     if (view.textFont == NULL) {
         print("could not load font %s - %s", fontpath, errorText);
     }
+
+    view.isDirty = true;
 
     return (DemoView *)&view;
 } // fontMakeScrollingTextDemoView
