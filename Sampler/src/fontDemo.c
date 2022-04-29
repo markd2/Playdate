@@ -340,7 +340,115 @@ typedef struct ScrollingDemoView {
     
     int crankMargin;
 
+    int currentTopLine;
+
 } ScrollingDemoView;
+
+const char *topLinePositions[200000];
+
+void dumpTopLinePositions(void) {
+
+    for (int i = 0; i < 20; i++) {
+        print("[%d] %.10s", i, topLinePositions[i] ?: "NULL");
+    }
+} // dumpTopLinePositions
+
+
+void drawWrappedStringFromTopLine(const char *string,
+                                  LCDFont *withFont, Rect inRect,
+                                  int currentTopLine,
+                                  WordWidthHash **wordWidthHash) {
+    int lineCount = 0;
+
+    if (topLinePositions[currentTopLine] == NULL) {
+        if (currentTopLine != 0) {
+            if (topLinePositions[currentTopLine - 1] != NULL) {
+                print("oops, problem - currentTopLine %d has an empty prior",
+                      currentTopLine);
+                return;
+            }
+        }
+        topLinePositions[currentTopLine] = string;
+    }
+
+    pd->graphics->setFont(withFont);
+
+    int lineLength = 0;
+    int x = inRect.x;
+    int y = inRect.y;
+
+    const char *wordStart = string;
+    const char *scan = string;
+    const char *stop = string + strlen(string);
+
+    int fontHeight = pd->graphics->getFontHeight(withFont);
+
+    int spaceWidth = pd->graphics->getTextWidth(withFont, " ", 1,
+                                                kASCIIEncoding, 0);
+    char buffer[64]; // longest W&P word is 31 characters
+
+    while (true) {
+        if (*scan == '\000') break;
+
+        if (*scan == ' ' || *scan == '\n' || scan == stop) {
+            int wordLength = scan - wordStart;
+
+            strncpy(buffer, wordStart, wordLength);
+            buffer[wordLength] = '\000';
+
+            int width = shget(*wordWidthHash, buffer);
+            if (width == 0) {
+                width = pd->graphics->getTextWidth(withFont,
+                                                   wordStart,
+                                                   wordLength,
+                                                   kASCIIEncoding,
+                                                   0);
+                shput(*wordWidthHash, buffer, width);
+                int spoonflongle = shget(*wordWidthHash, buffer);
+            }
+
+            // too long to fit? wrap.
+            if (lineLength + width > inRect.width) {
+                x = inRect.x;
+                y += fontHeight;
+                lineLength = 0;
+                
+                lineCount++;
+                topLinePositions[currentTopLine + lineCount] = wordStart;
+            }
+
+            // overflew the rectangle?  Done!
+            if (y > inRect.y + inRect.height - fontHeight) {
+                break;
+            }
+
+            // draw
+            int width2 = pd->graphics->drawText(wordStart,
+                                                scan - wordStart,
+                                                kASCIIEncoding, x, y);
+            lineLength += width;
+            x += width;
+
+            if (*scan == '\n') {
+                x = inRect.x;
+                y += fontHeight;
+                lineLength = 0;
+
+                lineCount++;
+                scan++;
+                topLinePositions[currentTopLine + lineCount] = scan;
+            }
+
+            wordStart = ++scan;
+
+            x += spaceWidth;
+            lineLength += spaceWidth;
+        }
+
+        scan++;
+    }
+    
+} // drawWrappedStringFromTopLine
 
 
 int scrollingDemoViewCallback(void *userdata) {
@@ -375,7 +483,19 @@ int scrollingDemoViewCallback(void *userdata) {
 
     pd->graphics->setFont(view->textFont);
     Point titlePoint = { 30, 0 };
-    drawCString("Scrolling Text", titlePoint);
+    char buffer[1024];
+    snprintf(buffer, sizeof(buffer), "Scrolling Text (line %d)",
+             view->currentTopLine);
+    drawCString(buffer, titlePoint);
+
+    LCDFont *font = view->textFont;
+    const char *topLine = topLinePositions[view->currentTopLine] ?: view->warAndPeace;
+
+    drawWrappedStringFromTopLine(topLine, font, wrapFrame,
+                                 view->currentTopLine,
+                                 &view->wordWidthHash);
+    dumpTopLinePositions();    
+    print("---------");
 
     pd->system->drawFPS(30, kScreenHeight - 20);
 
@@ -384,12 +504,28 @@ int scrollingDemoViewCallback(void *userdata) {
 } // scrollingDemoViewCallback
 
 
+static void scrollingDemoHandleButtons(PDButtons buttons, UpDown upDown, void *context) {
+    if (upDown != kPressed) return;
+
+    ScrollingDemoView *view = (ScrollingDemoView *)context;
+
+    if (buttons == kButtonUp) {
+        view->currentTopLine--;
+        if (view->currentTopLine < 0) view->currentTopLine = 0;
+    } else if (buttons == kButtonDown) {
+        view->currentTopLine++;
+    }
+    print("%d", view->currentTopLine);
+    
+} // scrollingDemoHandleButtons
+
+
 DemoView *fontMakeScrollingTextDemoView(void) {
     static ScrollingDemoView view = { 0 };
 
     view.isa.name = "Scrolling Demo";
     view.isa.updateCallback = scrollingDemoViewCallback;
-    view.isa.buttonCallback = NULL;
+    view.isa.buttonCallback = scrollingDemoHandleButtons;
 
     view.wordWidthHash = NULL;
     sh_new_arena(view.wordWidthHash);
