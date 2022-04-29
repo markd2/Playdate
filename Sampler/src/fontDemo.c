@@ -399,7 +399,6 @@ DemoView *fontMakeScrollingTextDemoView(void) {
     shput(view.wordWidthHash, "prime", 0);
 
     const char *filename = "text/war-and-peace.txt";
-//    const char *filename = "text/war-and-peace-short.txt";
     SDFile *file = pd->file->open(filename, kFileRead);
 
     FileStat stat;
