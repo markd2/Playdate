@@ -453,6 +453,11 @@ void drawWrappedStringFromTopLine(const char *string,
 
 int scrollingDemoViewUpdate(void *userdata) {
     ScrollingDemoView *view = (ScrollingDemoView *)userdata;
+
+    if (!view->isDirty) {
+        pd->system->drawFPS(30, kScreenHeight - 20);
+    }
+
     Rect screen = screenRect();
     Rect innerFrame = insetRect(screen, 5, 5);
     Rect wrapFrame = insetRect(screen, 15, 15);
