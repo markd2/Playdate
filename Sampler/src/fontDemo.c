@@ -20,7 +20,7 @@ typedef struct DemoView {
     ButtonPumperCallback *buttonCallback;
 } DemoView;
 
-DemoView *fontMakeSimpleDemoView(void);
+DemoView *fontMakeMarkdownDemoView(void);
 DemoView *fontMakeWrappedTextDemoView(void);
 DemoView *fontMakeScrollingTextDemoView(void);
 
@@ -80,7 +80,7 @@ DemoSample *fontDemoSample(void) {
 
     demo->currentDemoViewIndex = 2; // start with scrolling text demo
 
-    demo->demoViews[0] = fontMakeSimpleDemoView();
+    demo->demoViews[0] = fontMakeMarkdownDemoView();
     demo->demoViews[1] = fontMakeWrappedTextDemoView();
     demo->demoViews[2] = fontMakeScrollingTextDemoView();
     // if you add another to this, go visit the FontDemo struct
@@ -91,7 +91,7 @@ DemoSample *fontDemoSample(void) {
 
 // ==================================================
 
-int genericCallback(void *userdata) {
+int markdownCallback(void *userdata) {
     DemoView *demoView = (DemoView *)userdata;
 
     pd->graphics->clear(kColorWhite);
@@ -100,25 +100,64 @@ int genericCallback(void *userdata) {
     pd->graphics->drawText(string, strlen(string),
                            kASCIIEncoding, 100, 100);
     return 1; // update screen
-} // genericCallback
+} // markdownCallback
 
 // --------------------------------------------------
 
-typedef struct SimpleDemoView {
+// asdf
+
+/* Markdown Demo View - have some text we can scroll through, and create it
+ * via markdown.
+ *
+ * [ ] have a source Markdown document
+ * [ ] have an offline process to convert the Markdown to an easily loaded and
+ *     parsable format
+ * [ ] Make the above EL&PF (essentially an attributed string)
+ * [ ] Draw said attributed string
+ * [ ] Smoothly scroll
+ * [ ] stretch goal - do the playback character by character
+ */
+
+typedef enum AttributedStringStyle {
+    kStyleHeadline,
+    kStylePlain,
+    kStyleBold,
+    kStyleItalic
+} AttributedStringStyle;
+
+typedef struct Attribute {
+    int rangeStart;
+    int rangeEnd;  // inclusive
+    AttributedStringStyle style;
+} Attribute;
+
+typedef struct AttributedString {
+    const char *string;
+    Attribute attributes[100];
+} AttributedString;
+
+typedef struct MarkdownDemoView {
     DemoView isa;
-} SimpleDemoView;
+    AttributedString *attributedString;
+} MarkdownDemoView;
 
-DemoView *fontMakeSimpleDemoView(void) {
-    static SimpleDemoView view;
+DemoView *fontMakeMarkdownDemoView(void) {
+    static MarkdownDemoView view;
 
-    view.isa.name = "Simple Demo";
-    view.isa.updateCallback = genericCallback;
+    view.isa.name = "Markdown Demo";
+    view.isa.updateCallback = markdownCallback;
     view.isa.buttonCallback = NULL;
 
-    return (DemoView *)&view;
-} // fontMakeSimpleDemoView
+    view.attributedString = pdMalloc(sizeof(view.attributedString));
 
-// --------------------------------------------------
+    return (DemoView *)&view;
+} // fontMakeMarkdownDemoView
+
+
+// asdf
+
+
+// ==================================================
 
 static const int kMaxCrankMargin = 200;
 typedef struct WrappedDemoView {
