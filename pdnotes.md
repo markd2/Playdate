@@ -336,8 +336,8 @@ also a font - set for subsequent user in drawText calls
 text tracking - looks like leading?  spacing between letters?
    the lua font:set/get tracking is talking about spacing between letters
    lua also has leading as well. (spacing between lines)
+  "tracking value is the number of pixels of whitespace between each character drawn in a string"
 
-  (yep, definitely spacing)
 ```
     int tracking = 10;
     int width = pd->graphics->getTextWidth(font, text, textlen, kASCIIEncoding, tracking);
@@ -429,6 +429,8 @@ loadBitmapTable - given a path, make a table (I think the filename encodes the
 loadIntoBitmapTable - load into a previously allocated table
 newBitmapTable - makes a new table that can hold X widthxheight bitmaps.
 
+----------
+
 Fonts and text
 
 drawText - text (void*), length, string encoding, at x, y.
@@ -439,9 +441,21 @@ drawText - text (void*), length, string encoding, at x, y.
 getFontGlyph - gets a bitmap for a given character.  Can return advance
   through an optional int pointer.
 getFontKeming - returns the keming adjustment between two characters
-getTextWidth - given a font, text, length, encoding, and tracking, retursn the 
+getTextWidth - given a font, text, length, encoding, and tracking, returns the 
   width.  (So tracking does seem to be a keming thing)
 loadFont - given a path, returns LCDFont.
+
+font file format in the Lua docs - https://sdk.play.date/inside-playdate/#C-graphics.font
+  - .fnt file - plain text
+  - `space` for the width of a space
+  - pairs of glyph and width (in the order, L->R, T->B) in the file a
+  - keming pairs supported
+  - can embed the font's pixel data by using datalen, base68, and pixel cell 
+    width and height
+
+Lua-land lets you specify a set of fonts for normal / bold / italic 
+
+----------
 
 Gee I'm a Tree
 
