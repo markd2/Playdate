@@ -38,21 +38,54 @@ static void draw(LCDFont *font, const char *string) {
     int textWidth = pd->graphics->getTextWidth(font,
                                                string, strlen(string),
                                                kASCIIEncoding, 0);
-    int centeringX = (kScreenWidth - textWidth) / 2.0;
+//    int centeringX = (kScreenWidth - textWidth) / 2.0;
+    int centeringX = 10;
+    int Y = 0;
 
+    pd->graphics->setTextLeading(1);
     pd->graphics->setFont(font);
     pd->graphics->drawText(string, strlen(string), 
                            kASCIIEncoding, 
-                           centeringX,
-                           kVerticalDrawingOffset);
+                           centeringX, Y);
 } // draw
 
 
 // --------------------------------------------------
 
+static char *string = ""
+"   :   :   :   :   :   :   :   :   :   :\n"
+"   :302:   :   :   :   :   :   :   :   :\n"
+"   :   :   :   :   :   :   :   :   :   :\n"
+"   :   :   :   :   :   :   :   :   :   :\n"
+"   :   :   :   :   :   :   :   :   :   :\n"
+"   :   :   :   :   :   :   :   :   :   :\n"
+"   :   :   :   :   :   :   :   :   :   :\n"
+"TRAJECTORY - 164\n"
+"MISSED!!\n"
+" <  KLINGON AT 4-3  FIRING PH TORP >\n"
+"\n"
+"\n"
+" QUADRANT 3-1    SECTOR          3-4\n"
+"              K1 YEARS           2.97\n"
+"              K2 STARDTE         3424.0\n"
+"      E        3 CONDITION       RED\n"
+"    K          4 SHIELDS         50%\n"
+"              *5 SHIELD ENERGY   2189\n"
+"               6 AVAIL ENERGY    2359\n"
+"               7 PH TORPS        10\n"
+"*              8 KLINGONS        41\n"
+"1 2 3 4 5 6 7 8  BASES           4\n"
+"                 COURSE NOT SET.";
+
+static int flippa = 1;
 static int updateDisplay(void) {
-    draw(appleFont, "HELLO [ BRK 0 ] # E");
-    return 1; // 1 to update the disply, 0 to naught do it.
+    if (flippa) {
+        draw(appleFont, string);
+        flippa = 0;
+        return 1; // 1 to update the disply, 0 to naught do it.
+    } else {
+        return 0;
+    }
 } // updateDisplay
 
 
