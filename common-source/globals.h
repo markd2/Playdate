@@ -6,8 +6,8 @@
 #endif
 
 #define print pd->system->logToConsole 
-#define kScreenWidth LCD_COLUMNS
-#define kScreenHeight LCD_ROWS
+#define kScreenWidth LCD_COLUMNS // 400
+#define kScreenHeight LCD_ROWS   // 240
 
 extern PlaydateAPI *pd;
 
