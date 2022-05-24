@@ -29,11 +29,29 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
     }
 } // handleButtons
 
+static const int kVerticalDrawingOffset = kScreenHeight / 2 - 50;
+
+static void draw(LCDFont *font, const char *string) {
+    // kind of heavyweight
+    pd->graphics->clear(kColorWhite);
+
+    int textWidth = pd->graphics->getTextWidth(font,
+                                               string, strlen(string),
+                                               kASCIIEncoding, 0);
+    int centeringX = (kScreenWidth - textWidth) / 2.0;
+
+    pd->graphics->setFont(font);
+    pd->graphics->drawText(string, strlen(string), 
+                           kASCIIEncoding, 
+                           centeringX,
+                           kVerticalDrawingOffset);
+} // draw
 
 
 // --------------------------------------------------
 
 static int updateDisplay(void) {
+    draw(appleFont, "HELLO [ BRK 0 ] # E");
     return 1; // 1 to update the disply, 0 to naught do it.
 } // updateDisplay
 
