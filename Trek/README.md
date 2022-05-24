@@ -29,3 +29,8 @@ size)
 
 This could be do-able
 ![](assets/info-panel-2x.png)
+
+So close! Using NRG as an abbrv, it pretty much all fits except the decimal
+for the stardate.  That we could drop.
+
+![](assets/panel-nrg-2x.png)
