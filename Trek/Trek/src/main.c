@@ -39,7 +39,7 @@ static void draw(LCDFont *font, const char *string) {
                                                string, strlen(string),
                                                kASCIIEncoding, 0);
 //    int centeringX = (kScreenWidth - textWidth) / 2.0;
-    int centeringX = 10;
+    int centeringX = 2;
     int Y = 0;
 
     pd->graphics->setTextLeading(1);
@@ -52,7 +52,7 @@ static void draw(LCDFont *font, const char *string) {
 
 // --------------------------------------------------
 
-static char *string = ""
+static char *fullScreenString = ""
 "   :   :   :   :   :   :   :   :   :   :\n"
 "   :302:   :   :   :   :   :   :   :   :\n"
 "   :   :   :   :   :   :   :   :   :   :\n"
@@ -68,7 +68,7 @@ static char *string = ""
 " QUADRANT 3-1    SECTOR          3-4\n"
 "              K1 YEARS           2.97\n"
 "              K2 STARDTE         3424.0\n"
-"      E        3 CONDITION       RED\n"
+"     #E        3 CONDITION       RED\n"
 "    K          4 SHIELDS         50%\n"
 "              *5 SHIELD ENERGY   2189\n"
 "               6 AVAIL ENERGY    2359\n"
@@ -77,10 +77,24 @@ static char *string = ""
 "1 2 3 4 5 6 7 8  BASES           4\n"
 "                 COURSE NOT SET.";
 
+static char *infoString = ""
+" QUADRANT 3-1    SECTOR        3-4\n"
+"              K1 YEARS         2.97\n"
+"              K2 STARDTE       3424.0\n"
+"     #E        3 CONDITION     RED\n"
+"    K          4 SHIELDS       50%\n"
+"              *5 SHIELD ENERGY 2189\n"
+"               6 AVAIL ENERGY  2359\n"
+"               7 PH TORPS      10\n"
+"*              8 KLINGONS      41\n"
+"1 2 3 4 5 6 7 8  BASES         4\n"
+"                 COURSE NOT SET.";
+
+
 static int flippa = 1;
 static int updateDisplay(void) {
     if (flippa) {
-        draw(appleFont, string);
+        draw(appleFont, infoString);
         flippa = 0;
         return 1; // 1 to update the disply, 0 to naught do it.
     } else {
@@ -109,6 +123,7 @@ int eventHandler(PlaydateAPI* playdate,
     switch (event) {
     case kEventInit: {
         pd->display->setRefreshRate(10);
+        pd->display->setScale(2);
         
         const char *errorText = NULL;
         appleFont = pd->graphics->loadFont("font/Apple2",
