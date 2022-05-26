@@ -126,7 +126,7 @@ int eventHandler(PlaydateAPI* playdate,
         pd->display->setScale(2);
         
         const char *errorText = NULL;
-        appleFont = pd->graphics->loadFont("font/Apple2",
+        appleFont = pd->graphics->loadFont("font/Apple2-7",
                                            &errorText);
         if (appleFont == NULL) {
             print("no Apple ][ font");
