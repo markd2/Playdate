@@ -10,19 +10,6 @@
 static ButtonPumper *pumper;
 static LCDFont *appleFont;
 
-static const char *eventNames[] = {
-    "kEventInit",
-    "kEventInitLua",
-    "kEventLock",
-    "kEventUnlock",
-    "kEventPause",
-    "kEventResume",
-    "kEventTerminate",
-    "kEventKeyPressed", // arg is keycode
-    "kEventKeyReleased",
-    "kEventLowPower"
-};
-
 static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
     if (buttons == kButtonA && upDown == kPressed) {
         print("BUTTON A");

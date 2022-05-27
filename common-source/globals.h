@@ -11,4 +11,6 @@
 
 extern PlaydateAPI *pd;
 
+extern const char *eventNames[];
+
 #endif // BORK_GLOBALS_H
