@@ -1,6 +1,10 @@
 #include "panel.h"
 #include "memory.h"
 
+const bool kUpdateDisplay = true;
+const bool kDontUpdateDisplay = false;
+
+
 Size panelNaturalSize(Panel *panel) {
     return panel->naturalSize(panel);
 } // panelNaturalSize
