@@ -16,6 +16,11 @@
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #endif
 
+typedef struct Size {
+    int width;
+    int height;
+} Size;
+
 typedef struct Point {
     int x;
     int y;
