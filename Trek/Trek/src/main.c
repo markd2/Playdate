@@ -23,6 +23,7 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
 static const int kVerticalDrawingOffset = kScreenHeight / 2 - 50;
 
 static Panel *panel;
+static Galaxy galaxy;
 
 static void draw(LCDFont *font, const char *string) {
 
@@ -134,7 +135,11 @@ int eventHandler(PlaydateAPI* playdate,
 
         pd->system->setCrankSoundsDisabled(1);  // turn off sound
 
-        panel = (Panel *)galaxyOverviewPanelNew(NULL);
+        int baseCount = 10;
+        int klingonCount = 50;
+        galaxyRandomize(&galaxy, baseCount, klingonCount);
+        galaxyPrint(&galaxy);
+        panel = (Panel *)galaxyOverviewPanelNew(&galaxy);
         break;
     }
 
