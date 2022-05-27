@@ -6,6 +6,10 @@
 
 #include "pd_api.h"
 
+#include "panel.h"
+#include "galaxyOverviewPanel.h"
+#include "trek.h"
+
 
 static ButtonPumper *pumper;
 static LCDFont *appleFont;
@@ -18,7 +22,14 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
 
 static const int kVerticalDrawingOffset = kScreenHeight / 2 - 50;
 
+static Panel *panel;
+
 static void draw(LCDFont *font, const char *string) {
+
+    pd->graphics->setDrawOffset(30, 50);
+    panelDraw(panel);
+
+#if OLD_DRAWING
     // kind of heavyweight
     pd->graphics->clear(kColorWhite);
 
@@ -34,6 +45,7 @@ static void draw(LCDFont *font, const char *string) {
     pd->graphics->drawText(string, strlen(string), 
                            kASCIIEncoding, 
                            centeringX, Y);
+#endif
 } // draw
 
 
@@ -121,6 +133,8 @@ int eventHandler(PlaydateAPI* playdate,
         pumper = buttonPumperNew(handleButtons, NULL);
 
         pd->system->setCrankSoundsDisabled(1);  // turn off sound
+
+        panel = (Panel *)galaxyOverviewPanelNew(NULL);
         break;
     }
 
