@@ -22,19 +22,6 @@ static unsigned int startTime = 0;
 static const int kAlertThreshold = 30 * 60;  // 30 minutes
 static FilePlayer *thresholdSound;
 
-static const char *eventNames[] = {
-    "kEventInit",
-    "kEventInitLua",
-    "kEventLock",
-    "kEventUnlock",
-    "kEventPause",
-    "kEventResume",
-    "kEventTerminate",
-    "kEventKeyPressed", // arg is keycode
-    "kEventKeyReleased",
-    "kEventLowPower"
-};
-
 static const int kVerticalDrawingOffset = kScreenHeight / 2 - 50;
 
 static void draw(LCDFont *font, const char *string) {

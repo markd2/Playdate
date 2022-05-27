@@ -5,19 +5,6 @@
 
 #include "pd_api.h"
 
-static const char *eventNames[] = {
-    "kEventInit",
-    "kEventInitLua",
-    "kEventLock",
-    "kEventUnlock",
-    "kEventPause",
-    "kEventResume",
-    "kEventTerminate",
-    "kEventKeyPressed", // arg is keycode
-    "kEventKeyReleased",
-    "kEventLowPower"
-};
-
 // Return 1 to update the display, 0 to not update it
 static int update(void *userdata) {
     print("SNORGLE");
