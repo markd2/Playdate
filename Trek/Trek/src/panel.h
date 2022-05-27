@@ -10,8 +10,8 @@ const bool kUpdateDisplay = true;
 const bool kDontUpdateDisplay = false;
 
 typedef struct Panel {
-    Size (*naturalSize)(void);
-    bool (*draw)(void);  // return 1 to update display, 0 to not
+    Size (*naturalSize)(struct Panel *panel);
+    bool (*draw)(struct Panel *panel);  // return 1 to update display, 0 to not
 } Panel;
 
 Size panelNaturalSize(Panel *panel);

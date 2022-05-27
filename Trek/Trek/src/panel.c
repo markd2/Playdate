@@ -2,17 +2,30 @@
 #include "memory.h"
 
 Size panelNaturalSize(Panel *panel) {
-    return panel->naturalSize();
+    return panel->naturalSize(panel);
 } // panelNaturalSize
 
 
 bool panelDraw(Panel *panel) {
-    return panel->draw();
+    return panel->draw(panel);
 } // panelDraw
 
 
+static Size _naturalSize(Panel *panel) {
+    return (Size){ 0, 0 };
+} // _naturalSize
+
+static bool _draw(Panel *panel) {
+    return kDontUpdateDisplay;
+} // _draw
+
+
 Panel *panelNew(size_t size) {
-    return pdMalloc(size);
+    Panel *panel = pdMalloc(size);
+    panel->naturalSize = _naturalSize;
+    panel->draw = _draw;
+
+    return panel;
 } // panelNew
 
 
