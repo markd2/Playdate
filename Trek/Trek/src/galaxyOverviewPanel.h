@@ -4,6 +4,7 @@
 #define GALAXY_OVERVIEW_PANEL_INCLUDED
 
 #include "panel.h"
+#include "trek.h" // for Galaxy
 
 typedef struct GalaxyOverviewPanel {
     Panel panel;
