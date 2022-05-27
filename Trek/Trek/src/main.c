@@ -123,10 +123,9 @@ int eventHandler(PlaydateAPI* playdate,
     switch (event) {
     case kEventInit: {
         pd->display->setRefreshRate(10);
-        pd->display->setScale(2);
         
         const char *errorText = NULL;
-        appleFont = pd->graphics->loadFont("font/Apple2-7",
+        appleFont = pd->graphics->loadFont("font/Apple2-14",
                                            &errorText);
         if (appleFont == NULL) {
             print("no Apple ][ font");
