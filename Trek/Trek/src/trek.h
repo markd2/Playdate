@@ -9,9 +9,25 @@ typedef struct Sector {
     short starCount;
 } Sector;
 
+typedef struct Coordinate {
+    short row;
+    short column;
+} Coordinate;
+
+enum {
+    kGalaxyRows = 8,
+    kGalaxyColumns = 10
+};
 
 typedef struct Galaxy {
-    Sector sectors[8][10];  // 8 rows of 10 columns
+    Coordinate enterpriseSector;
+    Coordinate enterpriseCoordinate;
+
+    Sector sectors[kGalaxyRows][kGalaxyColumns];
 } Galaxy;
+
+// Hardcoded randomization.
+void galaxyRandomize(Galaxy *galaxy, int baseCount, int klingonCount);
+void galaxyPrint(Galaxy *galaxy);
 
 #endif // TREK_INCLUDED
