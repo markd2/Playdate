@@ -1,13 +1,40 @@
 #include "galaxyOverviewPanel.h"
 #include "drawhelpers.h"
+#include "globals.h"
 
 static Size _naturalSize(Panel *panel) {
-    return (Size){ 150, 45 };
+    int sectorWidth = 4 * 10 + 3;
+    int sectorHeight = 19;
+    return (Size){ kGalaxyColumns * sectorWidth, kGalaxyRows * sectorHeight };
 } // _naturalSize
 
+
 static bool _draw(Panel *panel) {
-    Rect rect = (Rect){ 0, 0, 150, 45 };
+    GalaxyOverviewPanel *gopanel = (GalaxyOverviewPanel *)panel;
+    Size size = _naturalSize(panel);
+    Rect rect = (Rect){ 0, 0, size.width, size.height };
     strokeRect(rect, kColorBlack);
+
+    char line[1024];
+    char *lineScan;
+
+    int Y = 2;
+
+    for (int row = 0; row < kGalaxyRows; row++) {
+        lineScan = line;
+        for (int column = 0; column < kGalaxyColumns; column++) {
+            Sector sector = gopanel->galaxy->sectors[row][column];
+            *lineScan++ = sector.klingonCount + '0';
+            *lineScan++ = sector.baseCount + '0';
+            *lineScan++ = sector.starCount + '0';
+
+            *lineScan++ = ':';
+        }
+        *(lineScan - 1) = '\000';
+        pd->graphics->drawText(line, strlen(line), kASCIIEncoding, 1, Y);
+
+        Y += 19;
+    }
     return kUpdateDisplay;
 } // _draw
 
