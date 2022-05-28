@@ -51,6 +51,7 @@ Triangle clampTriangleToScreen(Triangle triangle);
 Rect insetRect(Rect source, int xInset, int yInset);
 
 bool rectsIntersect(Rect thing1, Rect thing2);
+Rect rectUnion(Rect thing1, Rect thing2);
 
 LCDRect rectToLCDRect(Rect rect);
 

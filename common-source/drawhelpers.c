@@ -23,8 +23,3 @@ void fillRect(Rect rect, LCDColor color) {
 void frameRect(Rect rect, LCDColor color) {
     pd->graphics->drawRect(rect.x, rect.y, rect.width, rect.height, color);
 } // frameRect
-
-
-LCDRect rectToLCDRect(Rect rect) {
-    return (LCDRect){ rect.x, rect.y, rect.x + rect.width, rect.y + rect.height };
-} // rectToLCDRect

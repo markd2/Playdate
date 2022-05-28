@@ -213,3 +213,7 @@ Rect rectUnion(Rect thing1, Rect thing2) {
 
 } // rectUnion
 
+
+LCDRect rectToLCDRect(Rect rect) {
+    return (LCDRect){ rect.x, rect.y, rect.x + rect.width, rect.y + rect.height };
+} // rectToLCDRect

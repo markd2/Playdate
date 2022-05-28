@@ -277,9 +277,9 @@ static int wrappedDemoUpdate(void *context) {
     view->crankMargin = MAX(view->crankMargin, 0);
     view->crankMargin = MIN(view->crankMargin, kMaxCrankMargin);
 
-    strokeRect(innerFrame, kColorBlack);
+    frameRect(innerFrame, kColorBlack);
     wrapFrame.width -= view->crankMargin;
-    strokeRect(wrapFrame, kColorBlack);
+    frameRect(wrapFrame, kColorBlack);
 
     pd->graphics->setFont(view->textFont);
     Point titlePoint = { 30, 0 };
@@ -532,8 +532,8 @@ int scrollingDemoViewUpdate(void *userdata) {
 
     pd->graphics->clear(kColorWhite);
 
-    strokeRect(innerFrame, kColorBlack);
-    strokeRect(wrapFrame, kColorBlack);
+    frameRect(innerFrame, kColorBlack);
+    frameRect(wrapFrame, kColorBlack);
 
     pd->graphics->setFont(view->textFont);
     Point titlePoint = { 30, 0 };
