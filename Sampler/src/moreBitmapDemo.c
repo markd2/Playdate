@@ -4,6 +4,7 @@
 
 #include "demoSample.h"
 #include "buttonpumper.h"
+#include "drawhelpers.h"
 #include "globals.h"
 #include "geometry.h"
 #include "patterns.h"

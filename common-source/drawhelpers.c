@@ -14,3 +14,17 @@ void drawCString(const char *string, Point at) {
                            kASCIIEncoding, at.x, at.y);
 } // drawCString
 
+
+void fillRect(Rect rect, LCDColor color) {
+    pd->graphics->fillRect(rect.x, rect.y, rect.width, rect.height, color);
+} // fillRect
+
+
+void frameRect(Rect rect, LCDColor color) {
+    pd->graphics->drawRect(rect.x, rect.y, rect.width, rect.height, color);
+} // frameRect
+
+
+LCDRect rectToLCDRect(Rect rect) {
+    return (LCDRect){ rect.x, rect.y, rect.x + rect.width, rect.y + rect.height };
+} // rectToLCDRect
