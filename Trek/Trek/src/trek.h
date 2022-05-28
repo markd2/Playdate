@@ -15,8 +15,8 @@ typedef struct Coordinate {
 } Coordinate;
 
 enum {
-    kGalaxyRows = 8,
-    kGalaxyColumns = 10
+    kGalaxyRows = 9,
+    kGalaxyColumns = 9
 };
 
 typedef struct Galaxy {
