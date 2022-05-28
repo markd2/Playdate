@@ -27,7 +27,7 @@ static Galaxy galaxy;
 
 static void draw(LCDFont *font, const char *string) {
 
-    pd->graphics->setDrawOffset(30, 50);
+    pd->graphics->setDrawOffset(5, 5);
     panelDraw(panel);
 
 #if OLD_DRAWING
