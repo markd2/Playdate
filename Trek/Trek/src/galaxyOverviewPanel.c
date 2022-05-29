@@ -2,6 +2,15 @@
 #include "drawhelpers.h"
 #include "globals.h"
 
+typedef enum DigitPosition {
+    kKlingonPosition,
+    kBasePosition,
+    kStarPosition,
+    kDelimiterPosition
+} DigitPosition;
+
+Point cellOrigin(int row, int column, DigitPosition position);
+
 static Size _naturalSize(Panel *panel) {
     int sectorWidth = 4 * 10 + 3;
     int sectorHeight = 19;
@@ -18,29 +27,41 @@ static bool _draw(Panel *panel) {
     GalaxyOverviewPanel *gopanel = (GalaxyOverviewPanel *)panel;
     pd->graphics->setFont(gopanel->font);
 
-    char line[1024];
-    char *lineScan;
-
-    int X = 2;
-    int Y = 2;
-
     for (int row = 0; row < kGalaxyRows; row++) {
-        lineScan = line;
         for (int column = 0; column < kGalaxyColumns; column++) {
             Sector sector = gopanel->galaxy->sectors[row][column];
-            *lineScan++ = sector.klingonCount + '0';
-            *lineScan++ = sector.baseCount + '0';
-            *lineScan++ = sector.starCount + '0';
 
-            *lineScan++ = ':';
+            Point origin;
+            char charString[2] = {0};;
+
+            origin = cellOrigin(row, column, kKlingonPosition);
+            charString[0] = sector.klingonCount + '0';
+            pd->graphics->drawText(charString, 1, kASCIIEncoding, origin.x, origin.y);
+
+            origin = cellOrigin(row, column, kBasePosition);
+            charString[0] = sector.baseCount + '0';
+            pd->graphics->drawText(charString, 1, kASCIIEncoding, origin.x, origin.y);
+
+            origin = cellOrigin(row, column, kStarPosition);
+            charString[0] = sector.starCount + '0';
+            pd->graphics->drawText(charString, 1, kASCIIEncoding, origin.x, origin.y);
+
+            if (column != kGalaxyColumns - 1) {
+                origin = cellOrigin(row, column, kDelimiterPosition);
+                pd->graphics->drawText(":", 1, kASCIIEncoding, origin.x, origin.y);
+            }
         }
-        *(lineScan - 1) = '\000';
-        pd->graphics->drawText(line, strlen(line), kASCIIEncoding, X, Y);
-
-        Y += 19;
     }
+    
     return kUpdateDisplay;
 } // _draw
+
+Point cellOrigin(int row, int column, DigitPosition position) {
+    int baseX = column * 11 * 4;
+    int x = baseX + position * 11 + 2;
+    int y = row * 19 + 2; // +2 for the top margin
+    return (Point){ x, y };
+} // cellOrigin
 
 
 GalaxyOverviewPanel *galaxyOverviewPanelNew(Galaxy *galaxy, LCDFont *font) {
