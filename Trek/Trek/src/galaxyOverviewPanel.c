@@ -11,10 +11,6 @@ static Size _naturalSize(Panel *panel) {
 
 static bool _draw(Panel *panel) {
     GalaxyOverviewPanel *gopanel = (GalaxyOverviewPanel *)panel;
-    Size size = _naturalSize(panel);
-    Rect rect = (Rect){ 0, 0, size.width, size.height };
-    frameRect(rect, kColorBlack);
-
     char line[1024];
     char *lineScan;
 

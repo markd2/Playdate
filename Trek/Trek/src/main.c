@@ -6,8 +6,9 @@
 
 #include "pd_api.h"
 
-#include "panel.h"
+#include "drawhelpers.h"
 #include "galaxyOverviewPanel.h"
+#include "panel.h"
 #include "trek.h"
 
 
@@ -27,8 +28,14 @@ static Galaxy galaxy;
 
 static void draw(LCDFont *font, const char *string) {
 
-    pd->graphics->setDrawOffset(5, 5);
+    Size panelSize = panelNaturalSize(panel);
+    Rect panelRect = (Rect){ 0, 0, panelSize.width, panelSize.height };
+    Rect centeredRect = rectCenteredIn(screenRect(), panelRect);
+
+    frameRect(centeredRect, kColorBlack);
+    pd->graphics->setDrawOffset(centeredRect.x, centeredRect.y);
     panelDraw(panel);
+
 
 #if OLD_DRAWING
     // kind of heavyweight
