@@ -8,6 +8,7 @@
 
 #include "drawhelpers.h"
 #include "galaxyOverviewPanel.h"
+#include "menuPanel.h"
 #include "panel.h"
 #include "patterns.h"
 #include "trek.h"
@@ -16,16 +17,24 @@
 static ButtonPumper *pumper;
 static LCDFont *appleFont;
 
-static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
-    if (buttons == kButtonA && upDown == kPressed) {
-        print("BUTTON A");
-    }
-} // handleButtons
-
 static const int kVerticalDrawingOffset = kScreenHeight / 2 - 50;
 
 static Panel *panel;
+static Panel *menuPanel;
+static Panel *overlayPanel; // null for no overlay
+
 static Galaxy galaxy;
+
+
+static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
+    print("handle buttons");
+    if (buttons == kButtonB && upDown == kPressed) {
+        overlayPanel = menuPanel;
+    } else if (buttons == kButtonB) {
+        overlayPanel = NULL;
+    }
+} // handleButtons
+
 
 static void draw(LCDFont *font, const char *string) {
 
@@ -43,6 +52,19 @@ static void draw(LCDFont *font, const char *string) {
     } pd->graphics->popContext();
 
     frameRect(centeredRect, kColorBlack);
+
+    if (overlayPanel) {
+        Size overlaySize = panelNaturalSize(overlayPanel);
+        Rect overlayRect = (Rect){ 0, 0, overlaySize.width, overlaySize.height };
+        Rect centeredOverlay = rectCenteredIn(screen, overlayRect);
+
+        pd->graphics->pushContext(NULL); {
+            pd->graphics->setDrawOffset(centeredOverlay.x, centeredOverlay.y);
+            panelDraw(overlayPanel);
+        } pd->graphics->popContext();
+
+        frameRect(centeredOverlay, kColorBlack);
+    }
 } // draw
 
 
@@ -135,8 +157,9 @@ int eventHandler(PlaydateAPI* playdate,
         int klingonCount = 50;
         galaxyRandomize(&galaxy, baseCount, klingonCount);
         galaxyPrint(&galaxy);
-        panel = (Panel *)galaxyOverviewPanelNew(&galaxy);
+        panel = (Panel *)galaxyOverviewPanelNew(&galaxy, appleFont);
 
+        menuPanel = (Panel *)menuPanelNew();
         break;
     }
 
