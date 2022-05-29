@@ -5,7 +5,8 @@
 static Size _naturalSize(Panel *panel) {
     int sectorWidth = 4 * 10 + 3;
     int sectorHeight = 19;
-    return (Size){ kGalaxyColumns * sectorWidth, kGalaxyRows * sectorHeight };
+    // +1 for the width is to add a bit of margin on the left side of the text
+    return (Size){ kGalaxyColumns * sectorWidth + 1, kGalaxyRows * sectorHeight };
 } // _naturalSize
 
 
@@ -18,6 +19,7 @@ static bool _draw(Panel *panel) {
     char line[1024];
     char *lineScan;
 
+    int X = 2;
     int Y = 2;
 
     for (int row = 0; row < kGalaxyRows; row++) {
@@ -31,7 +33,7 @@ static bool _draw(Panel *panel) {
             *lineScan++ = ':';
         }
         *(lineScan - 1) = '\000';
-        pd->graphics->drawText(line, strlen(line), kASCIIEncoding, 1, Y);
+        pd->graphics->drawText(line, strlen(line), kASCIIEncoding, X, Y);
 
         Y += 19;
     }
