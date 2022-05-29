@@ -110,13 +110,13 @@ static char *infoString = ""
 
 static int flippa = 1;
 static int updateDisplay(void) {
-    if (flippa) {
+//    if (flippa) {
         draw(appleFont, infoString);
-        flippa = 0;
+//        flippa = 0;
         return 1; // 1 to update the disply, 0 to naught do it.
-    } else {
-        return 0;
-    }
+//    } else {
+//        return 0;
+//    }
 } // updateDisplay
 
 
