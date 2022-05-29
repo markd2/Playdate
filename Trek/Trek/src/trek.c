@@ -3,6 +3,11 @@
 #include <stdlib.h> // for arc4random_uniform
 #include "globals.h" // for print
 
+bool coordinateEqual(Coordinate thing1, Coordinate thing2) {
+    return thing1.row == thing2.row && thing1.column == thing2.column;
+} // coordinateEqual
+
+
 void galaxyRandomize(Galaxy *galaxy, int baseCount, int klingonCount) {
     memset(galaxy, 0, sizeof(*galaxy));
 

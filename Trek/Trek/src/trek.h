@@ -3,6 +3,8 @@
 #ifndef TREK_INCLUDED
 #define TREK_INCLUDED
 
+#include <stdbool.h>
+
 typedef struct Sector {
     short klingonCount;
     short baseCount;
@@ -13,6 +15,8 @@ typedef struct Coordinate {
     short row;
     short column;
 } Coordinate;
+bool coordinateEqual(Coordinate thing1, Coordinate thing2);
+
 
 enum {
     kGalaxyRows = 9,
