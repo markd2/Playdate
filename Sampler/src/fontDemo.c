@@ -256,8 +256,8 @@ static int wrappedDemoUpdate(void *context) {
     pd->graphics->clear(kColorWhite);
 
     Rect screen = screenRect();
-    Rect innerFrame = insetRect(screen, 5, 5);
-    Rect wrapFrame = insetRect(screen, 15, 15);
+    Rect innerFrame = rectInset(screen, 5, 5);
+    Rect wrapFrame = rectInset(screen, 15, 15);
 
     float crankValue = pd->system->getCrankChange();
 
@@ -498,8 +498,8 @@ int scrollingDemoViewUpdate(void *userdata) {
     }
 
     Rect screen = screenRect();
-    Rect innerFrame = insetRect(screen, 5, 5);
-    Rect wrapFrame = insetRect(screen, 15, 15);
+    Rect innerFrame = rectInset(screen, 5, 5);
+    Rect wrapFrame = rectInset(screen, 15, 15);
 
     float crankValue = pd->system->getCrankChange();
 

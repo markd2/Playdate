@@ -33,6 +33,12 @@ typedef struct Rect {
     int width;
     int height;
 } Rect;
+Point rectCenter(Rect rect);
+Rect rectCenteredIn(Rect outerRect, Rect innerRect);  // centers inner in outer
+Rect rectInset(Rect source, int xInset, int yInset);
+Rect rectUnion(Rect thing1, Rect thing2);
+bool rectsIntersect(Rect thing1, Rect thing2);
+LCDRect rectToLCDRect(Rect rect);
 
 typedef struct Triangle {
     Point p1;
@@ -48,11 +54,6 @@ Rect screenRect(void);
 Rect clampRectToScreen(Rect rect);
 Point clampPointToScreen(Point point);
 Triangle clampTriangleToScreen(Triangle triangle);
-Rect insetRect(Rect source, int xInset, int yInset);
 
-bool rectsIntersect(Rect thing1, Rect thing2);
-Rect rectUnion(Rect thing1, Rect thing2);
-
-LCDRect rectToLCDRect(Rect rect);
 
 #endif // BORK_GEOMETRY_H

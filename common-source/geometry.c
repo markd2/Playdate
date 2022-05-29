@@ -116,7 +116,7 @@ Triangle clampTriangleToScreen(Triangle triangle) {
 } // clampTriangleToScreen
 
 
-Rect insetRect(Rect source, int xInset, int yInset) {
+Rect rectInset(Rect source, int xInset, int yInset) {
     Rect rect = source;
 
     rect.x += xInset;
@@ -126,7 +126,7 @@ Rect insetRect(Rect source, int xInset, int yInset) {
 
     return rect;
 
-} // insetRect
+} // rectInset
 
 
 Triangle triangleAt(Point centeredAt, int size, int rotation) {
@@ -217,3 +217,29 @@ Rect rectUnion(Rect thing1, Rect thing2) {
 LCDRect rectToLCDRect(Rect rect) {
     return (LCDRect){ rect.x, rect.y, rect.x + rect.width, rect.y + rect.height };
 } // rectToLCDRect
+
+
+Point rectCenter(Rect rect) {
+    Point point = (Point){ rect.x + rect.width / 2, rect.y + rect.height / 2};
+    return point;
+    
+} // rectCenter
+
+
+Rect rectCenteredIn(Rect outerRect, Rect innerRect) {
+    Point outerCenter = rectCenter(outerRect);
+    Point innerCenter = rectCenter(innerRect);
+    print("outer %d %d   vs inner %d %d", outerCenter.x, outerCenter.y,
+          innerCenter.x, innerCenter.y);
+    print("inner %d %d", innerRect.width, innerRect.height);
+
+    Rect result = innerRect;
+    result.x += outerCenter.x - innerCenter.x;
+    result.y += outerCenter.y - innerCenter.y;
+
+    Point resultCenter = rectCenter(result);
+    print("    result %d %d", resultCenter.x, resultCenter.y);
+
+    return result;
+    
+} // rectCenteredIn
