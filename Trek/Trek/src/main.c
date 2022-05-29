@@ -9,6 +9,7 @@
 #include "drawhelpers.h"
 #include "galaxyOverviewPanel.h"
 #include "panel.h"
+#include "patterns.h"
 #include "trek.h"
 
 
@@ -30,30 +31,18 @@ static void draw(LCDFont *font, const char *string) {
 
     Size panelSize = panelNaturalSize(panel);
     Rect panelRect = (Rect){ 0, 0, panelSize.width, panelSize.height };
-    Rect centeredRect = rectCenteredIn(screenRect(), panelRect);
+    Rect screen = screenRect();
+
+    fillRect(screen, (uintptr_t)percent50Pattern);
+
+    Rect centeredRect = rectCenteredIn(screen, panelRect);
+
+    pd->graphics->pushContext(NULL); {
+        pd->graphics->setDrawOffset(centeredRect.x, centeredRect.y);
+        panelDraw(panel);
+    } pd->graphics->popContext();
 
     frameRect(centeredRect, kColorBlack);
-    pd->graphics->setDrawOffset(centeredRect.x, centeredRect.y);
-    panelDraw(panel);
-
-
-#if OLD_DRAWING
-    // kind of heavyweight
-    pd->graphics->clear(kColorWhite);
-
-    int textWidth = pd->graphics->getTextWidth(font,
-                                               string, strlen(string),
-                                               kASCIIEncoding, 0);
-//    int centeringX = (kScreenWidth - textWidth) / 2.0;
-    int centeringX = 2;
-    int Y = 0;
-
-    pd->graphics->setTextLeading(1);
-    pd->graphics->setFont(font);
-    pd->graphics->drawText(string, strlen(string), 
-                           kASCIIEncoding, 
-                           centeringX, Y);
-#endif
 } // draw
 
 
@@ -147,6 +136,7 @@ int eventHandler(PlaydateAPI* playdate,
         galaxyRandomize(&galaxy, baseCount, klingonCount);
         galaxyPrint(&galaxy);
         panel = (Panel *)galaxyOverviewPanelNew(&galaxy);
+
         break;
     }
 
