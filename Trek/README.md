@@ -34,3 +34,15 @@ So close! Using NRG as an abbrv, it pretty much all fits except the decimal
 for the stardate.  That we could drop.
 
 ![](assets/panel-nrg-2x.png)
+
+----------
+
+Working on a panel system (essentially views without their own hierarchy).
+
+Here's the galaxy overview panel drawn over a 50% background:
+
+![](assets/galaxy-panel.png)
+
+Thinking of having info panels (galaxy / sector info) that can be moved
+between with the D-pad.  Then B/A for bringing up an interactive panel (choose
+the actions, program the computer)
