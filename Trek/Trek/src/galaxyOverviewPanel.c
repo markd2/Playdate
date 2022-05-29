@@ -10,6 +10,10 @@ static Size _naturalSize(Panel *panel) {
 
 
 static bool _draw(Panel *panel) {
+    Size naturalSize = panelNaturalSize(panel);
+    Rect drawingArea = (Rect){ 0, 0, naturalSize.width, naturalSize.height };
+    fillRect(drawingArea, kColorWhite);
+
     GalaxyOverviewPanel *gopanel = (GalaxyOverviewPanel *)panel;
     char line[1024];
     char *lineScan;

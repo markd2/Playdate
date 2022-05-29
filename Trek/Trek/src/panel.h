@@ -13,11 +13,14 @@ typedef struct Panel Panel;
 
 struct Panel {
     Size (*naturalSize)(Panel *panel);
-    bool (*draw)(Panel *panel);  // return 1 to update display, 0 to not
+    bool (*draw)(Panel *panel);  // return 1 to update display, 0 to not.
 };
 
 Size panelNaturalSize(Panel *panel);
-bool panelDraw(Panel *panel); // draw relative to (0,0), coordinate system will be changed before drawing if needed.
+// draw relative to (0,0), coordinate system will be changed before drawing if needed.
+// panel is responsible for the entirety of its contents, but not any chrome around
+// itself.
+bool panelDraw(Panel *panel);
 
 Panel *panelNew(size_t size);
 void panelFree(Panel *panel);
