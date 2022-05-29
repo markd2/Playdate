@@ -55,3 +55,8 @@ also added inverted drawing and moving the enterprise sector around with the
 D-Pad
 
 ![](assets/moving-sector.gif)
+
+We can't see the whole galaxy out of the gate, so have a fog of war around the ship.
+
+![](assets/frog-of-war.gif)
+

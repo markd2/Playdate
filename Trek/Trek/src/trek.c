@@ -8,6 +8,30 @@ bool coordinateEqual(Coordinate thing1, Coordinate thing2) {
 } // coordinateEqual
 
 
+void galaxyMakeVisibleAroundSector(Galaxy *galaxy, Coordinate sector) {
+    print("HUH?");
+    for (int row = sector.row - 1; row < sector.row + 2; row++) {
+        int trueRow = row;
+        if (row < 0) {
+            trueRow = kGalaxyRows - 1;
+        } else if (trueRow >= kGalaxyRows) {
+            trueRow = 0;
+        }
+
+        for (int column = sector.column - 1; column < sector.column + 2; column++) {
+            int trueColumn = column;
+            if (column < 0) {
+                trueColumn = kGalaxyColumns - 1;
+            } else if (trueColumn >= kGalaxyColumns) {
+                trueColumn = 0;
+            }
+            print("marking %d %d visible", trueRow, trueColumn);
+            galaxy->visible[trueRow][trueColumn] = true;
+        }
+    }
+} // galaxyMakeVisibleAroundSector
+
+
 void galaxyRandomize(Galaxy *galaxy, int baseCount, int klingonCount) {
     memset(galaxy, 0, sizeof(*galaxy));
 
@@ -29,6 +53,9 @@ void galaxyRandomize(Galaxy *galaxy, int baseCount, int klingonCount) {
         short column = random() % kGalaxyColumns;
         galaxy->sectors[row][column].klingonCount++;
     }
+
+    galaxy->enterpriseSector = (Coordinate){ 3, 4 };
+    galaxyMakeVisibleAroundSector(galaxy, galaxy->enterpriseSector);
 
 } // galaxyRandomize
 

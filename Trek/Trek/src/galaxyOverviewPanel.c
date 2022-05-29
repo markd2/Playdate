@@ -53,6 +53,10 @@ static bool _draw(Panel *panel) {
                 pd->graphics->setDrawMode(kDrawModeInverted);
             }
 
+            if (!galaxy->visible[row][column]) {
+                continue;
+            }
+
             char charString[2] = {0};
 
             origin = cellOrigin(row, column, kKlingonPosition);

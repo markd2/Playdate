@@ -28,7 +28,10 @@ typedef struct Galaxy {
     Coordinate enterpriseCoordinate;
 
     Sector sectors[kGalaxyRows][kGalaxyColumns];
+    bool visible[kGalaxyRows][kGalaxyColumns];
 } Galaxy;
+
+void galaxyMakeVisibleAroundSector(Galaxy *galaxy, Coordinate sector);
 
 // Hardcoded randomization.
 void galaxyRandomize(Galaxy *galaxy, int baseCount, int klingonCount);

@@ -58,6 +58,8 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
     if (galaxy.enterpriseSector.row < 0) galaxy.enterpriseSector.row = kGalaxyRows - 1;
     if (galaxy.enterpriseSector.row >= kGalaxyRows) galaxy.enterpriseSector.row = 0;
 
+    galaxyMakeVisibleAroundSector(&galaxy, galaxy.enterpriseSector);
+
 } // handleButtons
 
 
