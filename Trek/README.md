@@ -46,3 +46,7 @@ Here's the galaxy overview panel drawn over a 50% background:
 Thinking of having info panels (galaxy / sector info) that can be moved
 between with the D-pad.  Then B/A for bringing up an interactive panel (choose
 the actions, program the computer)
+
+This is what it looks like with an empty panel when pressing the B button. woo!
+
+![](assets/overlay-panel.gif)
