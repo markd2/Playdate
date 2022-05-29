@@ -50,3 +50,8 @@ the actions, program the computer)
 This is what it looks like with an empty panel when pressing the B button. woo!
 
 ![](assets/overlay-panel.gif)
+
+also added inverted drawing and moving the enterprise sector around with the
+D-Pad
+
+![](assets/moving-sector.gif)
