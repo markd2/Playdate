@@ -26,13 +26,34 @@ static bool _draw(Panel *panel) {
 
     GalaxyOverviewPanel *gopanel = (GalaxyOverviewPanel *)panel;
     pd->graphics->setFont(gopanel->font);
+    Galaxy *galaxy = gopanel->galaxy;
 
     for (int row = 0; row < kGalaxyRows; row++) {
         for (int column = 0; column < kGalaxyColumns; column++) {
-            Sector sector = gopanel->galaxy->sectors[row][column];
 
+            // always draw the interior separators
             Point origin;
-            char charString[2] = {0};;
+            if (column != kGalaxyColumns - 1) {
+                origin = cellOrigin(row, column, kDelimiterPosition);
+                pd->graphics->drawText(":", 1, kASCIIEncoding, origin.x, origin.y);
+            }
+
+            Sector sector = galaxy->sectors[row][column];
+
+            bool drawHighlighted = coordinateEqual(galaxy->enterpriseSector, (Coordinate){row, column});
+
+            if (drawHighlighted) {
+                origin = cellOrigin(row, column, kKlingonPosition);
+                // +1/-1's are to embiggen the inverted rectangle a smidge to give
+                // a readable border.
+                Rect rect = (Rect){ origin.x - 1, origin.y - 1, 3 * 11 + 1, 14 + 1 };
+                fillRect(rect, kColorBlack);
+                pd->graphics->setDrawMode(kDrawModeInverted);
+            } else {
+                pd->graphics->setDrawMode(kDrawModeCopy);
+            }
+
+            char charString[2] = {0};
 
             origin = cellOrigin(row, column, kKlingonPosition);
             charString[0] = sector.klingonCount + '0';
@@ -45,11 +66,6 @@ static bool _draw(Panel *panel) {
             origin = cellOrigin(row, column, kStarPosition);
             charString[0] = sector.starCount + '0';
             pd->graphics->drawText(charString, 1, kASCIIEncoding, origin.x, origin.y);
-
-            if (column != kGalaxyColumns - 1) {
-                origin = cellOrigin(row, column, kDelimiterPosition);
-                pd->graphics->drawText(":", 1, kASCIIEncoding, origin.x, origin.y);
-            }
         }
     }
     
