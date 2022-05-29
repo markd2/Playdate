@@ -32,6 +32,32 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
     } else if (buttons == kButtonB) {
         overlayPanel = NULL;
     }
+
+    if (upDown == kPressed) {
+        switch (buttons) {
+        case kButtonLeft:
+            galaxy.enterpriseSector.column--;
+            break;
+        case kButtonRight:
+            galaxy.enterpriseSector.column++;
+            break;
+        case kButtonUp:
+            galaxy.enterpriseSector.row--;
+            break;
+        case kButtonDown:
+            galaxy.enterpriseSector.row++;
+            break;
+        default:
+            break;
+        }
+    }
+
+    if (galaxy.enterpriseSector.column < 0) galaxy.enterpriseSector.column = kGalaxyColumns - 1;
+    if (galaxy.enterpriseSector.column >= kGalaxyColumns) galaxy.enterpriseSector.column = 0;
+
+    if (galaxy.enterpriseSector.row < 0) galaxy.enterpriseSector.row = kGalaxyRows - 1;
+    if (galaxy.enterpriseSector.row >= kGalaxyRows) galaxy.enterpriseSector.row = 0;
+
 } // handleButtons
 
 
