@@ -31,6 +31,8 @@ static bool _draw(Panel *panel) {
     for (int row = 0; row < kGalaxyRows; row++) {
         for (int column = 0; column < kGalaxyColumns; column++) {
 
+            pd->graphics->setDrawMode(kDrawModeCopy);
+
             // always draw the interior separators
             Point origin;
             if (column != kGalaxyColumns - 1) {
@@ -49,8 +51,6 @@ static bool _draw(Panel *panel) {
                 Rect rect = (Rect){ origin.x - 1, origin.y - 1, 3 * 11 + 1, 14 + 1 };
                 fillRect(rect, kColorBlack);
                 pd->graphics->setDrawMode(kDrawModeInverted);
-            } else {
-                pd->graphics->setDrawMode(kDrawModeCopy);
             }
 
             char charString[2] = {0};
