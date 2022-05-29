@@ -16,6 +16,8 @@ static bool _draw(Panel *panel) {
     fillRect(drawingArea, kColorWhite);
 
     GalaxyOverviewPanel *gopanel = (GalaxyOverviewPanel *)panel;
+    pd->graphics->setFont(gopanel->font);
+
     char line[1024];
     char *lineScan;
 
@@ -41,9 +43,10 @@ static bool _draw(Panel *panel) {
 } // _draw
 
 
-GalaxyOverviewPanel *galaxyOverviewPanelNew(Galaxy *galaxy) {
+GalaxyOverviewPanel *galaxyOverviewPanelNew(Galaxy *galaxy, LCDFont *font) {
     GalaxyOverviewPanel *panel = (GalaxyOverviewPanel *)panelNew(sizeof(GalaxyOverviewPanel));
     panel->galaxy = galaxy;
+    panel->font = font;
 
     panel->panel.naturalSize = _naturalSize;
     panel->panel.draw = _draw;
@@ -52,4 +55,7 @@ GalaxyOverviewPanel *galaxyOverviewPanelNew(Galaxy *galaxy) {
     
 } // galaxyOverviewPanelNew
 
-void galaxyOverviewPanelFree(Galaxy *galaxy);
+
+void galaxyOverviewPanelFree(Galaxy *galaxy) {
+    panelFree((Panel *)galaxy);
+} // galaxyOverviewPanelFree

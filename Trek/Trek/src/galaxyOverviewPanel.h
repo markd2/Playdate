@@ -5,15 +5,17 @@
 
 #include "panel.h"
 #include "trek.h" // for Galaxy
+#include "globals.h" // for LCDFont
 
 typedef struct GalaxyOverviewPanel {
     Panel panel;
     
     Galaxy *galaxy; // not owned
+    LCDFont *font;
      
 } GalaxyOverviewPanel;
 
-GalaxyOverviewPanel *galaxyOverviewPanelNew(Galaxy *galaxy);
+GalaxyOverviewPanel *galaxyOverviewPanelNew(Galaxy *galaxy, LCDFont *font);
 void galaxyOverviewPanelFree(Galaxy *galaxy);
 
 
