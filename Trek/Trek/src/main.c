@@ -27,7 +27,6 @@ static Galaxy galaxy;
 
 
 static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
-    print("handle buttons");
     if (buttons == kButtonB && upDown == kPressed) {
         overlayPanel = menuPanel;
     } else if (buttons == kButtonB) {

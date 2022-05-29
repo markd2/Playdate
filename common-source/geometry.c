@@ -229,16 +229,12 @@ Point rectCenter(Rect rect) {
 Rect rectCenteredIn(Rect outerRect, Rect innerRect) {
     Point outerCenter = rectCenter(outerRect);
     Point innerCenter = rectCenter(innerRect);
-    print("outer %d %d   vs inner %d %d", outerCenter.x, outerCenter.y,
-          innerCenter.x, innerCenter.y);
-    print("inner %d %d", innerRect.width, innerRect.height);
 
     Rect result = innerRect;
     result.x += outerCenter.x - innerCenter.x;
     result.y += outerCenter.y - innerCenter.y;
 
     Point resultCenter = rectCenter(result);
-    print("    result %d %d", resultCenter.x, resultCenter.y);
 
     return result;
     
