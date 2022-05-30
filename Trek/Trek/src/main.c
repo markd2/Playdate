@@ -14,16 +14,20 @@
 #include "trek.h"
 
 
-static ButtonPumper *pumper;
-static LCDFont *appleFont;
+// The data structure
+static Galaxy galaxy;
 
-static const int kVerticalDrawingOffset = kScreenHeight / 2 - 50;
-
+// Panel settings that drive the game.
 static Panel *panel;
 static Panel *menuPanel;
 static Panel *overlayPanel; // null for no overlay
 
-static Galaxy galaxy;
+// Specific panel instances
+static GalaxyOverviewPanel *overviewPanel;
+
+// Support
+static ButtonPumper *pumper;
+static LCDFont *appleFont;
 
 
 static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
@@ -159,7 +163,9 @@ int eventHandler(PlaydateAPI* playdate,
         int klingonCount = 50;
         galaxyRandomize(&galaxy, baseCount, klingonCount);
         galaxyPrint(&galaxy);
-        panel = (Panel *)galaxyOverviewPanelNew(&galaxy, appleFont);
+
+        overviewPanel = galaxyOverviewPanelNew(&galaxy, appleFont);
+        panel = (Panel *)overviewPanel;
 
         menuPanel = (Panel *)menuPanelNew();
         break;
