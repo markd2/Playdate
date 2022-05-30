@@ -37,7 +37,7 @@ static bool _draw(Panel *panel) {
             Point origin;
             if (column != kGalaxyColumns - 1) {
                 origin = cellOrigin(row, column, kDelimiterPosition);
-                pd->graphics->drawText(":", 1, kASCIIEncoding, origin.x, origin.y);
+                drawCString(":", origin);
             }
 
             Sector sector = galaxy->sectors[row][column];
@@ -59,17 +59,17 @@ static bool _draw(Panel *panel) {
 
             char charString[2] = {0};
 
-            origin = cellOrigin(row, column, kKlingonPosition);
             charString[0] = sector.klingonCount + '0';
-            pd->graphics->drawText(charString, 1, kASCIIEncoding, origin.x, origin.y);
+            origin = cellOrigin(row, column, kKlingonPosition);
+            drawCString(charString, origin);
 
             origin = cellOrigin(row, column, kBasePosition);
             charString[0] = sector.baseCount + '0';
-            pd->graphics->drawText(charString, 1, kASCIIEncoding, origin.x, origin.y);
+            drawCString(charString, origin);
 
             origin = cellOrigin(row, column, kStarPosition);
             charString[0] = sector.starCount + '0';
-            pd->graphics->drawText(charString, 1, kASCIIEncoding, origin.x, origin.y);
+            drawCString(charString, origin);
         }
     }
     
