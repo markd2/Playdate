@@ -97,6 +97,6 @@ GalaxyOverviewPanel *galaxyOverviewPanelNew(Galaxy *galaxy, LCDFont *font) {
 } // galaxyOverviewPanelNew
 
 
-void galaxyOverviewPanelFree(Galaxy *galaxy) {
-    panelFree((Panel *)galaxy);
+void galaxyOverviewPanelFree(GalaxyOverviewPanel *panel) {
+    panelFree((Panel *)panel);
 } // galaxyOverviewPanelFree
