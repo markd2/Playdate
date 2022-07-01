@@ -1215,3 +1215,11 @@ ensembles.
 
 something to play with just updating affected rows (c.f. gingerbeard in the discord june 28)
 
+----------
+
+
+I would suggest that you don’t use MP3s and instead you convert those files to ADPCM. There’s an incredible converter that I’ve used for my game and a lot of other people have used as a result of that I post here in a second
+https://github.com/dbry/adpcm-xq 
+adpcm-xq [-options] infile.wav outfile.wav
+we have like 15-20min of music in ADPCM and it's <50mb
+I wouldn't personally be too worried about storage concerns until the game is like, >100mb+
