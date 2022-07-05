@@ -18,6 +18,8 @@ typedef struct DemoView {
     const char *name;
     PDCallbackFunction *updateCallback;
     ButtonPumperCallback *buttonCallback;
+    bool isDirty;
+
 } DemoView;
 
 DemoView *fontMakeMarkdownDemoView(void);
@@ -60,8 +62,10 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
         if (fd->currentDemoViewIndex < 0) {
             fd->currentDemoViewIndex = count - 1;
         }
+        fd->demoViews[fd->currentDemoViewIndex]->isDirty = true;
     } else if (buttons == kButtonRight && upDown == kPressed) {
         fd->currentDemoViewIndex = (fd->currentDemoViewIndex + 1) % count;
+        fd->demoViews[fd->currentDemoViewIndex]->isDirty = true;
     } else {
         DemoView *currentDemoView = fd->demoViews[fd->currentDemoViewIndex];
 
@@ -69,6 +73,7 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
             currentDemoView->buttonCallback(buttons, upDown, currentDemoView);
         }
     }
+    print("CURRENT INDEX IS %d", fd->currentDemoViewIndex);
 } // handleButtons
 
 
@@ -394,8 +399,6 @@ DemoView *fontMakeWrappedTextDemoView(void) {
 typedef struct ScrollingDemoView {
     DemoView isa;
 
-    bool isDirty;
-
     const char *warAndPeace;
     WordWidthHash *wordWidthHash;
 
@@ -515,7 +518,7 @@ void drawWrappedStringFromTopLine(const char *string,
 int scrollingDemoViewUpdate(void *userdata) {
     ScrollingDemoView *view = (ScrollingDemoView *)userdata;
 
-    if (!view->isDirty) {
+    if (!view->isa.isDirty) {
         pd->system->drawFPS(30, kScreenHeight - 20);
     }
 
@@ -530,27 +533,27 @@ int scrollingDemoViewUpdate(void *userdata) {
     }
     if (crankValue > 7.0f) {
         view->currentTopLine += 11;
-        view->isDirty = true;
+        view->isa.isDirty = true;
     } else if (crankValue > 3.5f) {
         view->currentTopLine += 5;
-        view->isDirty = true;
+        view->isa.isDirty = true;
     } else if (crankValue > 0.0f) {
         view->currentTopLine += 1;
-        view->isDirty = true;
+        view->isa.isDirty = true;
     } else if (crankValue < -7.0f) {
         view->currentTopLine -= 11;
-        view->isDirty = true;
+        view->isa.isDirty = true;
     } else if (crankValue < -3.5f) {
         view->currentTopLine -= 5;
-        view->isDirty = true;
+        view->isa.isDirty = true;
     } else if (crankValue < 0.0f) {
         view->currentTopLine -= 1;
-        view->isDirty = true;
+        view->isa.isDirty = true;
     }
     view->currentTopLine = MAX(view->currentTopLine, 0);
 
-    if (!view->isDirty) return 1;
-    view->isDirty = false;
+    if (!view->isa.isDirty) return 1;
+    view->isa.isDirty = false;
 
     pd->graphics->clear(kColorWhite);
 
@@ -589,10 +592,10 @@ static void scrollingDemoHandleButtons(PDButtons buttons, UpDown upDown, void *c
         view->currentTopLine--;
         if (view->currentTopLine < 0) view->currentTopLine = 0;
 
-        view->isDirty = true;
+        view->isa.isDirty = true;
     } else if (buttons == kButtonDown) {
         view->currentTopLine++;
-        view->isDirty = true;
+        view->isa.isDirty = true;
     }
     print("%d", view->currentTopLine);
     
@@ -633,7 +636,7 @@ DemoView *fontMakeScrollingTextDemoView(void) {
         print("could not load font %s - %s", fontpath, errorText);
     }
 
-    view.isDirty = true;
+    view.isa.isDirty = true;
 
     return (DemoView *)&view;
 } // fontMakeScrollingTextDemoView
