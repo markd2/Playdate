@@ -14,19 +14,36 @@
 #include "pd_api.h"
 #include "stb_ds.h"
 
+typedef struct { char *key; int value; } WordWidthHash;
+
 typedef struct DemoView {
     const char *name;
     PDCallbackFunction *updateCallback;
     ButtonPumperCallback *buttonCallback;
     bool isDirty;
 
+    LCDBitmap *menuImageBitmap;
+    LCDFont *menuImageFont;
+    WordWidthHash *menuImageWordWidthHash;
 } DemoView;
 
 DemoView *fontMakeMarkdownDemoView(void);
 DemoView *fontMakeWrappedTextDemoView(void);
 DemoView *fontMakeScrollingTextDemoView(void);
 
-typedef struct { char *key; int value; } WordWidthHash;
+static void commonInit(DemoView *demoView) {
+    bzero(demoView, sizeof(*demoView));
+
+    const char *errorText = NULL;
+    const char *fontpath = "font/Roobert-11-Mono-Condensed";
+    // const char *fontpath = "font/Asheville-Rounded-24-px";
+    demoView->menuImageFont = pd->graphics->loadFont(fontpath, &errorText);
+    if (demoView->menuImageFont == NULL) {
+        print("could not load font %s - %s", fontpath, errorText);
+    }
+    sh_new_arena(demoView->menuImageWordWidthHash);
+
+} // commonInit
 
 
 typedef struct FontDemo {
@@ -76,131 +93,6 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
     print("CURRENT INDEX IS %d", fd->currentDemoViewIndex);
 } // handleButtons
 
-
-static LCDBitmap *menuImageBitmap;
-
-static LCDBitmap *menuImageCallback(DemoSample *sample, int *outXOffset) {
-    if (outXOffset != NULL) {
-        *outXOffset = 0;
-    }
-
-    if (menuImageBitmap == NULL) {
-        menuImageBitmap = pd->graphics->newBitmap(kScreenWidth, kScreenHeight, kColorWhite);
-        const int width = 3;
-        pd->graphics->pushContext(menuImageBitmap); {
-            pd->graphics->drawLine(0, 0, kScreenWidth, kScreenHeight, width, kColorBlack);
-            pd->graphics->drawLine(kScreenWidth, 0, 0, kScreenHeight, width, kColorBlack);
-        } pd->graphics->popContext();
-    }
-
-    return menuImageBitmap;
-
-} // menuImageCallback
-
-
-DemoSample *fontDemoSample(void) {
-    FontDemo *demo = (FontDemo *)demoSampleNew("Font", kFont,
-                                               update,
-                                               sizeof(FontDemo));
-    demo->isa.menuImageCallback = menuImageCallback;
-    demo->pumper = buttonPumperNew(handleButtons, demo);
-
-    demo->currentDemoViewIndex = 2; // start with scrolling text demo
-
-    demo->demoViews[0] = fontMakeMarkdownDemoView();
-    demo->demoViews[1] = fontMakeWrappedTextDemoView();
-    demo->demoViews[2] = fontMakeScrollingTextDemoView();
-    // if you add another to this, go visit the FontDemo struct
-
-    return (DemoSample *)demo;
-} // drawingDemoSample
-
-
-// ==================================================
-
-int markdownCallback(void *userdata) {
-    DemoView *demoView = (DemoView *)userdata;
-
-    pd->graphics->clear(kColorWhite);
-
-    const char *string = demoView->name;
-    pd->graphics->drawText(string, strlen(string),
-                           kASCIIEncoding, 100, 100);
-    return 1; // update screen
-} // markdownCallback
-
-// --------------------------------------------------
-
-// asdf
-
-/* Markdown Demo View - have some text we can scroll through, and create it
- * via markdown.
- *
- * [ ] have a source Markdown document
- * [ ] have an offline process to convert the Markdown to an easily loaded and
- *     parsable format
- * [ ] Make the above EL&PF (essentially an attributed string)
- * [ ] Draw said attributed string
- * [ ] Smoothly scroll
- * [ ] stretch goal - do the playback character by character
- */
-
-typedef enum AttributedStringStyle {
-    kStyleHeadline,
-    kStylePlain,
-    kStyleBold,
-    kStyleItalic
-} AttributedStringStyle;
-
-typedef struct Attribute {
-    int rangeStart;
-    int rangeEnd;  // inclusive
-    AttributedStringStyle style;
-} Attribute;
-
-typedef struct AttributedString {
-    const char *string;
-    Attribute attributes[100];
-} AttributedString;
-
-typedef struct MarkdownDemoView {
-    DemoView isa;
-    AttributedString *attributedString;
-} MarkdownDemoView;
-
-DemoView *fontMakeMarkdownDemoView(void) {
-    static MarkdownDemoView view;
-
-    view.isa.name = "Markdown Demo";
-    view.isa.updateCallback = markdownCallback;
-    view.isa.buttonCallback = NULL;
-
-    view.attributedString = pdMalloc(sizeof(view.attributedString));
-
-    return (DemoView *)&view;
-} // fontMakeMarkdownDemoView
-
-
-// asdf
-
-
-// ==================================================
-
-static const int kMaxCrankMargin = 200;
-typedef struct WrappedDemoView {
-    DemoView isa;
-    LCDFont *textFont;
-
-    LCDFont *fonts[6];
-    WordWidthHash *wordWidthHashes[6];
-
-    int currentFontIndex;
-
-    int crankMargin;
-
-} WrappedDemoView;
-
-const char *wrappedText = "Once upon a midnight dreary, while I pondered, weak and weary, Over many a quaint and curious volume of forgotten lore-\n  While I nodded, nearly napping, suddenly there came a tapping, As of some one gently rapping, rapping at my chamber door.\n\"'Tis some visitor,\" I muttered, \"tapping at my chamber door-\n      Only this and nothing more.\"";
 
 // Performance is pretty adequate - couldn't see a reduction of
 // FPS when wrapping double the pirsig string.
@@ -277,6 +169,142 @@ void drawWrappedString(const char *string,
 
 } // drawWrappedString
 
+static LCDBitmap *menuImageCallback(DemoSample *sample, int *outXOffset) {
+    FontDemo *fontDemo = (FontDemo *)sample;
+
+    DemoView *demoView = fontDemo->demoViews[fontDemo->currentDemoViewIndex];
+
+    if (demoView->menuImageBitmap == NULL) {
+        demoView->menuImageBitmap = pd->graphics->newBitmap(kScreenWidth, kScreenHeight, kColorWhite);
+        const int width = 3;
+        Rect rect = (Rect){ kScreenWidth / 2, 0, 
+                            kScreenWidth / 2, kScreenHeight };
+        pd->graphics->pushContext(demoView->menuImageBitmap); {
+            demoView->isDirty = true;
+            demoView->updateCallback(demoView);
+
+            fillRect(rect, kColorWhite);
+            const char *text = "SPLUNGE MONKEY\nHoover greeble ni peng ni womm ni bork";
+            drawWrappedString(text,
+                              demoView->menuImageFont, rect,
+                              &demoView->menuImageWordWidthHash);
+
+        } pd->graphics->popContext();
+    }
+
+    if (outXOffset != NULL) {
+        *outXOffset = kScreenWidth / 2;
+    }
+
+    return demoView->menuImageBitmap;
+
+} // menuImageCallback
+
+
+DemoSample *fontDemoSample(void) {
+    FontDemo *demo = (FontDemo *)demoSampleNew("Font", kFont,
+                                               update,
+                                               sizeof(FontDemo));
+    demo->isa.menuImageCallback = menuImageCallback;
+    demo->pumper = buttonPumperNew(handleButtons, demo);
+
+    demo->currentDemoViewIndex = 2; // start with scrolling text demo
+
+    demo->demoViews[0] = fontMakeMarkdownDemoView();
+    demo->demoViews[1] = fontMakeWrappedTextDemoView();
+    demo->demoViews[2] = fontMakeScrollingTextDemoView();
+    // if you add another to this, go visit the FontDemo struct
+
+    return (DemoSample *)demo;
+} // drawingDemoSample
+
+
+// ==================================================
+
+int markdownCallback(void *userdata) {
+    DemoView *demoView = (DemoView *)userdata;
+
+    pd->graphics->clear(kColorWhite);
+
+    const char *string = demoView->name;
+    pd->graphics->drawText(string, strlen(string),
+                           kASCIIEncoding, 100, 100);
+    return 1; // update screen
+} // markdownCallback
+
+// --------------------------------------------------
+
+// asdf
+
+/* Markdown Demo View - have some text we can scroll through, and create it
+ * via markdown.
+ *
+ * [ ] have a source Markdown document
+ * [ ] have an offline process to convert the Markdown to an easily loaded and
+ *     parsable format
+ * [ ] Make the above EL&PF (essentially an attributed string)
+ * [ ] Draw said attributed string
+ * [ ] Smoothly scroll
+ * [ ] stretch goal - do the playback character by character
+ */
+
+typedef enum AttributedStringStyle {
+    kStyleHeadline,
+    kStylePlain,
+    kStyleBold,
+    kStyleItalic
+} AttributedStringStyle;
+
+typedef struct Attribute {
+    int rangeStart;
+    int rangeEnd;  // inclusive
+    AttributedStringStyle style;
+} Attribute;
+
+typedef struct AttributedString {
+    const char *string;
+    Attribute attributes[100];
+} AttributedString;
+
+typedef struct MarkdownDemoView {
+    DemoView isa;
+    AttributedString *attributedString;
+} MarkdownDemoView;
+
+DemoView *fontMakeMarkdownDemoView(void) {
+    static MarkdownDemoView view;
+    commonInit(&view.isa);
+
+    view.isa.name = "Markdown Demo";
+    view.isa.updateCallback = markdownCallback;
+    view.isa.buttonCallback = NULL;
+
+    view.attributedString = pdMalloc(sizeof(view.attributedString));
+
+    return (DemoView *)&view;
+} // fontMakeMarkdownDemoView
+
+
+// asdf
+
+
+// ==================================================
+
+static const int kMaxCrankMargin = 200;
+typedef struct WrappedDemoView {
+    DemoView isa;
+    LCDFont *textFont;
+
+    LCDFont *fonts[6];
+    WordWidthHash *wordWidthHashes[6];
+
+    int currentFontIndex;
+
+    int crankMargin;
+
+} WrappedDemoView;
+
+const char *wrappedText = "Once upon a midnight dreary, while I pondered, weak and weary, Over many a quaint and curious volume of forgotten lore-\n  While I nodded, nearly napping, suddenly there came a tapping, As of some one gently rapping, rapping at my chamber door.\n\"'Tis some visitor,\" I muttered, \"tapping at my chamber door-\n      Only this and nothing more.\"";
 
 static int wrappedDemoUpdate(void *context) {
     WrappedDemoView *view = (WrappedDemoView *)context;
@@ -346,6 +374,7 @@ static void wrappedTextHandleButtons(PDButtons buttons, UpDown upDown, void *con
 
 DemoView *fontMakeWrappedTextDemoView(void) {
     static WrappedDemoView view;
+    commonInit(&view.isa);
 
     view.isa.name = "Wrapped Demo";
     view.isa.updateCallback = wrappedDemoUpdate;
@@ -603,7 +632,8 @@ static void scrollingDemoHandleButtons(PDButtons buttons, UpDown upDown, void *c
 
 
 DemoView *fontMakeScrollingTextDemoView(void) {
-    static ScrollingDemoView view = { 0 };
+    static ScrollingDemoView view;
+    commonInit(&view.isa);
 
     view.isa.name = "Scrolling Demo";
     view.isa.updateCallback = scrollingDemoViewUpdate;
