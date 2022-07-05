@@ -728,7 +728,7 @@ getHeadphoneState(int *headphone, int *mic, changeCallback(int headphone, int mi
   - if changeclalback is provided, will be called when the status changes.
     - and audio output will *not* automatically switch - the callback should use
        sound->setOutputsActive
-setOUtputsActive - force audio output to the given outputs (headphone / speaker)
+setOutputsActive - force audio output to the given outputs (headphone / speaker)
    regardless of the headphone status
 
 channels
@@ -752,7 +752,7 @@ addCallbackSource - creates a new
   - takes a channel, audioSource function, context, stereo flag
   - the callback takes a context, int16_t *left / right, length
     - no right if it's a stereo source.
-  - the functino should fill in the buffers.  return 1 to play, or 0 if the source
+  - the function should fill in the buffers.  return 1 to play, or 0 if the source
     is silent through the cycle.
   - caller takes ownership of the allocated source, and should free it
     (I don't understsand why it's talking about memory management here)
