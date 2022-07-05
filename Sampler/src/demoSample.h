@@ -9,6 +9,11 @@ typedef enum DemoSampleCategory {
     kSynth,
 } DemoSampleCategory;
 
+struct DemoSample;
+
+typedef LCDBitmap *MenuImageCallback(struct DemoSample *sample,
+                                     int *outXOffset /*nullable*/ );
+
 // To use, embed this as the first field of your structure.
 // Then provide a function make one.  Call demoSampleNew to create it,
 // passing sizeof your struct.
@@ -16,6 +21,7 @@ typedef struct DemoSample {
     const char *name;
     DemoSampleCategory category;
     PDCallbackFunction *updateCallback;
+    MenuImageCallback *menuImageCallback;
     // suspend
     // resume
 } DemoSample;

@@ -72,10 +72,32 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
 } // handleButtons
 
 
+static LCDBitmap *menuImageBitmap;
+
+static LCDBitmap *menuImageCallback(DemoSample *sample, int *outXOffset) {
+    if (outXOffset != NULL) {
+        *outXOffset = 0;
+    }
+
+    if (menuImageBitmap == NULL) {
+        menuImageBitmap = pd->graphics->newBitmap(kScreenWidth, kScreenHeight, kColorWhite);
+        const int width = 3;
+        pd->graphics->pushContext(menuImageBitmap); {
+            pd->graphics->drawLine(0, 0, kScreenWidth, kScreenHeight, width, kColorBlack);
+            pd->graphics->drawLine(kScreenWidth, 0, 0, kScreenHeight, width, kColorBlack);
+        } pd->graphics->popContext();
+    }
+
+    return menuImageBitmap;
+
+} // menuImageCallback
+
+
 DemoSample *fontDemoSample(void) {
     FontDemo *demo = (FontDemo *)demoSampleNew("Font", kFont,
                                                update,
                                                sizeof(FontDemo));
+    demo->isa.menuImageCallback = menuImageCallback;
     demo->pumper = buttonPumperNew(handleButtons, demo);
 
     demo->currentDemoViewIndex = 2; // start with scrolling text demo
