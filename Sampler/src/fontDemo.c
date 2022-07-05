@@ -43,6 +43,10 @@ static void commonInit(DemoView *demoView) {
     }
     sh_new_arena(demoView->menuImageWordWidthHash);
 
+    // Make sure an initial allocation for the hash table is made
+    // before passing it around.
+    shput(demoView->menuImageWordWidthHash, "prime", 0);
+
 } // commonInit
 
 
