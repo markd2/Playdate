@@ -74,7 +74,7 @@ static void setupMenu(void) {
         int xOffset = 0;
         LCDBitmap *menuBitmap = currentSample->menuImageCallback(currentSample,
                                                                  &xOffset);
-        pd->system->setMenuImage(menuBitmap, 0);
+        pd->system->setMenuImage(menuBitmap, xOffset);
     } else {
         pd->system->setMenuImage(NULL, 0);
     }
