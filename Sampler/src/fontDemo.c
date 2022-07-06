@@ -25,13 +25,14 @@ typedef struct DemoView {
     LCDBitmap *menuImageBitmap;
     LCDFont *menuImageFont;
     WordWidthHash *menuImageWordWidthHash;
+    const char *menuText;
 } DemoView;
 
 DemoView *fontMakeMarkdownDemoView(void);
 DemoView *fontMakeWrappedTextDemoView(void);
 DemoView *fontMakeScrollingTextDemoView(void);
 
-static void commonInit(DemoView *demoView) {
+static void commonInit(DemoView *demoView, const char *menuText) {
     bzero(demoView, sizeof(*demoView));
 
     const char *errorText = NULL;
@@ -46,6 +47,8 @@ static void commonInit(DemoView *demoView) {
     // Make sure an initial allocation for the hash table is made
     // before passing it around.
     shput(demoView->menuImageWordWidthHash, "prime", 0);
+
+    demoView->menuText = menuText;
 
 } // commonInit
 
@@ -180,17 +183,16 @@ static LCDBitmap *menuImageCallback(DemoSample *sample, int *outXOffset) {
 
     if (demoView->menuImageBitmap == NULL) {
         demoView->menuImageBitmap = pd->graphics->newBitmap(kScreenWidth, kScreenHeight, kColorWhite);
-        const int width = 3;
         Rect rect = (Rect){ kScreenWidth / 2, 0, 
                             kScreenWidth / 2, kScreenHeight };
+        Rect insetRect = rectInset(rect, 10, 10);
         pd->graphics->pushContext(demoView->menuImageBitmap); {
             demoView->isDirty = true;
             demoView->updateCallback(demoView);
 
             fillRect(rect, kColorWhite);
-            const char *text = "SPLUNGE MONKEY\nHoover greeble ni peng ni womm ni bork";
-            drawWrappedString(text,
-                              demoView->menuImageFont, rect,
+            drawWrappedString(demoView->menuText,
+                              demoView->menuImageFont, insetRect,
                               &demoView->menuImageWordWidthHash);
 
         } pd->graphics->popContext();
@@ -206,7 +208,7 @@ static LCDBitmap *menuImageCallback(DemoSample *sample, int *outXOffset) {
 
 
 DemoSample *fontDemoSample(void) {
-    FontDemo *demo = (FontDemo *)demoSampleNew("Font", kFont,
+    FontDemo *demo = (FontDemo *)demoSampleNew("Text", kFont,
                                                update,
                                                sizeof(FontDemo));
     demo->isa.menuImageCallback = menuImageCallback;
@@ -277,7 +279,8 @@ typedef struct MarkdownDemoView {
 
 DemoView *fontMakeMarkdownDemoView(void) {
     static MarkdownDemoView view;
-    commonInit(&view.isa);
+    const char *menuText = "MarkDown";
+    commonInit(&view.isa, menuText);
 
     view.isa.name = "Markdown Demo";
     view.isa.updateCallback = markdownCallback;
@@ -378,7 +381,8 @@ static void wrappedTextHandleButtons(PDButtons buttons, UpDown upDown, void *con
 
 DemoView *fontMakeWrappedTextDemoView(void) {
     static WrappedDemoView view;
-    commonInit(&view.isa);
+    const char *menuText = "Wrapped Text";
+    commonInit(&view.isa, menuText);
 
     view.isa.name = "Wrapped Demo";
     view.isa.updateCallback = wrappedDemoUpdate;
@@ -637,7 +641,9 @@ static void scrollingDemoHandleButtons(PDButtons buttons, UpDown upDown, void *c
 
 DemoView *fontMakeScrollingTextDemoView(void) {
     static ScrollingDemoView view;
-    commonInit(&view.isa);
+    const char *menuText = "Scrolling";
+    commonInit(&view.isa, menuText);
+
 
     view.isa.name = "Scrolling Demo";
     view.isa.updateCallback = scrollingDemoViewUpdate;
