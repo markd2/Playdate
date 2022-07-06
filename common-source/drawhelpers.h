@@ -15,4 +15,11 @@ void fillRect(Rect rect, LCDColor color);
 // need a takes-font and clear-background-to-color version too.
 void drawCString(const char *string, Point at);
 
+typedef struct { char *key; int value; } WordWidthHash;
+void drawWrappedString(const char *string,
+                       LCDFont *withFont, Rect inRect,
+                       WordWidthHash **wordWidthHash,
+                       int newlineLeading);
+
+
 #endif // BORK_DRAWHELPERS_H
