@@ -36,6 +36,7 @@ PDC = $(SDK)/bin/pdc
 VPATH += $(SDK)/C_API/buildsupport
 
 CC   = $(GCC)$(TRGT)gcc -g
+CPP  = $(GPP)$(TRGT)g++ -g
 CP   = $(GCC)$(TRGT)objcopy
 AS   = $(GCC)$(TRGT)gcc -x assembler-with-cpp
 BIN  = $(CP) -O binary
@@ -97,6 +98,9 @@ ASFLAGS  = $(MCFLAGS) $(OPT) -g -gdwarf-2 -Wa,-amhls=$(<:.s=.lst) $(ADEFS)
 CPFLAGS  = $(MCFLAGS) $(OPT) -gdwarf-2 -Wall -Wno-unused -Wstrict-prototypes -Wno-unknown-pragmas -fverbose-asm -Wdouble-promotion
 CPFLAGS += -ffunction-sections -fdata-sections -Wa,-ahlms=$(OBJDIR)/$(notdir $(<:.c=.lst)) $(DEFS)
 
+CPPFLAGS  = $(MCFLAGS) $(OPT) -fno-exceptions -nodefaultlibs -nostdlib -gdwarf-2 -Wall -Wno-unused -Wno-unknown-pragmas -fverbose-asm -Wdouble-promotion
+CPPFLAGS += -ffunction-sections -fdata-sections -Wa,-ahlms=$(OBJDIR)/$(notdir $(<:.c=.lst)) $(DEFS)
+
 LDFLAGS  = $(MCFLAGS) -T$(LDSCRIPT) -Wl,-Map=$(OBJDIR)/pdex.map,--cref,--gc-sections,--no-warn-mismatch $(LIBDIR)
 
 # Generate dependency information
@@ -140,7 +144,7 @@ $(OBJDIR)/%.o : %.c | OBJDIR DEPDIR
 
 $(OBJDIR)/%.o : %.cpp | OBJDIR DEPDIR
 	mkdir -p `dirname $@`
-	$(CPP) -c $(CPFLAGS) -I . $(INCDIR) $< -o $@
+	$(CPP) -c $(CPPFLAGS) -I . $(INCDIR) $< -o $@
 
 $(OBJDIR)/%.o : %.s | OBJDIR DEPDIR
 	$(AS) -c $(ASFLAGS) $< -o $@

@@ -1,22 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+extern "C" {
 #include "globals.h"
-
 #include "pd_api.h"
+}
 
 // Return 1 to update the display, 0 to not update it
 static int update(void *userdata) {
-    print("SNORGLE");
     return 1;
 } // update
 
+extern "C"
 int eventHandler(PlaydateAPI* playdate, 
                  PDSystemEvent event,
                  uint32_t arg) {
+#if 0
     // NOTHING GOES HERE
     pd = playdate;
-    pd->system->logToConsole("event received %s (%x)", eventNames[event], arg);
+//    pd->system->logToConsole("event received %s (%x)", eventNames[event], arg);
 
     switch (event) {
     case kEventInit: {
@@ -40,7 +42,7 @@ int eventHandler(PlaydateAPI* playdate,
 
     default: break;
     }
-    
+#endif    
     return 0;
 
 } // eventHandler
