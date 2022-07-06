@@ -37,7 +37,6 @@ static void commonInit(DemoView *demoView, const char *menuText) {
 
     const char *errorText = NULL;
     const char *fontpath = "font/Roobert-11-Mono-Condensed";
-    // const char *fontpath = "font/Asheville-Rounded-24-px";
     demoView->menuImageFont = pd->graphics->loadFont(fontpath, &errorText);
     if (demoView->menuImageFont == NULL) {
         print("could not load font %s - %s", fontpath, errorText);
@@ -105,7 +104,8 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
 // FPS when wrapping double the pirsig string.
 void drawWrappedString(const char *string,
                        LCDFont *withFont, Rect inRect,
-                       WordWidthHash **wordWidthHash) {
+                       WordWidthHash **wordWidthHash,
+                       int newlineLeading) {
     pd->graphics->setFont(withFont);
 
     int lineLength = 0;
@@ -161,7 +161,7 @@ void drawWrappedString(const char *string,
 
             if (*scan == '\n') {
                 x = inRect.x;
-                y += fontHeight;
+                y += fontHeight + newlineLeading;
                 lineLength = 0;
             }
 
@@ -175,6 +175,7 @@ void drawWrappedString(const char *string,
     }
 
 } // drawWrappedString
+
 
 static LCDBitmap *menuImageCallback(DemoSample *sample, int *outXOffset) {
     FontDemo *fontDemo = (FontDemo *)sample;
@@ -193,7 +194,8 @@ static LCDBitmap *menuImageCallback(DemoSample *sample, int *outXOffset) {
             fillRect(rect, kColorWhite);
             drawWrappedString(demoView->menuText,
                               demoView->menuImageFont, insetRect,
-                              &demoView->menuImageWordWidthHash);
+                              &demoView->menuImageWordWidthHash,
+                              6);
 
         } pd->graphics->popContext();
     }
@@ -279,7 +281,10 @@ typedef struct MarkdownDemoView {
 
 DemoView *fontMakeMarkdownDemoView(void) {
     static MarkdownDemoView view;
-    const char *menuText = "MarkDown";
+    const char *menuText = "MARKDOWN DEMO\n"
+        "* So far just optimistic comments\n"
+        "* Left/Right to change Text Tabs";
+
     commonInit(&view.isa, menuText);
 
     view.isa.name = "Markdown Demo";
@@ -349,9 +354,9 @@ static int wrappedDemoUpdate(void *context) {
 
     LCDFont *font = view->fonts[view->currentFontIndex];
     drawWrappedString(wrappedText, font, wrapFrame,
-                      &view->wordWidthHashes[view->currentFontIndex]);
+                      &view->wordWidthHashes[view->currentFontIndex], 0);
 //    drawWrappedString(warAndPeace, font, wrapFrame,
-//                      &view->wordWidthHashes[view->currentFontIndex]);
+//                      &view->wordWidthHashes[view->currentFontIndex], 0);
 
     pd->system->drawFPS(30, kScreenHeight - 20);
 
@@ -381,7 +386,11 @@ static void wrappedTextHandleButtons(PDButtons buttons, UpDown upDown, void *con
 
 DemoView *fontMakeWrappedTextDemoView(void) {
     static WrappedDemoView view;
-    const char *menuText = "Wrapped Text";
+    const char *menuText = "WRAPPING DEMO\n"
+        "* Up/Down to change font\n"
+        "* Crank to change wrapping rectangle\n"
+        "* Left/Right to change Text Tabs";
+
     commonInit(&view.isa, menuText);
 
     view.isa.name = "Wrapped Demo";
@@ -641,9 +650,11 @@ static void scrollingDemoHandleButtons(PDButtons buttons, UpDown upDown, void *c
 
 DemoView *fontMakeScrollingTextDemoView(void) {
     static ScrollingDemoView view;
-    const char *menuText = "Scrolling";
+    const char *menuText = "SCROLLING DEMO\n"
+        "* Crank to scroll War and Peace\n"
+        "* Up/Down to scroll by line\n"
+        "* Left/Right to change Text Tabs";
     commonInit(&view.isa, menuText);
-
 
     view.isa.name = "Scrolling Demo";
     view.isa.updateCallback = scrollingDemoViewUpdate;
