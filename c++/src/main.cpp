@@ -10,22 +10,22 @@ PlaydateAPI *pd;
 
 class Blah {
 public:
-    virtual void draw();
+    virtual void draw() { };
 };
 
-void Blah::draw() {
-    pd->graphics->drawLine(0, 240, 400, 0, 3, kColorBlack);
-}
+//void Blah::draw() {
+//    pd->graphics->drawLine(0, 240, 400, 0, 3, kColorBlack);
+//}
 
-class Blah2 {
+class Blah2: Blah {
 public:
-    virtual void draw();
+    virtual void draw() { }
 };
 
-void Blah2::draw() {
-    pd->graphics->drawLine(0, 0, 400, 240, 3, kColorBlack);
-    pd->graphics->drawLine(0, 240, 400, 0, 3, kColorBlack);
-}
+//void Blah2::draw() {
+//    pd->graphics->drawLine(0, 0, 400, 240, 3, kColorBlack);
+//    pd->graphics->drawLine(0, 240, 400, 0, 3, kColorBlack);
+//}
 
 Blah *blah;
 

@@ -17,7 +17,7 @@ VPATH += src:../common-source
 
 LIB_SRC = ../common-source/buttonpumper.c ../common-source/memory.c ../common-source/globals.c ../common-source/patterns.c ../common-source/geometry.c ../common-source/timer.c
 
-SRC = src/setup.c src/main.cpp
+SRC = src/setup.c src/main.cpp src/pdnewlib.c
 CPPSRC = src/main.cpp
 
 # List all user directories here

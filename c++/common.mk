@@ -14,7 +14,7 @@ endif
 ifeq ($(detected_OS), Darwin)
 
   CLANGFLAGS = -g
-  SIMCOMPILER = clang $(CLANGFLAGS)
+  SIMCOMPILER = clang++ $(CLANGFLAGS)
   DYLIB_FLAGS = -dynamiclib -rdynamic
   DYLIB_EXT = dylib
   PDCFLAGS=
@@ -64,7 +64,8 @@ OPT = -O2 -falign-functions=16 -fomit-frame-pointer
 #
 # Define linker script file here
 #
-LDSCRIPT = $(patsubst ~%,$(HOME)%,$(SDK)/C_API/buildsupport/link_map.ld)
+# LDSCRIPT = $(patsubst ~%,$(HOME)%,$(SDK)/C_API/buildsupport/link_map.ld)
+LDSCRIPT = src/link_map.ld
 
 #
 # Define FPU settings here
@@ -98,7 +99,7 @@ ASFLAGS  = $(MCFLAGS) $(OPT) -g -gdwarf-2 -Wa,-amhls=$(<:.s=.lst) $(ADEFS)
 CPFLAGS  = $(MCFLAGS) $(OPT) -gdwarf-2 -Wall -Wno-unused -Wno-unknown-pragmas -fverbose-asm -Wdouble-promotion
 CPFLAGS += -ffunction-sections -fdata-sections -Wa,-ahlms=$(OBJDIR)/$(notdir $(<:.c=.lst)) $(DEFS)
 
-LDFLAGS  = $(MCFLAGS) -T$(LDSCRIPT) -Wl,-Map=$(OBJDIR)/pdex.map,--cref,--gc-sections,--no-warn-mismatch $(LIBDIR) -static -lstdc++
+LDFLAGS  = $(MCFLAGS) -T$(LDSCRIPT) -Wl,-Map=$(OBJDIR)/pdex.map,--cref,--gc-sections,--no-warn-mismatch $(LIBDIR) -lstdc++ -static
 
 # Generate dependency information
 CPFLAGS += -MD -MP -MF $(DEPDIR)/$(@F).d
