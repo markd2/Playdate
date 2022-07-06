@@ -98,7 +98,7 @@ ASFLAGS  = $(MCFLAGS) $(OPT) -g -gdwarf-2 -Wa,-amhls=$(<:.s=.lst) $(ADEFS)
 CPFLAGS  = $(MCFLAGS) $(OPT) -gdwarf-2 -Wall -Wno-unused -Wno-unknown-pragmas -fverbose-asm -Wdouble-promotion
 CPFLAGS += -ffunction-sections -fdata-sections -Wa,-ahlms=$(OBJDIR)/$(notdir $(<:.c=.lst)) $(DEFS)
 
-LDFLAGS  = $(MCFLAGS) -T$(LDSCRIPT) -Wl,-Map=$(OBJDIR)/pdex.map,--cref,--gc-sections,--no-warn-mismatch $(LIBDIR)
+LDFLAGS  = $(MCFLAGS) -T$(LDSCRIPT) -Wl,-Map=$(OBJDIR)/pdex.map,--cref,--gc-sections,--no-warn-mismatch $(LIBDIR) -static -lstdc++
 
 # Generate dependency information
 CPFLAGS += -MD -MP -MF $(DEPDIR)/$(@F).d
@@ -150,7 +150,7 @@ $(OBJDIR)/%.o : %.s | OBJDIR DEPDIR
 .PRECIOUS: $(OBJDIR)/%bin
 .PRECIOUS: $(OBJDIR)/%hex
 $(OBJDIR)/pdex.elf: $(OBJS) $(LDSCRIPT)
-	$(CC) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+	$(CPP) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 $(OBJDIR)/pdex.hex: $(OBJDIR)/pdex.elf
 	$(HEX) $< $@
