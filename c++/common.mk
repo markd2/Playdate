@@ -36,7 +36,7 @@ PDC = $(SDK)/bin/pdc
 VPATH += $(SDK)/C_API/buildsupport
 
 CC   = $(GCC)$(TRGT)gcc -g
-CPP  = $(GPP)$(TRGT)g++ -g
+CPP  = $(GCC)$(TRGT)g++ -g -fno-exceptions -nodefaultlibs -nostdlib
 CP   = $(GCC)$(TRGT)objcopy
 AS   = $(GCC)$(TRGT)gcc -x assembler-with-cpp
 BIN  = $(CP) -O binary
@@ -80,26 +80,23 @@ DEFS	= $(DDEFS) $(UDEFS)
 
 ADEFS   = $(DADEFS) $(UADEFS) -D__HEAP_SIZE=$(HEAP_SIZE) -D__STACK_SIZE=$(STACK_SIZE)
 
-SRC += $(SDK)/C_API/buildsupport/setup.c
+# SRC += $(SDK)/C_API/buildsupport/setup.c
 
 # Original object list
-_OBJS	= $(SRC:.c=.o) $(CPPSRC:.cpp=.o)
-$(info snorglebunnies $(_OBJS))
+#_OBJS	= $(SRC:.c=.o) $(CPPSRC:.cpp=.o)
+_OBJS	= $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(SRC)))
 
 # oject list in build folder
 OBJS    = $(addprefix $(OBJDIR)/, $(_OBJS))
-$(info $(OBJS))
+$(info "snorgle $(OBJS)")
 
 LIBS	= $(DLIBS) $(ULIBS)
 MCFLAGS = -mthumb -mcpu=$(MCU) $(FPU)
 
 ASFLAGS  = $(MCFLAGS) $(OPT) -g -gdwarf-2 -Wa,-amhls=$(<:.s=.lst) $(ADEFS)
 
-CPFLAGS  = $(MCFLAGS) $(OPT) -gdwarf-2 -Wall -Wno-unused -Wstrict-prototypes -Wno-unknown-pragmas -fverbose-asm -Wdouble-promotion
+CPFLAGS  = $(MCFLAGS) $(OPT) -gdwarf-2 -Wall -Wno-unused -Wno-unknown-pragmas -fverbose-asm -Wdouble-promotion
 CPFLAGS += -ffunction-sections -fdata-sections -Wa,-ahlms=$(OBJDIR)/$(notdir $(<:.c=.lst)) $(DEFS)
-
-CPPFLAGS  = $(MCFLAGS) $(OPT) -fno-exceptions -nodefaultlibs -nostdlib -gdwarf-2 -Wall -Wno-unused -Wno-unknown-pragmas -fverbose-asm -Wdouble-promotion
-CPPFLAGS += -ffunction-sections -fdata-sections -Wa,-ahlms=$(OBJDIR)/$(notdir $(<:.c=.lst)) $(DEFS)
 
 LDFLAGS  = $(MCFLAGS) -T$(LDSCRIPT) -Wl,-Map=$(OBJDIR)/pdex.map,--cref,--gc-sections,--no-warn-mismatch $(LIBDIR)
 
@@ -144,7 +141,7 @@ $(OBJDIR)/%.o : %.c | OBJDIR DEPDIR
 
 $(OBJDIR)/%.o : %.cpp | OBJDIR DEPDIR
 	mkdir -p `dirname $@`
-	$(CPP) -c $(CPPFLAGS) -I . $(INCDIR) $< -o $@
+	$(CPP) -c $(CPFLAGS) -I . $(INCDIR) $< -o $@
 
 $(OBJDIR)/%.o : %.s | OBJDIR DEPDIR
 	$(AS) -c $(ASFLAGS) $< -o $@

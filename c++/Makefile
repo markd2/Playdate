@@ -1,7 +1,7 @@
 HEAP_SIZE      = 8388208
 STACK_SIZE     = 61800
 
-PRODUCT = TEMPLATE.pdx
+PRODUCT = CppFun.pdx
 
 # Locate the SDK
 SDK = $(shell egrep '^\s*SDKRoot' ~/.Playdate/config | head -n 1 | cut -c9-)
@@ -17,7 +17,7 @@ VPATH += src:../common-source
 
 LIB_SRC = ../common-source/buttonpumper.c ../common-source/memory.c ../common-source/globals.c ../common-source/patterns.c ../common-source/geometry.c ../common-source/timer.c
 
-SRC = src/thing.c
+SRC = src/thing.c src/setup.c src/main.cpp
 CPPSRC = src/main.cpp
 
 # List all user directories here
