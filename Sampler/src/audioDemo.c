@@ -7,14 +7,14 @@
 
 #include "pd_api.h"
 
-typedef struct SynthDemo {
+typedef struct AudioDemo {
     DemoSample isa;
     ButtonPumper *pumper;
-} SynthDemo;
+} AudioDemo;
 
 
 static int update(void *context)  {
-    SynthDemo *demo = (SynthDemo *)context;
+    AudioDemo *demo = (AudioDemo *)context;
 
     PDButtons pushed, released;
     pd->system->getButtonState(NULL, &pushed, &released);
@@ -22,7 +22,7 @@ static int update(void *context)  {
 
     pd->graphics->clear(kColorWhite);
 
-    const char *snorgle = "snorgle synth";
+    const char *snorgle = "Audo Demo(s)";
     pd->graphics->drawText(snorgle, strlen(snorgle), kASCIIEncoding, 30, kScreenHeight / 2);
 
     return 1;
@@ -34,10 +34,10 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
 } // handleButtons
 
 
-DemoSample *synthDemoSample(void) {
-    SynthDemo *demo = (SynthDemo *)demoSampleNew("Synth", kSynth,
+DemoSample *audioDemoSample(void) {
+    AudioDemo *demo = (AudioDemo *)demoSampleNew("Audio", kAudio,
                                                  update,
-                                                 sizeof(SynthDemo));
+                                                 sizeof(AudioDemo));
     demo->pumper = buttonPumperNew(handleButtons, demo);
 
     return (DemoSample *)demo;

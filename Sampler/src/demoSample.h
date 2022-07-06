@@ -6,7 +6,7 @@ typedef enum DemoSampleCategory {
     kBitmap,
     kFont,
     kSprite,
-    kSynth,
+    kAudio,
 } DemoSampleCategory;
 
 struct DemoSample;

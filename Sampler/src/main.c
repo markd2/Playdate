@@ -17,7 +17,7 @@ DemoSample *spriteDemoSample(void);
 
 DemoSample *fontDemoSample(void);
 DemoSample *tableDemoSample(void);
-DemoSample *synthDemoSample(void);
+DemoSample *audioDemoSample(void);
 
 // NULL-terminated array of known samples
 DemoSample *allSamples[50];
@@ -97,7 +97,7 @@ int eventHandler(PlaydateAPI* playdate,
         DemoSample *spriteSample = spriteDemoSample();
         DemoSample *fontSample = fontDemoSample();
         DemoSample *tableSample = tableDemoSample();
-        DemoSample *synthSample = synthDemoSample();
+        DemoSample *audioSample = audioDemoSample();
 
         allSamples[0] = drawingSample;
         allSamples[1] = bitmapSample;
@@ -105,7 +105,7 @@ int eventHandler(PlaydateAPI* playdate,
         allSamples[3] = spriteSample;
         allSamples[4] = fontSample;
         allSamples[5] = tableSample;
-        allSamples[6] = synthSample;
+        allSamples[6] = audioSample;
 
         sampleCount = 7;
 
