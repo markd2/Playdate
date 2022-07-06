@@ -248,6 +248,7 @@ DemoSample *bitmapDemoSample(void) {
     BitmapDemo *demo = (BitmapDemo *)demoSampleNew("Bitmap", kBitmap,
                                                      update,
                                                      sizeof(BitmapDemo));
+    demo->showStencil = false;
     demo->pumper = buttonPumperNew(handleButtons, demo);
 
     const char *error;
