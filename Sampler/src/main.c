@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -67,6 +68,16 @@ static void setupMenu(void) {
     menuItem = pd->system->addOptionsMenuItem("Demos", options, sampleCount,
                                               menuItemCallback, 
                                               "userdata (unused here)");
+
+    DemoSample *currentSample = allSamples[currentIndex];
+    if (currentSample->menuImageCallback != NULL) {
+        int xOffset = 0;
+        LCDBitmap *menuBitmap = currentSample->menuImageCallback(currentSample,
+                                                                 &xOffset);
+        pd->system->setMenuImage(menuBitmap, xOffset);
+    } else {
+        pd->system->setMenuImage(NULL, 0);
+    }
     
 } // setupMenu
 
