@@ -38,4 +38,4 @@ ULIBDIR =
 ULIBS =
 
 include $(SDK)/C_API/buildsupport/common.mk
-
+PDCFLAGS = -q

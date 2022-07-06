@@ -37,6 +37,6 @@ ULIBDIR =
 # List all user libraries here
 ULIBS =
 
-PDCFLAGS = -q
 include $(SDK)/C_API/buildsupport/common.mk
+PDCFLAGS = -q
 
