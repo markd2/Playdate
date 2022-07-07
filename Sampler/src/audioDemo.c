@@ -4,6 +4,8 @@
 #include "demoSample.h"
 #include "buttonpumper.h"
 #include "globals.h"
+#include "geometry.h"
+#include "drawhelpers.h"
 
 #include "pd_api.h"
 
@@ -29,6 +31,22 @@ typedef struct AudioDemo {
 
 
 void drawGrid(AudioDemo *demo) {
+    // screen is a grid of 16 buttons, 4x4
+
+    const int width = kScreenWidth / 4;
+    const int height = kScreenHeight / 4;
+
+    for (int i = 0; i < demo->audioDemoButtonCount + 8; i++) {
+        int row = (i / 4);
+        int column = (i % 4);
+        Rect rect = (Rect){ width * row, height * column,
+                            width, height };
+        if ((row + column) % 2) {
+            fillRect(rect, kColorBlack);
+        } else {
+            fillRect(rect, kColorWhite);
+        }
+    }
 } // drawGrid
 
 
