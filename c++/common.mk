@@ -14,7 +14,7 @@ endif
 ifeq ($(detected_OS), Darwin)
 
   CLANGFLAGS = -g
-  SIMCOMPILER = clang $(CLANGFLAGS)
+  SIMCOMPILER = clang++ $(CLANGFLAGS)
   DYLIB_FLAGS = -dynamiclib -rdynamic
   DYLIB_EXT = dylib
   PDCFLAGS=
@@ -25,6 +25,7 @@ endif
 
 TRGT = arm-none-eabi-
 GCC:=$(dir $(shell which $(TRGT)gcc))
+GPP:=$(dir $(shell which $(TRGT)g++))
 
 ifeq ($(GCC),)
 GCC = /usr/local/bin/
@@ -34,20 +35,12 @@ PDC = $(SDK)/bin/pdc
 
 VPATH += $(SDK)/C_API/buildsupport
 
-CC   = $(GCC)$(TRGT)gcc -g -Wstrict-prototypes
+CC   = $(GCC)$(TRGT)gcc -g
 CPP  = $(GCC)$(TRGT)g++ -g -fno-exceptions -nodefaultlibs -nostdlib
-LL  := $(CC)
 CP   = $(GCC)$(TRGT)objcopy
 AS   = $(GCC)$(TRGT)gcc -x assembler-with-cpp
 BIN  = $(CP) -O binary
 HEX  = $(CP) -O ihex
-
-ifneq (, $(shell which armclang))
-$(info using armclang compiler)
-CC = armclang --target=arm-arm-none-eabi -nostdlibinc -nostdlib
-#CPP = armclang --target=arm-arm-none-eabi -nostdlibinc -nostdlib
-USE_ARMCLANG=1
-endif
 
 MCU  = cortex-m7
 
@@ -71,7 +64,8 @@ OPT = -O2 -falign-functions=16 -fomit-frame-pointer
 #
 # Define linker script file here
 #
-LDSCRIPT = $(patsubst ~%,$(HOME)%,$(SDK)/C_API/buildsupport/link_map.ld)
+# LDSCRIPT = $(patsubst ~%,$(HOME)%,$(SDK)/C_API/buildsupport/link_map.ld)
+LDSCRIPT = src/link_map.ld
 
 #
 # Define FPU settings here
@@ -87,13 +81,15 @@ DEFS	= $(DDEFS) $(UDEFS)
 
 ADEFS   = $(DADEFS) $(UADEFS) -D__HEAP_SIZE=$(HEAP_SIZE) -D__STACK_SIZE=$(STACK_SIZE)
 
-SRC += $(SDK)/C_API/buildsupport/setup.c
+# SRC += $(SDK)/C_API/buildsupport/setup.c
 
 # Original object list
-_OBJS	= $(patsubst %.cpp,%.cpp.o,$(patsubst %.c,%.o,$(SRC)))
+#_OBJS	= $(SRC:.c=.o) $(CPPSRC:.cpp=.o)
+_OBJS	= $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(SRC)))
 
 # oject list in build folder
 OBJS    = $(addprefix $(OBJDIR)/, $(_OBJS))
+$(info "snorgle $(OBJS)")
 
 LIBS	= $(DLIBS) $(ULIBS)
 MCFLAGS = -mthumb -mcpu=$(MCU) $(FPU)
@@ -101,16 +97,9 @@ MCFLAGS = -mthumb -mcpu=$(MCU) $(FPU)
 ASFLAGS  = $(MCFLAGS) $(OPT) -g -gdwarf-2 -Wa,-amhls=$(<:.s=.lst) $(ADEFS)
 
 CPFLAGS  = $(MCFLAGS) $(OPT) -gdwarf-2 -Wall -Wno-unused -Wno-unknown-pragmas -fverbose-asm -Wdouble-promotion
-CPFLAGS += -ffunction-sections -fdata-sections $(DEFS)
+CPFLAGS += -ffunction-sections -fdata-sections -Wa,-ahlms=$(OBJDIR)/$(notdir $(<:.c=.lst)) $(DEFS)
 
-CLANGFLAGS += -Wa,-ahlms=$(OBJDIR)/$(notdir $(<:.c=.lst))
-
-ifneq (,$(USE_ARMCLANG))
-# armclang options
-CPFLAGS += -I/opt/arm/developmentstudio-2021.2/sw/ARMCompiler6.17/include/
-endif
-
-LDFLAGS  = $(MCFLAGS) -T$(LDSCRIPT) -Wl,-Map=$(OBJDIR)/pdex.map,--cref,--gc-sections,--no-warn-mismatch $(LIBDIR)
+LDFLAGS  = $(MCFLAGS) -T$(LDSCRIPT) -Wl,-Map=$(OBJDIR)/pdex.map,--cref,--gc-sections,--no-warn-mismatch $(LIBDIR) -lstdc++ -static
 
 # Generate dependency information
 CPFLAGS += -MD -MP -MF $(DEPDIR)/$(@F).d
@@ -138,34 +127,31 @@ DEPDIR:
 	mkdir -p $(DEPDIR)
 
 device: $(OBJDIR)/pdex.bin
-	mkdir -p Source
 	cp $(OBJDIR)/pdex.bin Source
 
 simulator: $(OBJDIR)/pdex.${DYLIB_EXT}
-	mkdir -p Source
 	touch Source/pdex.bin
 	cp $(OBJDIR)/pdex.${DYLIB_EXT} Source
 
 pdc: simulator
 	$(PDC) $(PDCFLAGS) Source $(PRODUCT)
 
-$(OBJDIR)/%.cpp.o : %.cpp | OBJDIR DEPDIR
-	mkdir -p `dirname $@`
-	$(CPP) -c $(CPFLAGS) -I . $(INCDIR) $< -o $@
-
 $(OBJDIR)/%.o : %.c | OBJDIR DEPDIR
 	mkdir -p `dirname $@`
 	$(CC) -c $(CPFLAGS) -I . $(INCDIR) $< -o $@
 
-$(OBJDIR)/%.o : %.s | OBJDIR DEPDIR
+$(OBJDIR)/%.o : %.cpp | OBJDIR DEPDIR
 	mkdir -p `dirname $@`
+	$(CPP) -c $(CPFLAGS) -I . $(INCDIR) $< -o $@
+
+$(OBJDIR)/%.o : %.s | OBJDIR DEPDIR
 	$(AS) -c $(ASFLAGS) $< -o $@
 
 .PRECIOUS: $(OBJDIR)/%elf
 .PRECIOUS: $(OBJDIR)/%bin
 .PRECIOUS: $(OBJDIR)/%hex
 $(OBJDIR)/pdex.elf: $(OBJS) $(LDSCRIPT)
-	$(LL) -v $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+	$(CPP) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 $(OBJDIR)/pdex.hex: $(OBJDIR)/pdex.elf
 	$(HEX) $< $@
@@ -174,7 +160,7 @@ $(OBJDIR)/pdex.bin: $(OBJDIR)/pdex.elf
 	$(BIN) $< $@
 
 $(OBJDIR)/pdex.${DYLIB_EXT}: OBJDIR
-	$(SIMCOMPILER) $(DYLIB_FLAGS) -g -lm -DTARGET_SIMULATOR=1 -DTARGET_EXTENSION=1 $(INCDIR) -o $(OBJDIR)/pdex.${DYLIB_EXT} $(SRC) $(CLANGFLAGS)
+	$(SIMCOMPILER) $(DYLIB_FLAGS) -lm -DTARGET_SIMULATOR=1 -DTARGET_EXTENSION=1 $(INCDIR) -o $(OBJDIR)/pdex.${DYLIB_EXT} $(SRC)
 
 clean:
 	-rm -rf $(OBJDIR)
