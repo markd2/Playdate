@@ -27,10 +27,19 @@ void drawCString(const char *string, Point at) {
 } // drawCString
 
 
-void drawCStringCenteredInRect(const char *string, Rect rect) {
-    Point at = (Point){ rect.x, rect.y };
-    print("drawing %s at %d %d", string, at.x, at.y);
-    drawCString(string, at);
+void drawCStringCenteredInRect(const char *string, Rect rect, LCDFont *font) {
+    pd->graphics->pushContext(NULL); {
+        pd->graphics->setFont(font);
+        int textWidth = pd->graphics->getTextWidth(NULL, string, strlen(string),
+                                                   kASCIIEncoding, 0);
+        int fontHeight = pd->graphics->getFontHeight(font);
+        Rect textRect = (Rect){ 0, 0, textWidth, fontHeight };
+        Rect centered = rectCenteredIn(rect, textRect);
+        Point at = (Point){ centered.x, centered.y };
+        
+        drawCString(string, at);
+    } pd->graphics->popContext();
+
 } // drawCStringCenteredInRect
 
 

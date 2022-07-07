@@ -49,14 +49,16 @@ void drawGrid(AudioDemo *demo) {
                             width, height };
         Rect inset = rectInset(rect, buttonMargin, buttonMargin);
 
+        const char *labelText = button->labelText ?: "";
+
         if (i == demo->audioDemoCurrentButtonIndex) {
             fillRect(inset, kColorBlack);
             pd->graphics->pushContext(NULL); {
                 pd->graphics->setDrawMode(kDrawModeInverted);
-                drawCStringCenteredInRect(button->labelText ?: "", inset);
+                drawCStringCenteredInRect(labelText, inset, buttonFont);
             } pd->graphics->popContext();
         } else {
-            drawCStringCenteredInRect(button->labelText ?: "", inset);
+            drawCStringCenteredInRect(labelText, inset, buttonFont);
             frameRect(inset, kColorBlack);
         }
     }
