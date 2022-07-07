@@ -11,12 +11,6 @@ void strokeRect(Rect rect, LCDColor withColor) {
 } // strokeRect
 
 
-void drawCString(const char *string, Point at) {
-    pd->graphics->drawText(string, strlen(string),
-                           kASCIIEncoding, at.x, at.y);
-} // drawCString
-
-
 void fillRect(Rect rect, LCDColor color) {
     pd->graphics->fillRect(rect.x, rect.y, rect.width, rect.height, color);
 } // fillRect
@@ -25,6 +19,19 @@ void fillRect(Rect rect, LCDColor color) {
 void frameRect(Rect rect, LCDColor color) {
     pd->graphics->drawRect(rect.x, rect.y, rect.width, rect.height, color);
 } // frameRect
+
+
+void drawCString(const char *string, Point at) {
+    pd->graphics->drawText(string, strlen(string),
+                           kASCIIEncoding, at.x, at.y);
+} // drawCString
+
+
+void drawCStringCenteredInRect(const char *string, Rect rect) {
+    Point at = (Point){ rect.x, rect.y };
+    print("drawing %s at %d %d", string, at.x, at.y);
+    drawCString(string, at);
+} // drawCStringCenteredInRect
 
 
 // TODO (7/5/22): fix \n\n - doesn't advance properly

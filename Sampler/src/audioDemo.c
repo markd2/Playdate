@@ -19,6 +19,7 @@ typedef struct AudioDemoButton {
 } AudioDemoButton;
 
 static AudioDemoButton buttonAlloc[16];
+static LCDFont *buttonFont;
 
 typedef struct AudioDemo {
     DemoSample isa;
@@ -37,7 +38,11 @@ void drawGrid(AudioDemo *demo) {
     const int height = kScreenHeight / 4;
     const int buttonMargin = 8;
 
+    pd->graphics->setFont(buttonFont);
+
     for (int i = 0; i < demo->audioDemoButtonCount + 8; i++) {
+        AudioDemoButton *button = &demo->buttons[i];
+
         int row = (i / 4);
         int column = (i % 4);
         Rect rect = (Rect){ width * row, height * column,
@@ -46,7 +51,12 @@ void drawGrid(AudioDemo *demo) {
 
         if (i == demo->audioDemoCurrentButtonIndex) {
             fillRect(inset, kColorBlack);
+            pd->graphics->pushContext(NULL); {
+                pd->graphics->setDrawMode(kDrawModeInverted);
+                drawCStringCenteredInRect(button->labelText ?: "", inset);
+            } pd->graphics->popContext();
         } else {
+            drawCStringCenteredInRect(button->labelText ?: "", inset);
             frameRect(inset, kColorBlack);
         }
     }
@@ -66,6 +76,8 @@ static int update(void *context)  {
     pd->graphics->clear(kColorWhite);
 
     drawGrid(demo);
+
+    demo->isDirty = false;
 
     return 1;
 } // update
@@ -100,6 +112,15 @@ DemoSample *audioDemoSample(void) {
         char buffer[128];
         snprintf(buffer, 128, "Button %d", i);
         demo->buttons[i].labelText = strdup(buffer);
+    }
+
+    if (buttonFont == NULL) {
+        const char *errorText = NULL;
+        const char *fontpath = "font/Roobert-11-Mono-Condensed";
+        buttonFont = pd->graphics->loadFont(fontpath, &errorText);
+        if (buttonFont == NULL) {
+            print("could not load button font %s - %s", fontpath, errorText);
+        }
     }
 
     return (DemoSample *)demo;
