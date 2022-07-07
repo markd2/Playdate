@@ -25,6 +25,7 @@ typedef struct DemoSample {
     // resume
 } DemoSample;
 
+// Zeroes out the allocated memory.
 DemoSample *demoSampleNew(const char *name,
                           DemoSampleCategory category,
                           PDCallbackFunction updateCallback,
