@@ -26,7 +26,7 @@ typedef struct AudioDemo {
     bool isDirty;
     AudioDemoButton *buttons;
     int audioDemoButtonCount;
-    int audioDemoCurrentButton;
+    int audioDemoCurrentButtonIndex;
 } AudioDemo;
 
 
@@ -35,16 +35,19 @@ void drawGrid(AudioDemo *demo) {
 
     const int width = kScreenWidth / 4;
     const int height = kScreenHeight / 4;
+    const int buttonMargin = 8;
 
     for (int i = 0; i < demo->audioDemoButtonCount + 8; i++) {
         int row = (i / 4);
         int column = (i % 4);
         Rect rect = (Rect){ width * row, height * column,
                             width, height };
-        if ((row + column) % 2) {
-            fillRect(rect, kColorBlack);
+        Rect inset = rectInset(rect, buttonMargin, buttonMargin);
+
+        if (i == demo->audioDemoCurrentButtonIndex) {
+            fillRect(inset, kColorBlack);
         } else {
-            fillRect(rect, kColorWhite);
+            frameRect(inset, kColorBlack);
         }
     }
 } // drawGrid
@@ -91,6 +94,7 @@ DemoSample *audioDemoSample(void) {
 
     demo->buttons = buttonAlloc;
     demo->audioDemoButtonCount = 8;
+    demo->audioDemoCurrentButtonIndex = 2;
 
     for (int i = 0; i < 8; i++) {
         char buffer[128];
