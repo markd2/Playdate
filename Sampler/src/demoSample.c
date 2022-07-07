@@ -10,7 +10,7 @@ DemoSample *demoSampleNew(const char *name,
     moi->name = name;
     moi->category = category;
     moi->updateCallback = updateCallback;
-    moi->menuImageCallback = NULL;
+    moi->menuStringCallback = NULL;
 
     return moi;
 

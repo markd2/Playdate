@@ -20,9 +20,6 @@ typedef struct DemoView {
     ButtonPumperCallback *buttonCallback;
     bool isDirty;
 
-    LCDBitmap *menuImageBitmap;
-    LCDFont *menuImageFont;
-    WordWidthHash *menuImageWordWidthHash;
     const char *menuText;
 } DemoView;
 
@@ -32,19 +29,6 @@ DemoView *fontMakeScrollingTextDemoView(void);
 
 static void commonInit(DemoView *demoView, const char *menuText) {
     bzero(demoView, sizeof(*demoView));
-
-    const char *errorText = NULL;
-    const char *fontpath = "font/Roobert-11-Mono-Condensed";
-    demoView->menuImageFont = pd->graphics->loadFont(fontpath, &errorText);
-    if (demoView->menuImageFont == NULL) {
-        print("could not load font %s - %s", fontpath, errorText);
-    }
-    sh_new_arena(demoView->menuImageWordWidthHash);
-
-    // Make sure an initial allocation for the hash table is made
-    // before passing it around.
-    shput(demoView->menuImageWordWidthHash, "prime", 0);
-
     demoView->menuText = menuText;
 
 } // commonInit
@@ -98,44 +82,19 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
 } // handleButtons
 
 
-
-static LCDBitmap *menuImageCallback(DemoSample *sample, int *outXOffset) {
+static const char *menuStringCallback(DemoSample *sample) {
     FontDemo *fontDemo = (FontDemo *)sample;
-
     DemoView *demoView = fontDemo->demoViews[fontDemo->currentDemoViewIndex];
 
-    if (demoView->menuImageBitmap == NULL) {
-        demoView->menuImageBitmap = pd->graphics->newBitmap(kScreenWidth, kScreenHeight, kColorWhite);
-        Rect rect = (Rect){ kScreenWidth / 2, 0, 
-                            kScreenWidth / 2, kScreenHeight };
-        Rect insetRect = rectInset(rect, 10, 10);
-        pd->graphics->pushContext(demoView->menuImageBitmap); {
-            demoView->isDirty = true;
-            demoView->updateCallback(demoView);
+    return demoView->menuText;
 
-            fillRect(rect, kColorWhite);
-            drawWrappedString(demoView->menuText,
-                              demoView->menuImageFont, insetRect,
-                              &demoView->menuImageWordWidthHash,
-                              6);
-
-        } pd->graphics->popContext();
-    }
-
-    if (outXOffset != NULL) {
-        *outXOffset = kScreenWidth / 2;
-    }
-
-    return demoView->menuImageBitmap;
-
-} // menuImageCallback
-
+} // menuStringCallback
 
 DemoSample *fontDemoSample(void) {
     FontDemo *demo = (FontDemo *)demoSampleNew("Text", kFont,
                                                update,
                                                sizeof(FontDemo));
-    demo->isa.menuImageCallback = menuImageCallback;
+    demo->isa.menuStringCallback = menuStringCallback;
     demo->pumper = buttonPumperNew(handleButtons, demo);
 
     demo->currentDemoViewIndex = 2; // start with scrolling text demo
@@ -579,8 +538,8 @@ DemoView *fontMakeScrollingTextDemoView(void) {
     commonInit(&view.isa, menuText);
 
     view.isa.name = "Scrolling Demo";
-    view.isa.updateCallback = scrollingDemoViewUpdate;
     view.isa.buttonCallback = scrollingDemoHandleButtons;
+    view.isa.updateCallback = scrollingDemoViewUpdate;
 
     view.wordWidthHash = NULL;
     sh_new_arena(view.wordWidthHash);
