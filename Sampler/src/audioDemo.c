@@ -15,6 +15,7 @@ typedef struct AudioDemo {
 
 static int update(void *context)  {
     AudioDemo *demo = (AudioDemo *)context;
+    
 
     PDButtons pushed, released;
     pd->system->getButtonState(NULL, &pushed, &released);
@@ -33,12 +34,20 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
 
 } // handleButtons
 
+static const char *menuStringCallback(DemoSample *sample) {
+    const char *menuText = "AUDIO DEMO\n"
+        "* Does stuff with audio\n"
+        "* And synth DAW stuffs";
+    return menuText;
+} // menuStringCallback
+
 
 DemoSample *audioDemoSample(void) {
     AudioDemo *demo = (AudioDemo *)demoSampleNew("Audio", kAudio,
                                                  update,
                                                  sizeof(AudioDemo));
     demo->pumper = buttonPumperNew(handleButtons, demo);
+    demo->isa.menuStringCallback = menuStringCallback;
 
     return (DemoSample *)demo;
 } // drawingDemoSample
