@@ -128,12 +128,6 @@ void moveButton(AudioDemo *demo, GridDirection direction) {
         break;
     }
 
-    print("(%d %d) %d -> (%d %d)",
-          demo->audioDemoCurrentButtonIndex % 4,
-          demo->audioDemoCurrentButtonIndex / 4,
-          demo->audioDemoCurrentButtonIndex,
-          row, column);
-
     if (row < 0) row = 3;
     if (column < 0) column = 3;
     if (row >= 4) row = 0;
@@ -141,9 +135,6 @@ void moveButton(AudioDemo *demo, GridDirection direction) {
 
     int index = column * 4 + row;
     demo->audioDemoCurrentButtonIndex = index;
-
-    print("   -> (%d %d) %d",
-          row, column, index);
 
     demo->isDirty = true;
 
