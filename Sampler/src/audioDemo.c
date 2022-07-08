@@ -48,6 +48,14 @@ typedef struct AudioDemo {
 } AudioDemo;
 
 
+
+static void sampleFromDisk(AudioDemoButton *button, AudioDemo *demo) 
+} // sampleFromDisk
+
+
+
+// --------------------------------------------------
+
 AudioDemoButton *buttonAtIndex(AudioDemo *demo, int index) {
     if (index >= demo->audioDemoButtonCount) {
         print("bad programmer, bad button index %d vs %d",
@@ -223,10 +231,11 @@ DemoSample *audioDemoSample(void) {
 
     demo->buttons = buttonAlloc;
     demo->audioDemoButtonCount = kGridRows * kGridColumns;
-    demo->audioDemoCurrentButtonIndex = 2;
+    demo->audioDemoCurrentButtonIndex = 0;
 
     AudioDemoButton *sampleFromDiskButton = buttonAtIndex(demo, 0);
     sampleFromDiskButton->labelText = "Sample/File";
+    sampleFromDiskButton->callback = sampleFromDisk;
     sampleFromDiskButton->demo = demo;
 
     for (int i = 1; i < kGridRows * kGridColumns; i++) {
