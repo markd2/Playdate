@@ -10,7 +10,10 @@
 #include "pd_api.h"
 
 struct AudioDemoButton;
-typedef void AudioDemoButtonCallback(struct AudioDemoButton *button);
+struct AudioDemo;
+
+typedef void AudioDemoButtonCallback(struct AudioDemoButton *button,
+                                     struct AudioDemo *demo);
 
 typedef struct AudioDemoButton {
     const char *labelText;
@@ -84,9 +87,67 @@ static int update(void *context)  {
     return 1;
 } // update
 
+void demoButtonPlaceholderCallback(AudioDemoButton *button,
+                                   AudioDemo *demo) {
+    print("button blah %s", button->userdata);
+} // demoButtonPlaceholderCallback
+
+
+typedef enum GridDirection {
+    kGridDirectionUp,
+    kGridDirectionDown,
+    kGridDirectionLeft,
+    kGridDirectionRight,
+} GridDirection;
+
+
+void triggerButton(AudioDemo *demo) {
+    AudioDemoButton *button = &demo->buttons[demo->audioDemoCurrentButtonIndex];
+    if (button != NULL && button->callback != NULL) {
+        button->callback(button, demo);
+    }
+} // triggerButton
+
+
+void moveButton(AudioDemo *sample, GridDirection direction) {
+} // moveButton
+
 
 static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
-    print("YAY");
+    AudioDemo *sample = (AudioDemo *)context;
+
+    switch (buttons) {
+    case kButtonUp:
+        if (upDown == kPressed) {
+            moveButton(sample, kGridDirectionUp);
+        }
+        break;
+    case kButtonDown:
+        if (upDown == kPressed) {
+            moveButton(sample, kGridDirectionDown);
+        }
+        break;
+    case kButtonLeft:
+        if (upDown == kPressed) {
+            moveButton(sample, kGridDirectionLeft);
+        }
+        break;
+    case kButtonRight:
+        if (upDown == kPressed) {
+            moveButton(sample, kGridDirectionRight);
+        }
+        break;
+    case kButtonA:
+        if (upDown == kReleased) {
+            triggerButton(sample);
+        }
+        break;
+    case kButtonB:
+        if (upDown == kReleased) {
+            print("splunge");
+        }
+        break;
+    }
 } // handleButtons
 
 
@@ -107,13 +168,16 @@ DemoSample *audioDemoSample(void) {
     demo->isa.menuStringCallback = menuStringCallback;
 
     demo->buttons = buttonAlloc;
-    demo->audioDemoButtonCount = 8;
+    demo->audioDemoButtonCount = 16;
     demo->audioDemoCurrentButtonIndex = 2;
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 16; i++) {
         char buffer[128];
         snprintf(buffer, 128, "Button %d", i);
         demo->buttons[i].labelText = strdup(buffer);
+
+        demo->buttons[i].callback = demoButtonPlaceholderCallback;
+        demo->buttons[i].userdata = demo->buttons[i].labelText;
     }
 
     if (buttonFont == NULL) {
