@@ -18,10 +18,24 @@ typedef void AudioDemoButtonCallback(struct AudioDemoButton *button,
 typedef struct AudioDemoButton {
     const char *labelText;
     AudioDemoButtonCallback *callback;
+    struct AudioDemo *demo;
     void *userdata;
 } AudioDemoButton;
 
-static AudioDemoButton buttonAlloc[16];
+
+/* the usual 
+ *     0     1     2
+ *  0  +-0-+ +-1-+ +-2-+
+ *  1  +-3-+ +-4-+ +-5-+
+ *  2  +-6-+ +-7-+ +-8-+
+ *  3  +-9-+ +-10+ +-11+
+ */
+
+
+#define kGridRows 4
+#define kGridColumns 3
+
+static AudioDemoButton buttonAlloc[kGridRows * kGridColumns];
 static LCDFont *buttonFont;
 
 typedef struct AudioDemo {
@@ -34,21 +48,33 @@ typedef struct AudioDemo {
 } AudioDemo;
 
 
+AudioDemoButton *buttonAtIndex(AudioDemo *demo, int index) {
+    if (index >= demo->audioDemoButtonCount) {
+        print("bad programmer, bad button index %d vs %d",
+              index, demo->audioDemoButtonCount);
+        return NULL;
+    }
+
+    return &demo->buttons[index];
+} // buttonAtIndex
+
+
 void drawGrid(AudioDemo *demo) {
     // screen is a grid of 16 buttons, 4x4
 
-    const int width = kScreenWidth / 4;
-    const int height = kScreenHeight / 4;
+    const int width = kScreenWidth / kGridColumns;
+    const int height = kScreenHeight / kGridRows;
     const int buttonMargin = 8;
 
     pd->graphics->setFont(buttonFont);
 
-    for (int i = 0; i < demo->audioDemoButtonCount + 8; i++) {
+    for (int i = 0; i < demo->audioDemoButtonCount; i++) {
         AudioDemoButton *button = &demo->buttons[i];
 
-        int row = (i / 4);
-        int column = (i % 4);
-        Rect rect = (Rect){ width * row, height * column,
+        int row = i / kGridColumns;
+        int column = (i % kGridColumns);
+
+        Rect rect = (Rect){ width * column, height * row,
                             width, height };
         Rect inset = rectInset(rect, buttonMargin, buttonMargin);
 
@@ -110,9 +136,9 @@ void triggerButton(AudioDemo *demo) {
 
 
 void moveButton(AudioDemo *demo, GridDirection direction) {
-    int row = demo->audioDemoCurrentButtonIndex % 4;
-    int column = demo->audioDemoCurrentButtonIndex / 4;
-
+    int row = demo->audioDemoCurrentButtonIndex / kGridColumns;
+    int column = demo->audioDemoCurrentButtonIndex % kGridColumns;
+    
     switch (direction) {
     case kGridDirectionUp:
         row--;
@@ -128,12 +154,12 @@ void moveButton(AudioDemo *demo, GridDirection direction) {
         break;
     }
 
-    if (row < 0) row = 3;
-    if (column < 0) column = 3;
-    if (row >= 4) row = 0;
-    if (column >= 4) column = 0;
+    if (row < 0) row = kGridRows - 1;
+    if (column < 0) column = kGridColumns - 1;
+    if (row >= kGridRows) row = 0;
+    if (column >= kGridColumns) column = 0;
 
-    int index = column * 4 + row;
+    int index = row * kGridColumns + column;
     demo->audioDemoCurrentButtonIndex = index;
 
     demo->isDirty = true;
@@ -196,10 +222,14 @@ DemoSample *audioDemoSample(void) {
     demo->isa.menuStringCallback = menuStringCallback;
 
     demo->buttons = buttonAlloc;
-    demo->audioDemoButtonCount = 16;
+    demo->audioDemoButtonCount = kGridRows * kGridColumns;
     demo->audioDemoCurrentButtonIndex = 2;
 
-    for (int i = 0; i < 16; i++) {
+    AudioDemoButton *sampleFromDiskButton = buttonAtIndex(demo, 0);
+    sampleFromDiskButton->labelText = "Sample/File";
+    sampleFromDiskButton->demo = demo;
+
+    for (int i = 1; i < kGridRows * kGridColumns; i++) {
         char buffer[128];
         snprintf(buffer, 128, "Button %d", i);
         demo->buttons[i].labelText = strdup(buffer);
