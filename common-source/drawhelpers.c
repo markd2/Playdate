@@ -11,12 +11,6 @@ void strokeRect(Rect rect, LCDColor withColor) {
 } // strokeRect
 
 
-void drawCString(const char *string, Point at) {
-    pd->graphics->drawText(string, strlen(string),
-                           kASCIIEncoding, at.x, at.y);
-} // drawCString
-
-
 void fillRect(Rect rect, LCDColor color) {
     pd->graphics->fillRect(rect.x, rect.y, rect.width, rect.height, color);
 } // fillRect
@@ -25,6 +19,28 @@ void fillRect(Rect rect, LCDColor color) {
 void frameRect(Rect rect, LCDColor color) {
     pd->graphics->drawRect(rect.x, rect.y, rect.width, rect.height, color);
 } // frameRect
+
+
+void drawCString(const char *string, Point at) {
+    pd->graphics->drawText(string, strlen(string),
+                           kASCIIEncoding, at.x, at.y);
+} // drawCString
+
+
+void drawCStringCenteredInRect(const char *string, Rect rect, LCDFont *font) {
+    pd->graphics->pushContext(NULL); {
+        pd->graphics->setFont(font);
+        int textWidth = pd->graphics->getTextWidth(NULL, string, strlen(string),
+                                                   kASCIIEncoding, 0);
+        int fontHeight = pd->graphics->getFontHeight(font);
+        Rect textRect = (Rect){ 0, 0, textWidth, fontHeight };
+        Rect centered = rectCenteredIn(rect, textRect);
+        Point at = (Point){ centered.x, centered.y };
+        
+        drawCString(string, at);
+    } pd->graphics->popContext();
+
+} // drawCStringCenteredInRect
 
 
 // TODO (7/5/22): fix \n\n - doesn't advance properly

@@ -5,8 +5,10 @@
 #include "demoSample.h"
 #include "globals.h"
 #include "timing.h"
+#include "drawhelpers.h"
 
 #include "pd_api.h"
+#include "stb_ds.h"
 
 // prototypes of the sample-creation methods. Just so we won't have to have a header
 // for each of them.
@@ -55,6 +57,48 @@ void menuItemCallback(void *userdata) {
 } // menuItemCallback
 
 
+LCDBitmap *menuImageBitmap(const char *menuText) {
+    static LCDBitmap *menuImageBitmap;
+    static LCDFont *menuImageFont;
+    static WordWidthHash *menuImageWordWidthHash;
+    
+    if (menuImageBitmap == NULL) {
+        menuImageBitmap = pd->graphics->newBitmap(kScreenWidth, kScreenHeight, kColorWhite);
+
+        const char *errorText = NULL;
+        const char *fontpath = "font/Roobert-11-Mono-Condensed";
+        menuImageFont = pd->graphics->loadFont(fontpath, &errorText);
+        if (menuImageFont == NULL) {
+            print("could not load font %s - %s", fontpath, errorText);
+        }
+        sh_new_arena(menuImageWordWidthHash);
+        
+        // Make sure an initial allocation for the hash table is made
+        // before passing it around.
+        shput(menuImageWordWidthHash, "prime", 0);
+    }
+
+    Rect rect = (Rect){ kScreenWidth / 2, 0, 
+                        kScreenWidth / 2, kScreenHeight };
+    Rect insetRect = rectInset(rect, 10, 10);
+    pd->graphics->pushContext(menuImageBitmap); {
+//        demoView->isDirty = true;
+//        demoView->updateCallback(demoView);
+        
+        fillRect(rect, kColorWhite);
+        drawWrappedString(menuText,
+                          menuImageFont, insetRect,
+                          &menuImageWordWidthHash,
+                          6);
+        
+    } pd->graphics->popContext();
+
+    return menuImageBitmap;
+
+} // menuImageBitmap
+
+// TODO - add a way to get the menu string callback to arrange a rendering
+// of the current screen so the menu coming on-screen is cooler.
 static void setupMenu(void) {
     pd->system->removeAllMenuItems();
 
@@ -70,13 +114,14 @@ static void setupMenu(void) {
                                               "userdata (unused here)");
 
     DemoSample *currentSample = allSamples[currentIndex];
-    if (currentSample->menuImageCallback != NULL) {
-        int xOffset = 0;
-        LCDBitmap *menuBitmap = currentSample->menuImageCallback(currentSample,
-                                                                 &xOffset);
-        pd->system->setMenuImage(menuBitmap, xOffset);
-    } else {
+    if (currentSample->menuStringCallback == NULL) {
         pd->system->setMenuImage(NULL, 0);
+    } else {
+        const char *menuString = currentSample->menuStringCallback(currentSample);
+        if (menuString != NULL) {
+            LCDBitmap *bitmap = menuImageBitmap(menuString);
+            pd->system->setMenuImage(bitmap, kScreenWidth / 2);
+        }
     }
     
 } // setupMenu
@@ -109,7 +154,7 @@ int eventHandler(PlaydateAPI* playdate,
 
         sampleCount = 7;
 
-        selectDemo(1);
+        selectDemo(6);
 
         pd->display->setRefreshRate(60);
         font = pd->graphics->loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", NULL);

@@ -11,8 +11,7 @@ typedef enum DemoSampleCategory {
 
 struct DemoSample;
 
-typedef LCDBitmap *MenuImageCallback(struct DemoSample *sample,
-                                     int *outXOffset /*nullable*/ );
+typedef const char *MenuStringCallback(struct DemoSample *sample);
 
 // To use, embed this as the first field of your structure.
 // Then provide a function make one.  Call demoSampleNew to create it,
@@ -21,11 +20,12 @@ typedef struct DemoSample {
     const char *name;
     DemoSampleCategory category;
     PDCallbackFunction *updateCallback;
-    MenuImageCallback *menuImageCallback;
+    MenuStringCallback *menuStringCallback; // nullable
     // suspend
     // resume
 } DemoSample;
 
+// Zeroes out the allocated memory.
 DemoSample *demoSampleNew(const char *name,
                           DemoSampleCategory category,
                           PDCallbackFunction updateCallback,
