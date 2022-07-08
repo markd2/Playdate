@@ -109,7 +109,44 @@ void triggerButton(AudioDemo *demo) {
 } // triggerButton
 
 
-void moveButton(AudioDemo *sample, GridDirection direction) {
+void moveButton(AudioDemo *demo, GridDirection direction) {
+    int row = demo->audioDemoCurrentButtonIndex % 4;
+    int column = demo->audioDemoCurrentButtonIndex / 4;
+
+    switch (direction) {
+    case kGridDirectionUp:
+        row--;
+        break;
+    case kGridDirectionDown:
+        row++;
+        break;
+    case kGridDirectionLeft:
+        column--;
+        break;
+    case kGridDirectionRight:
+        column++;
+        break;
+    }
+
+    print("(%d %d) %d -> (%d %d)",
+          demo->audioDemoCurrentButtonIndex % 4,
+          demo->audioDemoCurrentButtonIndex / 4,
+          demo->audioDemoCurrentButtonIndex,
+          row, column);
+
+    if (row < 0) row = 3;
+    if (column < 0) column = 3;
+    if (row >= 4) row = 0;
+    if (column >= 4) column = 0;
+
+    int index = column * 4 + row;
+    demo->audioDemoCurrentButtonIndex = index;
+
+    print("   -> (%d %d) %d",
+          row, column, index);
+
+    demo->isDirty = true;
+
 } // moveButton
 
 
