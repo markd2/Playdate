@@ -49,9 +49,14 @@ typedef struct AudioDemo {
 
 
 static void sampleFromDiskCompletion(SoundSource *soundSource) {
-    print("BLOOP finished");
+    print("BLOOP %p finished", soundSource);
     pd->sound->fileplayer->freePlayer((FilePlayer *)soundSource);
 } // sampleFromDiskCompletion
+
+
+static void sampleFromDiskLoopCallback(SoundSource *soundSource) {
+    print("BLOOP %p Loop!", soundSource);
+} // sampleFromDiskLoopCallback
 
 
 static void sampleFromDisk(AudioDemoButton *button, AudioDemo *demo) {
@@ -64,6 +69,7 @@ static void sampleFromDisk(AudioDemoButton *button, AudioDemo *demo) {
         print("dang, can't load %s", path);
     }
     pd->sound->fileplayer->setFinishCallback(bloopFilePlayer, sampleFromDiskCompletion);
+    pd->sound->fileplayer->setLoopCallback(bloopFilePlayer, sampleFromDiskLoopCallback);
     pd->sound->fileplayer->play(bloopFilePlayer, 3); // repeat three times
 
 } // sampleFromDisk
