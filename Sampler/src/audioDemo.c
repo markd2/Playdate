@@ -49,7 +49,8 @@ typedef struct AudioDemo {
 
 
 
-static void sampleFromDisk(AudioDemoButton *button, AudioDemo *demo) 
+static void sampleFromDisk(AudioDemoButton *button, AudioDemo *demo) {
+    print("DISK");
 } // sampleFromDisk
 
 
