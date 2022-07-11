@@ -1217,5 +1217,8 @@ something to play with just updating affected rows (c.f. gingerbeard in the disc
 
 ----------
 
-huh, does the simulator not play audio?  My audio file isn't playing there, but
+huh, does the simulator not play audio?  (it doesn't when the volumn is all the way
+off %-) )
+
+My audio file isn't playing there, but
 does on the device (and sounds amazingly good)
