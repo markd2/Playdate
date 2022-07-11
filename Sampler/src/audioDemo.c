@@ -93,6 +93,34 @@ static void singleSampleCallback(AudioDemoButton *button,
 } // singleSampleCallback
 
 
+// ----------
+// PDSynth (simple)
+
+PDSynth *simpleSynth;
+
+static void setupSimpleSynth(void) {
+    simpleSynth = pd->sound->synth->newSynth();
+    pd->sound->synth->setWaveform(simpleSynth, kWaveformSquare);
+    
+    pd->sound->synth->setAttackTime(simpleSynth, .1);
+    pd->sound->synth->setDecayTime(simpleSynth, .2);
+    pd->sound->synth->setSustainLevel(simpleSynth, .8);
+    pd->sound->synth->setReleaseTime(simpleSynth, .5);
+
+    print("parameters?  %d", pd->sound->synth->getParameterCount(simpleSynth));
+} // setupSimpleSynth
+
+
+static void simpleSynthCallback(AudioDemoButton *button,
+                                AudioDemo *demo) {
+
+    if (simpleSynth == NULL) {
+        setupSimpleSynth();
+    }
+    int note = 20 + (random() % 60);
+    pd->sound->synth->playMIDINote(simpleSynth, note, 128, 0.1f, 0);
+} // simpleSynthCallback
+
 
 // --------------------------------------------------
 
@@ -316,6 +344,11 @@ DemoSample *audioDemoSample(void) {
     pd->sound->sampleplayer->setSample(samplePlayer, openHatSample);
     openHatButton->userdata = samplePlayer;
     openHatButton->callback = singleSampleCallback;
+
+    AudioDemoButton *simpleSynthButton = buttonAtIndex(demo, 1);
+    simpleSynthButton->labelText = "Simple Synth";
+    simpleSynthButton->demo = demo;
+    simpleSynthButton->callback = simpleSynthCallback;
 
     for (int i = 1; i < kGridRows * kGridColumns; i++) {
         if (demo->buttons[i].labelText != NULL) continue;
