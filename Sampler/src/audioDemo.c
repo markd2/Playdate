@@ -48,6 +48,9 @@ typedef struct AudioDemo {
 } AudioDemo;
 
 
+// ----------
+// Bloop Sample(file player)
+
 static void sampleFromDiskCompletion(SoundSource *soundSource) {
     print("BLOOP %p finished", soundSource);
     pd->sound->fileplayer->freePlayer((FilePlayer *)soundSource);
@@ -78,6 +81,16 @@ static void sampleFromDisk(AudioDemoButton *button, AudioDemo *demo) {
 static void printInfo(void) {
 } // printInfo
 
+
+// ----------
+// sample pad - kick / snare / open-hat
+
+static void singleSampleCallback(AudioDemoButton *button,
+                                 AudioDemo *demo) {
+    SamplePlayer *player = (SamplePlayer *)button->userdata;
+
+    pd->sound->sampleplayer->play(player, 1, 1.0f);
+} // singleSampleCallback
 
 
 
@@ -265,13 +278,54 @@ DemoSample *audioDemoSample(void) {
     sampleFromDiskButton->callback = sampleFromDisk;
     sampleFromDiskButton->demo = demo;
 
+    AudioSample *kickSample = pd->sound->sample->load("sound/kick-adpcm");
+    AudioSample *snareSample = pd->sound->sample->load("sound/snare-adpcm");
+    AudioSample *openHatSample = pd->sound->sample->load("sound/open-hat-adpcm");
+
+    if (kickSample == NULL) {
+        print("could not load kick");
+    }
+    if (snareSample == NULL) {
+        print("could not load snare");
+    }
+    if (openHatSample == NULL) {
+        print("could not load open hat");
+    }
+
+    SamplePlayer *samplePlayer;
+    AudioDemoButton *kickButton = buttonAtIndex(demo, 3);
+    kickButton->labelText = "Kick";
+    kickButton->demo = demo;
+    samplePlayer = pd->sound->sampleplayer->newPlayer();
+    pd->sound->sampleplayer->setSample(samplePlayer, kickSample);
+    kickButton->userdata = samplePlayer;
+    kickButton->callback = singleSampleCallback;
+
+    AudioDemoButton *snareButton = buttonAtIndex(demo, 6);
+    snareButton->labelText = "Snare";
+    snareButton->demo = demo;
+    samplePlayer = pd->sound->sampleplayer->newPlayer();
+    pd->sound->sampleplayer->setSample(samplePlayer, snareSample);
+    snareButton->userdata = samplePlayer;
+    snareButton->callback = singleSampleCallback;
+
+    AudioDemoButton *openHatButton = buttonAtIndex(demo, 9);
+    openHatButton->labelText = "Open Hat";
+    openHatButton->demo = demo;
+    samplePlayer = pd->sound->sampleplayer->newPlayer();
+    pd->sound->sampleplayer->setSample(samplePlayer, openHatSample);
+    openHatButton->userdata = samplePlayer;
+    openHatButton->callback = singleSampleCallback;
+
     for (int i = 1; i < kGridRows * kGridColumns; i++) {
+        if (demo->buttons[i].labelText != NULL) continue;
+
         char buffer[128];
         snprintf(buffer, 128, "Button %d", i);
         demo->buttons[i].labelText = strdup(buffer);
 
         demo->buttons[i].callback = demoButtonPlaceholderCallback;
-        demo->buttons[i].userdata = demo->buttons[i].labelText;
+        demo->buttons[i].userdata = (void *)demo->buttons[i].labelText;
     }
 
     if (buttonFont == NULL) {
