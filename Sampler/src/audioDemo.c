@@ -48,10 +48,30 @@ typedef struct AudioDemo {
 } AudioDemo;
 
 
+static void sampleFromDiskCompletion(SoundSource *soundSource) {
+    print("BLOOP finished");
+    pd->sound->fileplayer->freePlayer((FilePlayer *)soundSource);
+} // sampleFromDiskCompletion
+
 
 static void sampleFromDisk(AudioDemoButton *button, AudioDemo *demo) {
-    print("DISK");
+    
+    FilePlayer *bloopFilePlayer = pd->sound->fileplayer->newPlayer();
+    const char *path = "sound/liquid-drops-fx-01-adpcm"; // no .wav suffix
+    int success = pd->sound->fileplayer->loadIntoPlayer(bloopFilePlayer, path);
+
+    if (success == 0) {
+        print("dang, can't load %s", path);
+    }
+    pd->sound->fileplayer->setFinishCallback(bloopFilePlayer, sampleFromDiskCompletion);
+    pd->sound->fileplayer->play(bloopFilePlayer, 3); // repeat three times
+
 } // sampleFromDisk
+
+
+static void printInfo(void) {
+} // printInfo
+
 
 
 
@@ -207,7 +227,7 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
         break;
     case kButtonB:
         if (upDown == kReleased) {
-            print("splunge");
+            printInfo();
         }
         break;
     }
@@ -235,7 +255,7 @@ DemoSample *audioDemoSample(void) {
     demo->audioDemoCurrentButtonIndex = 0;
 
     AudioDemoButton *sampleFromDiskButton = buttonAtIndex(demo, 0);
-    sampleFromDiskButton->labelText = "Sample/File";
+    sampleFromDiskButton->labelText = "BLOOP"; // sample/file
     sampleFromDiskButton->callback = sampleFromDisk;
     sampleFromDiskButton->demo = demo;
 
