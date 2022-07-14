@@ -2,6 +2,11 @@
 
 Playing around with the PlayDate SDK.
 
+### Active Development
+
+* [Sampler](Sampler)
+* [Trek](Trek)
+
 ### Got it!
 
 Received Satuay April 23, 2022.  Enjoying _Bloom_.  First impressions of the
