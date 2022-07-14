@@ -4,10 +4,17 @@
 #include "pd_api.h"
 
 PlaydateAPI* pd;
-#define print pd->system->logToConsole 
+#define print pd->system->logToConsole
 
 static int update(void *userdata) {
-    print("update! %d", pd->system->getCurrentTimeMilliseconds());
+    pd->graphics->clear(kColorWhite);
+
+    int x = 10;
+    int y = 30;
+    int width = 20;
+    int height = 40;
+    pd->graphics->drawRect(x, y, width, height, kColorBlack);
+    
     return 1;
 } // update
 
