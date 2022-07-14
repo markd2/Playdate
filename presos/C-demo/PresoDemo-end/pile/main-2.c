@@ -6,27 +6,14 @@
 PlaydateAPI* pd;
 #define print pd->system->logToConsole
 
-typedef struct GameData {
-    int x;
-    int y;
-    int width;
-    int height;
-} GameData;
-static GameData gameData;
-
 static int update(void *userdata) {
-    GameData *gameData = userdata;
-
     pd->graphics->clear(kColorWhite);
 
-    pd->graphics->drawRect(gameData->x, gameData->y, 
-                           gameData->width, gameData->height, kColorBlack);
-
-    gameData->x++;
-    gameData->y++;
-
-    gameData->width += (random() % 5);
-    gameData->height += (random() % 5);
+    int x = 10;
+    int y = 30;
+    int width = 20;
+    int height = 40;
+    pd->graphics->drawRect(x, y, width, height, kColorBlack);
     
     return 1;
 } // update
@@ -43,11 +30,7 @@ int eventHandler(PlaydateAPI* playdate,
         pd = playdate;
         print("kEventInit");
         // setting this now assumes pure C ad doesn't run any Lua code
-        gameData.x = 10;
-        gameData.y = 30;
-        gameData.width = 40;
-        gameData.height = 40;
-        pd->system->setUpdateCallback(update, &gameData);
+        pd->system->setUpdateCallback(update, NULL);
         break;
 
     case kEventInitLua:
