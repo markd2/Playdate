@@ -9,7 +9,6 @@ PlaydateAPI* pd;
 
 typedef struct GameData {
     PDRect rect;
-    LCDBitmap *kitty;
 } GameData;
 
 
@@ -20,6 +19,9 @@ static int update(void *userdata) {
     GameData *gameData = userdata;
 
     pd->graphics->clear(kColorWhite);
+
+    pd->graphics->drawRect(gameData->rect.x, gameData->rect.y, 
+                           gameData->rect.width, gameData->rect.height, kColorBlack);
 
     PDButtons pushedButtons;
     pd->system->getButtonState(&pushedButtons, NULL, NULL); // &pushedButtons, NULL);
@@ -42,11 +44,6 @@ static int update(void *userdata) {
         gameData->rect.width -= (random() % 5);
         gameData->rect.height -= (random() % 5);
     }
-
-    pd->graphics->drawRect(gameData->rect.x, gameData->rect.y, 
-                           gameData->rect.width, gameData->rect.height, kColorBlack);
-    pd->graphics->drawBitmap(gameData->kitty, 0, 0, kBitmapUnflipped);
-
     return 1;
 } // update
 
@@ -63,14 +60,6 @@ int eventHandler(PlaydateAPI* playdate,
         print("kEventInit");
         // setting this now assumes pure C ad doesn't run any Lua code
         gameData.rect = PDRectMake(10, 30, 40, 40);
-
-        const char *error;
-        LCDBitmap *kitty = pd->graphics->loadBitmap("images/vector-kitty", &error);
-        if (kitty == NULL) {
-            print("could not load kitty image: %s", error);
-        }
-        gameData.kitty = kitty;
-
         pd->system->setUpdateCallback(update, &gameData);
         break;
 
