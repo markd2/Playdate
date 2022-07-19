@@ -40,7 +40,7 @@ static bool _draw(Panel *panel) {
                 drawCString(":", origin);
             }
 
-            Sector sector = galaxy->sectors[row][column];
+            SectorInfo sector = galaxy->sectors[row][column];
 
             bool drawHighlighted = coordinateEqual(galaxy->enterpriseSector, (Coordinate){row, column});
 

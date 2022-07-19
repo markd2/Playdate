@@ -67,7 +67,7 @@ void galaxyPrint(Galaxy *galaxy) {
     for (short row = 0; row < kGalaxyRows; row++) {
         lineScan = line;
         for (short column = 0; column < kGalaxyColumns; column++) {
-            Sector sector = galaxy->sectors[row][column];
+            SectorInfo sector = galaxy->sectors[row][column];
             *lineScan++ = sector.klingonCount + '0';
             *lineScan++ = sector.baseCount + '0';
             *lineScan++ = sector.starCount + '0';

@@ -5,11 +5,11 @@
 
 #include <stdbool.h>
 
-typedef struct Sector {
+typedef struct SectorInfo {
     short klingonCount;
     short baseCount;
     short starCount;
-} Sector;
+} SectorInfo;
 
 typedef struct Coordinate {
     short row;
@@ -55,7 +55,7 @@ typedef struct Galaxy {
     int bases;
     Coordinate course; // kCourseNotSet / -1,-1 for unset course
 
-    Sector sectors[kGalaxyRows][kGalaxyColumns];
+    SectorInfo sectors[kGalaxyRows][kGalaxyColumns];
     bool visible[kGalaxyRows][kGalaxyColumns];
 
     
