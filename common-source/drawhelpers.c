@@ -1,5 +1,8 @@
 #include "drawhelpers.h"
 
+#include <stdarg.h> // for va_args
+#include <stdio.h>  // for vsnprintf
+
 #include "globals.h"
 #include "stb_ds.h"
 
@@ -25,6 +28,14 @@ void drawCString(const char *string, Point at) {
     pd->graphics->drawText(string, strlen(string),
                            kASCIIEncoding, at.x, at.y);
 } // drawCString
+
+void drawCStringf(Point at, char *buffer, size_t size, const char *format, ...) {
+    va_list argList;
+    va_start (argList, format);
+
+    vsnprintf(buffer, size, format, argList);
+    drawCString(buffer, at);
+} // drawCStringf
 
 
 void drawCStringCenteredInRect(const char *string, Rect rect, LCDFont *font) {
