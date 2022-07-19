@@ -60,3 +60,11 @@ We can't see the whole galaxy out of the gate, so have a fog of war around the s
 
 ![](assets/frog-of-war.gif)
 
+----------
+
+Time for the sector map plus status.  Hard-coding it all for now.
+
+Next should probably come up with a good story/API for reversed
+text rendering.
+
+
