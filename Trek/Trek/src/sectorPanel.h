@@ -11,7 +11,8 @@ typedef struct SectorPanel {
 
     Galaxy *galaxy; // not owned
     LCDFont *font; // not owned
-
+    
+    Coordinate sectorCoordinate;
     SectorDetail *sector;
 } SectorPanel;
 

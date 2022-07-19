@@ -2,9 +2,15 @@
 #include "drawhelpers.h"
 #include "globals.h"
 
+/* TODO
+ *  - ponder an extra point of leading
+ */
+
 static const int kCharacterWidth = 10;
 static const int kCharacterHeight = 14;
 static const int kMenuCharacters = 20;
+static const int kOriginStartX = 2;
+static const int kOriginStartY = 2;
 
 static int naturalSectorWidth(void) {
     int sectorWidth = kCharacterWidth * kSectorColumns * 2 + kSectorColumns;
@@ -22,16 +28,26 @@ static Size _naturalSize(Panel *panel) {
     sectorWidth += kCharacterWidth * kMenuCharacters + kCharacterWidth;
     sectorHeight += kCharacterHeight + 1;
 
+    // header
+    sectorHeight += kCharacterHeight + 1;
+
+    sectorWidth += kOriginStartX * 2;
+    sectorHeight += kOriginStartY * 2;
+
     return (Size){ sectorWidth, sectorHeight };
 } // _naturalSize
 
-
 static void drawSector(SectorPanel *sectorPanel) {
-    Point origin = { 0 };
+
+    Point origin = (Point){ kOriginStartX, kOriginStartY };
     char buffer[16];
 
+    drawCString(" QUADRANT 3-1", origin);
+
+    origin.y += kCharacterHeight + 1;
+
     for (int row = 0; row < kSectorRows; row++) {
-        origin.x = 0;
+        origin.x = kOriginStartX;
         for (int column = 0 ; column < kSectorColumns; column++) {
             drawCString("# ", origin);
             origin.x += kCharacterWidth * 2 + 2;
@@ -42,15 +58,17 @@ static void drawSector(SectorPanel *sectorPanel) {
 
         origin.y += kCharacterHeight + 1;
     }
-    origin.x = 0;
+    origin.x = kOriginStartX;
     drawCString("1 2 3 4 5 6 7 8", origin);
 } // drawSector
 
 
 static void drawMenu(SectorPanel *sectorPanel) {
-    Point origin = (Point){ naturalSectorWidth() + kCharacterWidth + 1, 0 };
+    Point origin = (Point){ naturalSectorWidth() + kCharacterWidth + 1,
+                            kOriginStartY };
 
     const char *blah[] = {
+        "SECTOR      3-4",
         "YEARS       2.97",
         "STARDATE    3424.0",
         "CONDITION   RED",
@@ -80,8 +98,6 @@ static bool _draw(Panel *panel) {
     Size naturalSize = panelNaturalSize(panel);
     Rect drawingArea = (Rect){ 0, 0, naturalSize.width, naturalSize.height };
     fillRect(drawingArea, kColorWhite);
-
-    Point point = (Point){ 20, 30 };;
 
     pd->graphics->setFont(sectorPanel->font);
 
