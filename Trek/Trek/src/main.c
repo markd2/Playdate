@@ -178,10 +178,9 @@ int eventHandler(PlaydateAPI* playdate,
         galaxyPrint(&galaxy);
 
         overviewPanel = galaxyOverviewPanelNew(&galaxy, appleFont);
-        panel = (Panel *)overviewPanel;
-
         sectorPanel = sectorPanelNew(NULL, appleFont);
 
+        panel = (Panel *)sectorPanel;
         menuPanel = (Panel *)menuPanelNew();
         break;
     }
