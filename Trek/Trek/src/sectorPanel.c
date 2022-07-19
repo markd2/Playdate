@@ -4,22 +4,29 @@
 
 static const int kCharacterWidth = 10;
 static const int kCharacterHeight = 14;
+static const int kMenuCharacters = 20;
 
+static int naturalSectorWidth(void) {
+    int sectorWidth = kCharacterWidth * kSectorColumns * 2 + kSectorColumns;
+    sectorWidth += kCharacterWidth;
+    return sectorWidth;
+} // naturalSectorWidth
 
 static Size _naturalSize(Panel *panel) {
     // sector
-    int sectorWidth = kCharacterWidth * kSectorColumns * 2 + kSectorColumns;
+    int sectorWidth = naturalSectorWidth();
     int sectorHeight = kCharacterHeight * kSectorRows + kSectorRows;
-
-    // labels
-    sectorWidth += kCharacterWidth;
     sectorHeight += kCharacterHeight;
+
+    // menu
+    sectorWidth += kCharacterWidth * kMenuCharacters + kCharacterWidth;
+    sectorHeight += kCharacterHeight + 1;
 
     return (Size){ sectorWidth, sectorHeight };
 } // _naturalSize
 
 
-static void drawSector(void) {
+static void drawSector(SectorPanel *sectorPanel) {
     Point origin = { 0 };
     char buffer[16];
 
@@ -40,8 +47,32 @@ static void drawSector(void) {
 } // drawSector
 
 
-static void drawMenu(void) {
+static void drawMenu(SectorPanel *sectorPanel) {
+    Point origin = (Point){ naturalSectorWidth() + kCharacterWidth + 1, 0 };
+
+    const char *blah[] = {
+        "YEARS       2.97",
+        "STARDATE    3424.0",
+        "CONDITION   RED",
+        "SHIELDS     50%",
+        "SHIELD NRG  2189",
+        "AVAIL NRG   2359",
+        "PH TORPS    10",
+        "KLINGONS    41",
+        "BASES       4",
+        "COURSE NOT SET."
+        };
+
+    const char **scan = blah;
+    const char **stop = scan + sizeof(blah) / sizeof(*blah);
+
+    while (scan < stop) {
+        drawCString(*scan, origin);
+        origin.y += kCharacterHeight + 1;
+        scan++;
+    }
 } // drawMenu
+
 
 static bool _draw(Panel *panel) {
     SectorPanel *sectorPanel = (SectorPanel *)panel;
@@ -54,7 +85,8 @@ static bool _draw(Panel *panel) {
 
     pd->graphics->setFont(sectorPanel->font);
 
-    drawSector();
+    drawSector(sectorPanel);
+    drawMenu(sectorPanel);
 
     return true;
 } // _draw
