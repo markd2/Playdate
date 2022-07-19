@@ -2,10 +2,35 @@
 #include "drawhelpers.h"
 #include "globals.h"
 
+static const int kCharacterWidth = 10;
+static const int kCharacterHeight = 14;
+
+
 static Size _naturalSize(Panel *panel) {
-    return (Size){ 200, 150 };
+    // sector
+    int sectorWidth = kCharacterWidth * kSectorColumns * 2 + kSectorColumns;
+    int sectorHeight = kCharacterHeight * kSectorRows + kSectorRows;
+
+    return (Size){ sectorWidth, sectorHeight };
 } // _naturalSize
 
+
+static void drawSector(void) {
+    Point origin = { 0 };
+
+    for (int row = 0; row < kSectorRows; row++) {
+        origin.x = 0;
+        for (int column = 0 ; column < kSectorColumns; column++) {
+            drawCString("# ", origin);
+            origin.x += kCharacterWidth * 2 + 2;
+        }
+        origin.y += kCharacterHeight + 1;
+    }
+} // drawSector
+
+
+static void drawMenu(void) {
+} // drawMenu
 
 static bool _draw(Panel *panel) {
     SectorPanel *sectorPanel = (SectorPanel *)panel;
@@ -17,7 +42,9 @@ static bool _draw(Panel *panel) {
     Point point = (Point){ 20, 30 };;
 
     pd->graphics->setFont(sectorPanel->font);
-    drawCString("SNORGLE", point);
+
+    drawSector();
+
     return true;
 } // _draw
 
