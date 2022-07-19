@@ -11,12 +11,17 @@ static Size _naturalSize(Panel *panel) {
     int sectorWidth = kCharacterWidth * kSectorColumns * 2 + kSectorColumns;
     int sectorHeight = kCharacterHeight * kSectorRows + kSectorRows;
 
+    // labels
+    sectorWidth += kCharacterWidth;
+    sectorHeight += kCharacterHeight;
+
     return (Size){ sectorWidth, sectorHeight };
 } // _naturalSize
 
 
 static void drawSector(void) {
     Point origin = { 0 };
+    char buffer[16];
 
     for (int row = 0; row < kSectorRows; row++) {
         origin.x = 0;
@@ -24,8 +29,14 @@ static void drawSector(void) {
             drawCString("# ", origin);
             origin.x += kCharacterWidth * 2 + 2;
         }
+
+        origin.x -= kCharacterWidth + 1;
+        drawCStringf(origin, buffer, sizeof(buffer), "%d", row + 1);
+
         origin.y += kCharacterHeight + 1;
     }
+    origin.x = 0;
+    drawCString("1 2 3 4 5 6 7 8", origin);
 } // drawSector
 
 
