@@ -15,4 +15,7 @@ typedef struct SectorPanel {
     SectorDetail *sector;
 } SectorPanel;
 
+SectorPanel *sectorPanelNew(SectorDetail *sector, LCDFont *font);
+void sectorPanelFree(SectorPanel *panel);
+
 #endif // SECTOR_PANEL_INCLUDED

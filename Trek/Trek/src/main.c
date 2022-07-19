@@ -10,6 +10,7 @@
 #include "galaxyOverviewPanel.h"
 #include "menuPanel.h"
 #include "panel.h"
+#include "sectorPanel.h"
 #include "patterns.h"
 #include "trek.h"
 
@@ -24,6 +25,7 @@ static Panel *overlayPanel; // null for no overlay
 
 // Specific panel instances
 static GalaxyOverviewPanel *overviewPanel;
+static SectorPanel *sectorPanel;
 
 // Support
 static ButtonPumper *pumper;
@@ -35,6 +37,17 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
         overlayPanel = menuPanel;
     } else if (buttons == kButtonA) {
         overlayPanel = NULL;
+    }
+
+
+    if (buttons == kButtonB && upDown == kPressed) {
+        if (panel == (Panel *)overviewPanel) {
+            panel = (Panel *)sectorPanel;
+        } else if (panel == (Panel *)sectorPanel) {
+            panel = (Panel *)overviewPanel;
+        } else {
+            print("oops, unexpected panel traversal");
+        }
     }
 
     if (upDown == kPressed) {
@@ -166,6 +179,8 @@ int eventHandler(PlaydateAPI* playdate,
 
         overviewPanel = galaxyOverviewPanelNew(&galaxy, appleFont);
         panel = (Panel *)overviewPanel;
+
+        sectorPanel = sectorPanelNew(NULL, appleFont);
 
         menuPanel = (Panel *)menuPanelNew();
         break;

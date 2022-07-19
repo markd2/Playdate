@@ -8,12 +8,16 @@ static Size _naturalSize(Panel *panel) {
 
 
 static bool _draw(Panel *panel) {
+    SectorPanel *sectorPanel = (SectorPanel *)panel;
+
     Size naturalSize = panelNaturalSize(panel);
     Rect drawingArea = (Rect){ 0, 0, naturalSize.width, naturalSize.height };
     fillRect(drawingArea, kColorWhite);
 
     Point point = (Point){ 20, 30 };;
-    drawCString("Snorgle", point);
+
+    pd->graphics->setFont(sectorPanel->font);
+    drawCString("SNORGLE", point);
     return true;
 } // _draw
 
