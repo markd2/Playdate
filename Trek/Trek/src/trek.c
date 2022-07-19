@@ -1,6 +1,6 @@
 #include "trek.h"
-#include <string.h> // for memset
-#include <stdlib.h> // for arc4random_uniform
+#include <string.h>  // for memset
+#include <stdlib.h>  // for arc4random_uniform
 #include "globals.h" // for print
 
 bool coordinateEqual(Coordinate thing1, Coordinate thing2) {
@@ -9,7 +9,6 @@ bool coordinateEqual(Coordinate thing1, Coordinate thing2) {
 
 
 void galaxyMakeVisibleAroundSector(Galaxy *galaxy, Coordinate sector) {
-    print("HUH?");
     for (int row = sector.row - 1; row < sector.row + 2; row++) {
         int trueRow = row;
         if (row < 0) {
@@ -25,7 +24,6 @@ void galaxyMakeVisibleAroundSector(Galaxy *galaxy, Coordinate sector) {
             } else if (trueColumn >= kGalaxyColumns) {
                 trueColumn = 0;
             }
-            print("marking %d %d visible", trueRow, trueColumn);
             galaxy->visible[trueRow][trueColumn] = true;
         }
     }
