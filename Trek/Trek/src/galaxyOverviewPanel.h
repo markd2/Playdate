@@ -4,7 +4,7 @@
 #define GALAXY_OVERVIEW_PANEL_INCLUDED
 
 #include "panel.h"
-#include "trek.h" // for Galaxy
+#include "trek.h"    // for Galaxy
 #include "globals.h" // for LCDFont
 
 typedef struct GalaxyOverviewPanel {
