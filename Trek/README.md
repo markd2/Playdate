@@ -64,7 +64,10 @@ We can't see the whole galaxy out of the gate, so have a fog of war around the s
 
 Time for the sector map plus status.  Hard-coding it all for now.
 
+![](assets/sector.png)
+
 Next should probably come up with a good story/API for reversed
-text rendering.
+text rendering. Also play around with an extra point of (vertical) leading
+for easier reading.
 
 
