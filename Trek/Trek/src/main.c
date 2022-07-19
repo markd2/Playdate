@@ -31,9 +31,9 @@ static LCDFont *appleFont;
 
 
 static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
-    if (buttons == kButtonB && upDown == kPressed) {
+    if (buttons == kButtonA && upDown == kPressed) {
         overlayPanel = menuPanel;
-    } else if (buttons == kButtonB) {
+    } else if (buttons == kButtonA) {
         overlayPanel = NULL;
     }
 
