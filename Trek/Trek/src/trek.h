@@ -5,11 +5,15 @@
 
 #include <stdbool.h>
 
-typedef struct SectorInfo {
-    short klingonCount;
-    short baseCount;
-    short starCount;
-} SectorInfo;
+enum {
+    kGalaxyRows = 9,
+    kGalaxyColumns = 9,
+
+    kSectorRows = 8,
+    kSectorColumns = 8,
+
+    kCourseNotSet = -1
+};
 
 typedef struct Coordinate {
     short row;
@@ -18,12 +22,11 @@ typedef struct Coordinate {
 bool coordinateEqual(Coordinate thing1, Coordinate thing2);
 
 
-enum {
-    kGalaxyRows = 9,
-    kGalaxyColumns = 9,
-
-    kCourseNotSet = -1
-};
+typedef struct SectorInfo {
+    short klingonCount;
+    short baseCount;
+    short starCount;
+} SectorInfo;
 
 typedef enum Condition {
     kConditionGreen,
@@ -32,12 +35,14 @@ typedef enum Condition {
 } Condition;
 
 typedef enum SectorObject {
+    kEmpty = 0,
     kEnterprise = 'E',
     kKlingon = 'K',
     kStar = '*',
     kBase = 'B',
     kTorp = '#'
 } SectorObject;
+
 
 typedef struct Galaxy {
     Coordinate enterpriseSector;
@@ -57,8 +62,7 @@ typedef struct Galaxy {
 
     SectorInfo sectors[kGalaxyRows][kGalaxyColumns];
     bool visible[kGalaxyRows][kGalaxyColumns];
-
-    
+   
 } Galaxy;
 
 void galaxyMakeVisibleAroundSector(Galaxy *galaxy, Coordinate sector);
@@ -66,5 +70,12 @@ void galaxyMakeVisibleAroundSector(Galaxy *galaxy, Coordinate sector);
 // Hardcoded randomization.
 void galaxyRandomize(Galaxy *galaxy, int baseCount, int klingonCount);
 void galaxyPrint(Galaxy *galaxy);
+
+
+typedef struct SectorDetail {
+    SectorObject objects[kSectorRows][kSectorColumns];
+} SectorDetail;
+
+
 
 #endif // TREK_INCLUDED
