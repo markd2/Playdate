@@ -40,7 +40,7 @@ static bool _draw(Panel *panel) {
                 drawCString(":", origin);
             }
 
-            Sector sector = galaxy->sectors[row][column];
+            SectorInfo sector = galaxy->sectors[row][column];
 
             bool drawHighlighted = coordinateEqual(galaxy->enterpriseSector, (Coordinate){row, column});
 
@@ -97,6 +97,6 @@ GalaxyOverviewPanel *galaxyOverviewPanelNew(Galaxy *galaxy, LCDFont *font) {
 } // galaxyOverviewPanelNew
 
 
-void galaxyOverviewPanelFree(Galaxy *galaxy) {
-    panelFree((Panel *)galaxy);
+void galaxyOverviewPanelFree(GalaxyOverviewPanel *panel) {
+    panelFree((Panel *)panel);
 } // galaxyOverviewPanelFree

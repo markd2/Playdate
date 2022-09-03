@@ -10,27 +10,44 @@
 #include "galaxyOverviewPanel.h"
 #include "menuPanel.h"
 #include "panel.h"
+#include "sectorPanel.h"
 #include "patterns.h"
 #include "trek.h"
 
 
-static ButtonPumper *pumper;
-static LCDFont *appleFont;
+// The data structure
+static Galaxy galaxy;
 
-static const int kVerticalDrawingOffset = kScreenHeight / 2 - 50;
-
+// Panel settings that drive the game.
 static Panel *panel;
 static Panel *menuPanel;
 static Panel *overlayPanel; // null for no overlay
 
-static Galaxy galaxy;
+// Specific panel instances
+static GalaxyOverviewPanel *overviewPanel;
+static SectorPanel *sectorPanel;
+
+// Support
+static ButtonPumper *pumper;
+static LCDFont *appleFont;
 
 
 static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
-    if (buttons == kButtonB && upDown == kPressed) {
+    if (buttons == kButtonA && upDown == kPressed) {
         overlayPanel = menuPanel;
-    } else if (buttons == kButtonB) {
+    } else if (buttons == kButtonA) {
         overlayPanel = NULL;
+    }
+
+
+    if (buttons == kButtonB && upDown == kPressed) {
+        if (panel == (Panel *)overviewPanel) {
+            panel = (Panel *)sectorPanel;
+        } else if (panel == (Panel *)sectorPanel) {
+            panel = (Panel *)overviewPanel;
+        } else {
+            print("oops, unexpected panel traversal");
+        }
     }
 
     if (upDown == kPressed) {
@@ -159,8 +176,11 @@ int eventHandler(PlaydateAPI* playdate,
         int klingonCount = 50;
         galaxyRandomize(&galaxy, baseCount, klingonCount);
         galaxyPrint(&galaxy);
-        panel = (Panel *)galaxyOverviewPanelNew(&galaxy, appleFont);
 
+        overviewPanel = galaxyOverviewPanelNew(&galaxy, appleFont);
+        sectorPanel = sectorPanelNew(NULL, appleFont);
+
+        panel = (Panel *)sectorPanel;
         menuPanel = (Panel *)menuPanelNew();
         break;
     }

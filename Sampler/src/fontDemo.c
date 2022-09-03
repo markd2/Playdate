@@ -18,13 +18,20 @@ typedef struct DemoView {
     const char *name;
     PDCallbackFunction *updateCallback;
     ButtonPumperCallback *buttonCallback;
+    bool isDirty;
+
+    const char *menuText;
 } DemoView;
 
 DemoView *fontMakeMarkdownDemoView(void);
 DemoView *fontMakeWrappedTextDemoView(void);
 DemoView *fontMakeScrollingTextDemoView(void);
 
-typedef struct { char *key; int value; } WordWidthHash;
+static void commonInit(DemoView *demoView, const char *menuText) {
+    bzero(demoView, sizeof(*demoView));
+    demoView->menuText = menuText;
+
+} // commonInit
 
 
 typedef struct FontDemo {
@@ -60,8 +67,10 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
         if (fd->currentDemoViewIndex < 0) {
             fd->currentDemoViewIndex = count - 1;
         }
+        fd->demoViews[fd->currentDemoViewIndex]->isDirty = true;
     } else if (buttons == kButtonRight && upDown == kPressed) {
         fd->currentDemoViewIndex = (fd->currentDemoViewIndex + 1) % count;
+        fd->demoViews[fd->currentDemoViewIndex]->isDirty = true;
     } else {
         DemoView *currentDemoView = fd->demoViews[fd->currentDemoViewIndex];
 
@@ -69,13 +78,23 @@ static void handleButtons(PDButtons buttons, UpDown upDown, void *context) {
             currentDemoView->buttonCallback(buttons, upDown, currentDemoView);
         }
     }
+    print("CURRENT INDEX IS %d", fd->currentDemoViewIndex);
 } // handleButtons
 
 
+static const char *menuStringCallback(DemoSample *sample) {
+    FontDemo *fontDemo = (FontDemo *)sample;
+    DemoView *demoView = fontDemo->demoViews[fontDemo->currentDemoViewIndex];
+
+    return demoView->menuText;
+
+} // menuStringCallback
+
 DemoSample *fontDemoSample(void) {
-    FontDemo *demo = (FontDemo *)demoSampleNew("Font", kFont,
+    FontDemo *demo = (FontDemo *)demoSampleNew("Text", kFont,
                                                update,
                                                sizeof(FontDemo));
+    demo->isa.menuStringCallback = menuStringCallback;
     demo->pumper = buttonPumperNew(handleButtons, demo);
 
     demo->currentDemoViewIndex = 2; // start with scrolling text demo
@@ -143,6 +162,11 @@ typedef struct MarkdownDemoView {
 
 DemoView *fontMakeMarkdownDemoView(void) {
     static MarkdownDemoView view;
+    const char *menuText = "MARKDOWN DEMO\n"
+        "* So far just optimistic comments\n"
+        "* Left/Right to change Text Tabs";
+
+    commonInit(&view.isa, menuText);
 
     view.isa.name = "Markdown Demo";
     view.isa.updateCallback = markdownCallback;
@@ -174,82 +198,6 @@ typedef struct WrappedDemoView {
 } WrappedDemoView;
 
 const char *wrappedText = "Once upon a midnight dreary, while I pondered, weak and weary, Over many a quaint and curious volume of forgotten lore-\n  While I nodded, nearly napping, suddenly there came a tapping, As of some one gently rapping, rapping at my chamber door.\n\"'Tis some visitor,\" I muttered, \"tapping at my chamber door-\n      Only this and nothing more.\"";
-
-// Performance is pretty adequate - couldn't see a reduction of
-// FPS when wrapping double the pirsig string.
-void drawWrappedString(const char *string,
-                       LCDFont *withFont, Rect inRect,
-                       WordWidthHash **wordWidthHash) {
-    pd->graphics->setFont(withFont);
-
-    int lineLength = 0;
-    int x = inRect.x;
-    int y = inRect.y;
-
-    const char *wordStart = string;
-    const char *scan = string;
-    const char *stop = string + strlen(string);
-
-    int fontHeight = pd->graphics->getFontHeight(withFont);
-
-    int spaceWidth = pd->graphics->getTextWidth(withFont, " ", 1,
-                                                kASCIIEncoding, 0);
-    char buffer[100];
-
-    while (scan <= stop) {
-        if (*scan == ' ' || *scan == '\n' || scan == stop) {
-            int wordLength = scan - wordStart;
-
-            strncpy(buffer, wordStart, wordLength);
-            buffer[wordLength] = '\000';
-
-            int width = shget(*wordWidthHash, buffer);
-            if (width == 0) {
-                width = pd->graphics->getTextWidth(withFont,
-                                                   wordStart,
-                                                   wordLength,
-                                                   kASCIIEncoding,
-                                                   0);
-                shput(*wordWidthHash, buffer, width);
-                int spoonflongle = shget(*wordWidthHash, buffer);
-            }
-
-            // too long to fit? wrap.
-            if (lineLength + width > inRect.width) {
-                x = inRect.x;
-                y += fontHeight;
-                lineLength = 0;
-            }
-
-            // overflew the rectangle?  Done!
-            if (y > inRect.y + inRect.height - fontHeight) {
-                break;
-            }
-
-            // draw
-            int width2 = pd->graphics->drawText(wordStart,
-                                                scan - wordStart,
-                                                kASCIIEncoding, x, y);
-            lineLength += width;
-            x += width;
-
-            if (*scan == '\n') {
-                x = inRect.x;
-                y += fontHeight;
-                lineLength = 0;
-            }
-
-            wordStart = ++scan;
-
-            x += spaceWidth;
-            lineLength += spaceWidth;
-        }
-
-        scan++;
-    }
-
-} // drawWrappedString
-
 
 static int wrappedDemoUpdate(void *context) {
     WrappedDemoView *view = (WrappedDemoView *)context;
@@ -287,9 +235,9 @@ static int wrappedDemoUpdate(void *context) {
 
     LCDFont *font = view->fonts[view->currentFontIndex];
     drawWrappedString(wrappedText, font, wrapFrame,
-                      &view->wordWidthHashes[view->currentFontIndex]);
+                      &view->wordWidthHashes[view->currentFontIndex], 0);
 //    drawWrappedString(warAndPeace, font, wrapFrame,
-//                      &view->wordWidthHashes[view->currentFontIndex]);
+//                      &view->wordWidthHashes[view->currentFontIndex], 0);
 
     pd->system->drawFPS(30, kScreenHeight - 20);
 
@@ -319,6 +267,12 @@ static void wrappedTextHandleButtons(PDButtons buttons, UpDown upDown, void *con
 
 DemoView *fontMakeWrappedTextDemoView(void) {
     static WrappedDemoView view;
+    const char *menuText = "WRAPPING DEMO\n"
+        "* Up/Down to change font\n"
+        "* Crank to change wrapping rectangle\n"
+        "* Left/Right to change Text Tabs";
+
+    commonInit(&view.isa, menuText);
 
     view.isa.name = "Wrapped Demo";
     view.isa.updateCallback = wrappedDemoUpdate;
@@ -371,8 +325,6 @@ DemoView *fontMakeWrappedTextDemoView(void) {
 
 typedef struct ScrollingDemoView {
     DemoView isa;
-
-    bool isDirty;
 
     const char *warAndPeace;
     WordWidthHash *wordWidthHash;
@@ -493,7 +445,7 @@ void drawWrappedStringFromTopLine(const char *string,
 int scrollingDemoViewUpdate(void *userdata) {
     ScrollingDemoView *view = (ScrollingDemoView *)userdata;
 
-    if (!view->isDirty) {
+    if (!view->isa.isDirty) {
         pd->system->drawFPS(30, kScreenHeight - 20);
     }
 
@@ -508,27 +460,27 @@ int scrollingDemoViewUpdate(void *userdata) {
     }
     if (crankValue > 7.0f) {
         view->currentTopLine += 11;
-        view->isDirty = true;
+        view->isa.isDirty = true;
     } else if (crankValue > 3.5f) {
         view->currentTopLine += 5;
-        view->isDirty = true;
+        view->isa.isDirty = true;
     } else if (crankValue > 0.0f) {
         view->currentTopLine += 1;
-        view->isDirty = true;
+        view->isa.isDirty = true;
     } else if (crankValue < -7.0f) {
         view->currentTopLine -= 11;
-        view->isDirty = true;
+        view->isa.isDirty = true;
     } else if (crankValue < -3.5f) {
         view->currentTopLine -= 5;
-        view->isDirty = true;
+        view->isa.isDirty = true;
     } else if (crankValue < 0.0f) {
         view->currentTopLine -= 1;
-        view->isDirty = true;
+        view->isa.isDirty = true;
     }
     view->currentTopLine = MAX(view->currentTopLine, 0);
 
-    if (!view->isDirty) return 1;
-    view->isDirty = false;
+    if (!view->isa.isDirty) return 1;
+    view->isa.isDirty = false;
 
     pd->graphics->clear(kColorWhite);
 
@@ -567,10 +519,10 @@ static void scrollingDemoHandleButtons(PDButtons buttons, UpDown upDown, void *c
         view->currentTopLine--;
         if (view->currentTopLine < 0) view->currentTopLine = 0;
 
-        view->isDirty = true;
+        view->isa.isDirty = true;
     } else if (buttons == kButtonDown) {
         view->currentTopLine++;
-        view->isDirty = true;
+        view->isa.isDirty = true;
     }
     print("%d", view->currentTopLine);
     
@@ -578,11 +530,16 @@ static void scrollingDemoHandleButtons(PDButtons buttons, UpDown upDown, void *c
 
 
 DemoView *fontMakeScrollingTextDemoView(void) {
-    static ScrollingDemoView view = { 0 };
+    static ScrollingDemoView view;
+    const char *menuText = "SCROLLING DEMO\n"
+        "* Crank to scroll War and Peace\n"
+        "* Up/Down to scroll by line\n"
+        "* Left/Right to change Text Tabs";
+    commonInit(&view.isa, menuText);
 
     view.isa.name = "Scrolling Demo";
-    view.isa.updateCallback = scrollingDemoViewUpdate;
     view.isa.buttonCallback = scrollingDemoHandleButtons;
+    view.isa.updateCallback = scrollingDemoViewUpdate;
 
     view.wordWidthHash = NULL;
     sh_new_arena(view.wordWidthHash);
@@ -611,7 +568,7 @@ DemoView *fontMakeScrollingTextDemoView(void) {
         print("could not load font %s - %s", fontpath, errorText);
     }
 
-    view.isDirty = true;
+    view.isa.isDirty = true;
 
     return (DemoView *)&view;
 } // fontMakeScrollingTextDemoView

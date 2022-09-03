@@ -1,0 +1,190 @@
+# round 1
+
+PlaydateAPI* pd;
+#define print pd->system->logToConsole
+
+static int update(void *userdata) {
+    print("update %d", pd->system->getCurrentTimeMilliseconds();
+    return 1;
+} // update
+
+
+#ifdef _WINDLL
+__declspec(dllexport)
+#endif
+int eventHandler(PlaydateAPI* playdate, 
+                 PDSystemEvent event,
+                 uint32_t arg) {
+    switch (event) {
+    case kEventInit:
+        pd = playdate;
+        print("kEventInit");
+        // setting this now assumes pure C ad doesn't run any Lua code
+        pd->system->setUpdateCallback(update, NULL);
+        break;
+
+    case kEventInitLua:
+        print("kEventInitLua");
+        break;
+
+    case kEventLock:
+        print("kEventLock");
+        break;
+
+    case kEventUnlock:
+        print("kEventUnlock");
+        break;
+
+    case kEventPause:
+        print("kEventPause");
+        break;
+
+    case kEventResume:
+        print("kEventResume");
+        break;
+
+    case kEventTerminate:
+        print("kEventTerminate");
+        break;
+
+    case kEventKeyPressed:
+        print("kEventKeyPressed");
+        break;
+
+    case kEventKeyReleased:
+        print("kEventKeyReleased");
+        break;
+
+    case kEventLowPower:
+        print("kEventLowPower");
+        break;
+    }
+
+    return 0;
+} // eventHandler
+
+
+--------------------------------------------------
+
+
+round 2
+  - draw something
+
+static int update(void *userdata) {
+    pd->graphics->clear(kColorWhite);
+
+    int x = 10;
+    int y = 30;
+    int width = 20;
+    int height = 40;
+    pd->graphics->drawRect(x, y, width, height, kColorBlack);
+    
+    return 1;
+} // update
+
+----------
+
+Round 3
+
+typedef struct GameData {
+    int x;
+    int y;
+    int width;
+    int height;
+} GameData;
+static GameData gameData;
+
+(init)
+        gameData.x = 10;
+        gameData.y = 30;
+        gameData.width = 40;
+        gameData.height = 40;
+        pd->system->setUpdateCallback(update, &gameData);
+
+
+static int update(void *userdata) {
+    GameData *gameData = userdata;
+
+    pd->graphics->clear(kColorWhite);
+
+    pd->graphics->drawRect(gameData->x, gameData->y, 
+                           gameData->width, gameData->height, kColorBlack);
+
+    gameData->x++;
+    gameData->y++;
+
+    gameData->width += (random() % 5);
+    gameData->height += (random() % 5);
+    
+    return 1;
+} // update
+
+
+----------
+# Round 4
+
+Unify rect in game data
+
+typedef struct GameData {
+    PDRect rect;
+} GameData;
+
+    pd->graphics->drawRect(gameData->rect.x, gameData->rect.y, 
+                           gameData->rect.width, gameData->rect.height, kColorBlack);
+
+    gameData->rect.x++;
+    gameData->rect.y++;
+
+    gameData->rect.width += (random() % 5);
+    gameData->rect.height += (random() % 5);
+
+----------
+# Round 5 - controls
+
+    PDButtons pushedButtons;
+    pd->system->getButtonState(&pushedButtons, NULL, NULL); // &pushedButtons, NULL);
+
+    if (pushedButtons & kButtonLeft) {
+        gameData->rect.x--;
+    } else if (pushedButtons & kButtonRight) {
+        gameData->rect.x++;
+    } else if (pushedButtons & kButtonUp) {
+        gameData->rect.y--;
+    } else if (pushedButtons & kButtonDown) {
+        gameData->rect.y++;
+    }
+
+    if (pushedButtons & kButtonA) {
+        gameData->rect.width += (random() % 5);
+        gameData->rect.height += (random() % 5);
+    }
+    if (pushedButtons & kButtonB) {
+        gameData->rect.width -= (random() % 5);
+        gameData->rect.height -= (random() % 5);
+    }
+
+----------
+# Round 6 - Bitmaps
+
+typedef struct GameData {
+    PDRect rect;
+    LCDBitmap *kitty;
+} GameData;
+
+
+// init
+        const char *error;
+        LCDBitmap *kitty = pd->graphics->loadBitmap("images/vector-kitty", &error);
+        if (kitty == NULL) {
+            print("could not load kitty image: %s", error);
+        }
+        gameData.kitty = kitty;
+
+
+// update
+    pd->graphics->drawRect(gameData->rect.x, gameData->rect.y, 
+                           gameData->rect.width, gameData->rect.height, kColorBlack);
+    pd->graphics->drawBitmap(gameData->kitty, 0, 0, kBitmapUnflipped);
+
+
+

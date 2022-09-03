@@ -728,7 +728,7 @@ getHeadphoneState(int *headphone, int *mic, changeCallback(int headphone, int mi
   - if changeclalback is provided, will be called when the status changes.
     - and audio output will *not* automatically switch - the callback should use
        sound->setOutputsActive
-setOUtputsActive - force audio output to the given outputs (headphone / speaker)
+setOutputsActive - force audio output to the given outputs (headphone / speaker)
    regardless of the headphone status
 
 channels
@@ -752,7 +752,7 @@ addCallbackSource - creates a new
   - takes a channel, audioSource function, context, stereo flag
   - the callback takes a context, int16_t *left / right, length
     - no right if it's a stereo source.
-  - the functino should fill in the buffers.  return 1 to play, or 0 if the source
+  - the function should fill in the buffers.  return 1 to play, or 0 if the source
     is silent through the cycle.
   - caller takes ownership of the allocated source, and should free it
     (I don't understsand why it's talking about memory management here)
@@ -1217,9 +1217,15 @@ something to play with just updating affected rows (c.f. gingerbeard in the disc
 
 ----------
 
-
 I would suggest that you don’t use MP3s and instead you convert those files to ADPCM. There’s an incredible converter that I’ve used for my game and a lot of other people have used as a result of that I post here in a second
 https://github.com/dbry/adpcm-xq 
 adpcm-xq [-options] infile.wav outfile.wav
 we have like 15-20min of music in ADPCM and it's <50mb
 I wouldn't personally be too worried about storage concerns until the game is like, >100mb+
+
+huh, does the simulator not play audio?  (it doesn't when the volumn is all the way
+off %-) )
+
+My audio file isn't playing there, but
+does on the device (and sounds amazingly good)
+

@@ -135,9 +135,9 @@ static void drawShapes(BitmapDemo *demo) {
 
     int kittyWidth, kittyHeight;
     int rowBytes;
-    int hasMask;
+    uint8_t *mask;
     uint8_t *data;
-    pd->graphics->getBitmapData(demo->kitty, &kittyWidth, &kittyHeight, &rowBytes, &hasMask, &data);
+    pd->graphics->getBitmapData(demo->kitty, &kittyWidth, &kittyHeight, &rowBytes, &mask, &data);
 
     // really want to print ascii
     // print("kitty width %d  height %d  rowBytes %d  hasMask %d",
@@ -248,6 +248,7 @@ DemoSample *bitmapDemoSample(void) {
     BitmapDemo *demo = (BitmapDemo *)demoSampleNew("Bitmap", kBitmap,
                                                      update,
                                                      sizeof(BitmapDemo));
+    demo->showStencil = false;
     demo->pumper = buttonPumperNew(handleButtons, demo);
 
     const char *error;
@@ -276,15 +277,15 @@ DemoSample *bitmapDemoSample(void) {
     // Dump the kitty image to the console - be sure to show it and embiggen.
     int kittyWidth, kittyHeight;
     int rowBytes;
-    int hasMask;
+    uint8_t *mask;
     uint8_t *data;
-    pd->graphics->getBitmapData(demo->kitty, &kittyWidth, &kittyHeight, &rowBytes, &hasMask, &data);
+    pd->graphics->getBitmapData(demo->kitty, &kittyWidth, &kittyHeight, &rowBytes, &mask, &data);
 
 //    dumpBitmapAsASCII(kittyWidth, kittyHeight, rowBytes, data);
 
-    if (hasMask) {
+    if (mask) {
         print("----");
-//        dumpBitmapAsASCII(kittyWidth, kittyHeight, rowBytes, data + rowBytes * kittyHeight);
+//        dumpBitmapAsASCII(kittyWidth, kittyHeight, rowBytes, mask);
     }
         
 
