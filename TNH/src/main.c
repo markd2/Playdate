@@ -125,7 +125,7 @@ int eventHandler(PlaydateAPI* playdate,
         if (!exists) {
             print("  SNORGLE NO SOUND FILE FOUND");
         }
-
+        pd->system->setAutoLockDisabled(1);
 //        pd->system->setCrankSoundsDisabled(1);  // turn off sound
         break;
     }
