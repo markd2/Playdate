@@ -1,5 +1,6 @@
 const std = @import("std");
 const pdapi = @import("playdate_api_definitions.zig");
+const geo = @import("geometry.zig");
 
 var g_playdate_image: *pdapi.LCDBitmap = undefined;
 
@@ -64,15 +65,22 @@ fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
 
     if (current == 0) {
         _ = pd.graphics.drawText("BorkB", 5, .UTF8Encoding, 0, 0);
+        pd.graphics.drawBitmap(g_playdate_image, 
+                               pdapi.LCD_COLUMNS / 2 - 16, 
+                               pdapi.LCD_ROWS / 2 - 16,
+                               .BitmapUnflipped);
     } else {
         _ = pd.graphics.drawText("Greeble", 7, .UTF8Encoding, 0, 0);
         mongoLog(pd, "{b} {b} {b}\n", .{ current, pushed, released });
+
+        const rp = geo.randomPoint();
+
+        pd.graphics.drawBitmap(g_playdate_image, 
+                               rp.x + pdapi.LCD_COLUMNS / 2 - 16, 
+                               rp.y + pdapi.LCD_ROWS / 2 - 16,
+                               .BitmapUnflipped);
     }
 
-    pd.graphics.drawBitmap(g_playdate_image, 
-                           pdapi.LCD_COLUMNS / 2 - 16, 
-                           pdapi.LCD_ROWS / 2 - 16,
-                           .BitmapUnflipped);
 
     // returning 1 signals to the OS to draw the frame.
     // we always want this frame drawn.
