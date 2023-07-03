@@ -13,3 +13,4 @@ pub fn randomPoint() Point {
     const y = @mod(rnd.random().int(i16), 50) - 25;
     return Point{.x = x, .y = y};
 }
+
