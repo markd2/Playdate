@@ -1,6 +1,7 @@
 const std = @import("std");
 const pdapi = @import("playdate_api_definitions.zig");
 const geo = @import("geometry.zig");
+const world = @import("world.zig");
 
 var g_playdate_image: *pdapi.LCDBitmap = undefined;
 
@@ -8,6 +9,7 @@ pub export fn eventHandler(pd: *pdapi.PlaydateAPI,
                            event: pdapi.PDSystemEvent,
                            arg: u32) callconv(.C) c_int {
     _ = arg;
+    // const player = world.Player{ .row = 5, .column = 5, .hasWeapon = true };
 
     switch (event) {
         .EventInit => {
@@ -55,6 +57,8 @@ fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
     //TODO: replace with your own code!
 
     const pd: *pdapi.PlaydateAPI = @ptrCast(@alignCast(userdata.?));
+
+    world.draw(pd);
 
     var current: pdapi.PDButtons = undefined;
     var pushed: pdapi.PDButtons = undefined;
