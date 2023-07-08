@@ -44,7 +44,13 @@ pub fn build(b: *std.build.Builder) !void {
         step.step.dependOn(&game_elf_step.step);
         previous_step = &step.step;
     }
-    const copy_assets = b.addSystemCommand(&.{ "cp", "assets/playdate_image.png", "assets/pdxinfo", "assets/icon.png", "zig-out/Source" });
+    const copy_assets = b.addSystemCommand(&.{
+        "cp", 
+        "assets/playdate_image.png", 
+        "assets/robot.png", 
+        "assets/pdxinfo", 
+        "assets/icon.png",
+        "zig-out/Source" });
     copy_assets.step.dependOn(previous_step);
     const pdc_path = try std.fmt.allocPrint(b.allocator, "{s}/bin/pdc{s}", .{
         playdate_sdk_path,

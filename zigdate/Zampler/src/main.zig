@@ -20,6 +20,9 @@ pub export fn eventHandler(pd: *pdapi.PlaydateAPI,
             const font = pd.graphics.loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", null).?;
             pd.graphics.setFont(font);
 
+            world.init(pd);
+            world.startGame();
+
             pd.system.setUpdateCallback(updateAndRender, pd);
         },
         .EventPause => {
@@ -33,7 +36,7 @@ pub export fn eventHandler(pd: *pdapi.PlaydateAPI,
     return 0;
 }
 
-fn mongoLog(pd: *pdapi.PlaydateAPI, comptime format: []const u8, args: anytype) void {
+pub fn mongoLog(pd: *pdapi.PlaydateAPI, comptime format: []const u8, args: anytype) void {
     const size = 0x100;
     const trunc_msg = "(msg truncated)";
     var buf: [size + trunc_msg.len]u8 = undefined;
@@ -60,33 +63,23 @@ fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
 
     world.draw(pd);
 
-    var current: pdapi.PDButtons = undefined;
-    var pushed: pdapi.PDButtons = undefined;
-    var released: pdapi.PDButtons = undefined;
+    var current: pdapi.PDButtons = 0;
+    var pushed: pdapi.PDButtons = 0;
+    var released: pdapi.PDButtons = 0;
     pd.system.getButtonState(&current, &pushed, &released);
 
-    pd.graphics.clear(@intFromEnum(pdapi.LCDSolidColor.ColorWhite));
-
-    if (current == 0) {
-        _ = pd.graphics.drawText("BorkB", 5, .UTF8Encoding, 0, 0);
-        pd.graphics.drawBitmap(g_playdate_image, 
-                               pdapi.LCD_COLUMNS / 2 - 16, 
-                               pdapi.LCD_ROWS / 2 - 16,
-                               .BitmapUnflipped);
-    } else {
-        _ = pd.graphics.drawText("Greeble", 7, .UTF8Encoding, 0, 0);
-        mongoLog(pd, "{b} {b} {b}\n", .{ current, pushed, released });
-
-        const rp = geo.randomPoint();
-
-        pd.graphics.drawBitmap(g_playdate_image, 
-                               rp.x + pdapi.LCD_COLUMNS / 2 - 16, 
-                               rp.y + pdapi.LCD_ROWS / 2 - 16,
-                               .BitmapUnflipped);
+    if (pushed != 0) {
+        mongoLog(pd, "pooshed {b}", .{pushed});
+        world.startGame();
     }
-
-
-    // returning 1 signals to the OS to draw the frame.
-    // we always want this frame drawn.
-    return 1;
+    
+    if (world.tick(current, pushed, released)) {
+        world.draw(pd);
+        // returning 1 signals to the OS to draw the frame.
+        return 1;
+    } else {
+        return 0;
+    }
 }
+
+
