@@ -4,7 +4,7 @@ const builtin = @import("builtin");
 pub fn build(b: *std.build.Builder) !void {
     const optimize = b.standardOptimizeOption(.{});
 
-    const pdx_file_name = "example.pdx";
+    const pdx_file_name = "zampler.pdx";
 
     const lib = b.addSharedLibrary(.{
         .name = "pdex",

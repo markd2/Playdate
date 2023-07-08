@@ -1,5 +1,5 @@
-name=Hello World Zig
-author=Daniel Bokser
-description=A small demo of the Zig API
-bundleID=com.panic.hellozigapi
+name=Zampler
+author=Borkware
+description=Sampler of Playdate
+bundleID=com.borkware.zampler
 imagePath=.
