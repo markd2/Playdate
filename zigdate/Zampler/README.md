@@ -5,6 +5,12 @@ Sampler stuff, but in Zig.
 * A Daleks-like game
 * more SDK exploration cards
 
+* `killall -q "Playdate Simulator" && open zig-out/zampler.pdx`
+
+```zig
+zig build && killall -q "Playdate Simulator" && open zig-out/zampler.pdx
+```
+
 
 See the real repo for the zig template, please visit https://github.com/DanB91/Zig-Playdate-Template
 
