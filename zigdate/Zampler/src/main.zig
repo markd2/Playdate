@@ -2,20 +2,21 @@ const std = @import("std");
 const pdapi = @import("playdate_api_definitions.zig");
 const geo = @import("geometry.zig");
 const world = @import("world.zig");
+const card = @import("card.zig");
+
+const wrapper = @import("playdate_api_wrapper.zig");
 
 var g_playdate_image: *pdapi.LCDBitmap = undefined;
+var pd: *pdapi.PlaydateAPI = undefined;
 
-pub export fn eventHandler(pd: *pdapi.PlaydateAPI,
-                           event: pdapi.PDSystemEvent,
-                           arg: u32) callconv(.C) c_int {
+pub export fn eventHandler(pd_in: *pdapi.PlaydateAPI, event: pdapi.PDSystemEvent, arg: u32) callconv(.C) c_int {
     _ = arg;
     // const player = world.Player{ .row = 5, .column = 5, .hasWeapon = true };
 
     switch (event) {
         .EventInit => {
-
-            g_playdate_image = pd.graphics.loadBitmap("playdate_image",
-                                                      null).?;
+            pd = pd_in;
+            g_playdate_image = pd.graphics.loadBitmap("playdate_image", null).?;
 
             const font = pd.graphics.loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", null).?;
             pd.graphics.setFont(font);
@@ -26,7 +27,7 @@ pub export fn eventHandler(pd: *pdapi.PlaydateAPI,
             pd.system.setUpdateCallback(updateAndRender, pd);
         },
         .EventPause => {
-            // setup menu
+            setupMenu();
         },
         .EventResume => {
             // back from menu
@@ -36,7 +37,40 @@ pub export fn eventHandler(pd: *pdapi.PlaydateAPI,
     return 0;
 }
 
-pub fn mongoLog(pd: *pdapi.PlaydateAPI, comptime format: []const u8, args: anytype) void {
+fn menuItemCallback(userdata: ?*anyopaque) callconv(.C) void {
+    _ = userdata;
+}
+
+fn setupMenu() void {
+    // set up a an "options" menu of all the available cards
+    // In The Future: maybe the card can supply a menu item or a checkmark item
+    // pd.system.removeAllMenuItems();
+    // _ = userdata;
+    // mongoLog("Snorgle", .{});
+
+    // c string is ?[*:0]u8
+//    var blah = "bork";
+//    var blah2 = "greeble";
+//    var options: [2][*:0]u8 = .{ blah, blah2 };
+//    const optionsCount = 0;
+
+    wrapper.set_playdate_api(pd);
+
+    const strings = [_][]const u8{
+        &world.card.name,
+        &world.card.name
+    };
+
+    const menuItem = wrapper.add_options_menu_item(
+        "Title",
+        menuItemCallback,
+        &strings,
+        "userdata (unused)");
+
+    _ = menuItem;
+}
+
+pub fn mongoLog(comptime format: []const u8, args: anytype) void {
     const size = 0x100;
     const trunc_msg = "(msg truncated)";
     var buf: [size + trunc_msg.len]u8 = undefined;
@@ -57,9 +91,7 @@ pub fn mongoLog(pd: *pdapi.PlaydateAPI, comptime format: []const u8, args: anyty
 }
 
 fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
-    //TODO: replace with your own code!
-
-    const pd: *pdapi.PlaydateAPI = @ptrCast(@alignCast(userdata.?));
+    _ = userdata; // this is the playdate api, but we have a global we can access.
 
     world.draw(pd);
 
@@ -69,10 +101,10 @@ fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
     pd.system.getButtonState(&current, &pushed, &released);
 
     if (pushed != 0) {
-        mongoLog(pd, "pooshed {b}", .{pushed});
+        mongoLog("pooshed {b}", .{pushed});
         world.startGame();
     }
-    
+
     if (world.tick(current, pushed, released)) {
         world.draw(pd);
         // returning 1 signals to the OS to draw the frame.
@@ -81,5 +113,3 @@ fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
         return 0;
     }
 }
-
-

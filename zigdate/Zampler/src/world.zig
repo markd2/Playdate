@@ -1,6 +1,10 @@
 const std = @import("std");
 const pdapi = @import("playdate_api_definitions.zig");
+const cardmod = @import("card.zig");
+
 const RndGen = std.rand.DefaultPrng;
+
+pub const card = cardmod.Card{ .name = "Splunge" };
 
 var rnd = RndGen.init(0);
 
