@@ -12,8 +12,7 @@ zig build && killall -q "Playdate Simulator" && open zig-out/zampler.pdx
 ```
 
 
-See the real repo for the zig template, please visit https://github.com/DanB91/Zig-Playdate-Template
-
+Please visit the real repo for the zig template: https://github.com/DanB91/Zig-Playdate-Template
 
 # Development
 
