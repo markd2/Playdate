@@ -55,11 +55,19 @@ fn setupMenu() void {
 //                                                    &strings, "userdata (unused)");
 //    _ = menuItem;
 
-    splunge(&strings);
+    // splunge("Greeble", menuItemCallback, &strings, null);
 }
 
-fn splunge(titles: [][*c]const u8) void {
+
+fn splunge(
+    title: [:0]const u8,
+    callback: ?pdapi.PDMenuItemCallbackFunction,
+    titles: [][*c]const u8,
+    userdata: ?*anyopaque) void {
+    _ = title;
+    _ = callback;
     _ = titles;
+    _ = userdata;
 }
 
 pub fn mongoLog(comptime format: []const u8, args: anytype) void {
