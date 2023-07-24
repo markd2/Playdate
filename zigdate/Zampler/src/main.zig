@@ -49,25 +49,15 @@ fn setupMenu() void {
     wrapper.set_playdate_api(pd);
     const string: [:0]const u8 = "hello";
     const jello: [:0]const u8 = "jello";
-    var strings = [_][*c]const u8{ string.ptr, jello.ptr };
+    const snarnge: [:0]const u8 = "snarnge";
+    var strings = [_][*c]const u8{ string.ptr, jello.ptr, snarnge.ptr };
 
-//    const menuItem = wrapper.add_options_menu_item("Title", menuItemCallback,
-//                                                    &strings, "userdata (unused)");
-//    _ = menuItem;
-
-    // splunge("Greeble", menuItemCallback, &strings, null);
-}
-
-
-fn splunge(
-    title: [:0]const u8,
-    callback: ?pdapi.PDMenuItemCallbackFunction,
-    titles: [][*c]const u8,
-    userdata: ?*anyopaque) void {
-    _ = title;
-    _ = callback;
-    _ = titles;
-    _ = userdata;
+    const menuItem = wrapper.add_options_menu_item(
+        "Title",
+        menuItemCallback,
+        &strings,
+        null);
+    _ = menuItem;
 }
 
 pub fn mongoLog(comptime format: []const u8, args: anytype) void {
