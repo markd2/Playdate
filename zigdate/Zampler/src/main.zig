@@ -49,25 +49,60 @@ fn setupMenu() void {
     // mongoLog("Snorgle", .{});
 
     // c string is ?[*:0]u8
-//    var blah = "bork";
-//    var blah2 = "greeble";
-//    var options: [2][*:0]u8 = .{ blah, blah2 };
-//    const optionsCount = 0;
+    //    var blah = "bork";
+    //    var blah2 = "greeble";
+    //    var options: [2][*:0]u8 = .{ blah, blah2 };
+    //    const optionsCount = 0;
 
     wrapper.set_playdate_api(pd);
 
-    const strings = [_][]const u8{
-        &world.card.name,
-        &world.card.name
-    };
+    //    const strings = [_][]const u8{
+    //        &world.card.name,
+    //        &world.card.name
+    //    };
 
-    const menuItem = wrapper.add_options_menu_item(
-        "Title",
-        menuItemCallback,
-        &strings,
-        "userdata (unused)");
+//    const strings = .{ &world.card.name.ptr, &world.card.name.ptr };
 
-    _ = menuItem;
+//     const menuItem = wrapper.add_options_menu_item("Title", menuItemCallback, strings, "userdata (unused)");
+
+    const string: [:0]const u8 = "hello";
+    const jello: [:0]const u8 = "jello";
+    var strings = [_][*c]const u8{ string.ptr, jello.ptr };
+
+//    const menuItem = wrapper.add_options_menu_item("Title", menuItemCallback,
+//                                                    &strings, "userdata (unused)");
+//    _ = menuItem;
+
+    splunge(&strings);
+
+
+//    _ = pd.system.addOptionsMenuItem(
+//        "Title".ptr,
+//        strings,
+//        @as(c_int, @intCast(strings.len)),
+//        menuItemCallback,
+//        "userdata (unused)");
+
+//    _ = menuItem;
+
+//    const string: [:0]const u8 = "hello";
+//    const string_list: []const [*c]const u8 = .{ &string.ptr, &string.ptr };
+//    splunge(& .{ string_list.ptr });
+
+//    const string: [:0]const u8 = "hello";
+//    var array  = [_][*c]const u8{ string.ptr };
+//    splunge(&array);
+    
+    // splunge(.{ blah });
+    // expected type '[][*c]const u8', found 'struct{comptime [:0]const u8 = "hello"}'
+
+    // splunge(.{ &blah });
+    // expected type '[][*c]const u8', found 'struct{comptime *const [:0]const u8 = "hello"}'
+
+}
+
+fn splunge(titles: [][*c]const u8) void {
+    _ = titles;
 }
 
 pub fn mongoLog(comptime format: []const u8, args: anytype) void {
