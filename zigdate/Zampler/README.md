@@ -11,6 +11,7 @@ Sampler stuff, but in Zig.
 zig build && killall -q "Playdate Simulator" && open zig-out/zampler.pdx
 ```
 
+* `lldb ~/Developer/PlaydateSDK/bin/Playdate\ Simulator.app/Contents/MacOS/Playdate\ Simulator`
 
 Please visit the real repo for the zig template: https://github.com/DanB91/Zig-Playdate-Template
 
