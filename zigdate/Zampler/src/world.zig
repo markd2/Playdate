@@ -4,7 +4,7 @@ const cardmod = @import("card.zig");
 
 const RndGen = std.rand.DefaultPrng;
 
-pub const card = cardmod.Card{ .name = "Splunge" };
+pub const card = cardmod.Card{ .name = "World" };
 
 var rnd = RndGen.init(0);
 

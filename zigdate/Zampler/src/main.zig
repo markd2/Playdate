@@ -6,6 +6,8 @@ const card = @import("card.zig");
 
 const wrapper = @import("playdate_api_wrapper.zig");
 
+const worldCard = world.card;
+
 var g_playdate_image: *pdapi.LCDBitmap = undefined;
 var pd: *pdapi.PlaydateAPI = undefined;
 
@@ -47,7 +49,7 @@ fn setupMenu() void {
     // pd.system.removeAllMenuItems();
 
     wrapper.set_playdate_api(pd);
-    const string: [:0]const u8 = "hello";
+    const string: [:0]const u8 = worldCard.name;
     const jello: [:0]const u8 = "jello";
     const snarnge: [:0]const u8 = "snarnge";
     var strings = [_][*c]const u8{ string.ptr, jello.ptr, snarnge.ptr };
