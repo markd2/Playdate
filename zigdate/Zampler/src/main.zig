@@ -1,19 +1,21 @@
 const std = @import("std");
 const pdapi = @import("playdate_api_definitions.zig");
 const geo = @import("geometry.zig");
-const world = @import("world.zig");
 const card = @import("card.zig");
-
 const wrapper = @import("playdate_api_wrapper.zig");
 
-const worldCard = world.card;
+// Cards
+const robots = @import("robots.zig");
+const collisions = @import("collisions.zig");
+const robotsCard = robots.card;
+const collisionsCard = collisions.card;
 
 var g_playdate_image: *pdapi.LCDBitmap = undefined;
 var pd: *pdapi.PlaydateAPI = undefined;
 
 pub export fn eventHandler(pd_in: *pdapi.PlaydateAPI, event: pdapi.PDSystemEvent, arg: u32) callconv(.C) c_int {
     _ = arg;
-    // const player = world.Player{ .row = 5, .column = 5, .hasWeapon = true };
+    // const player = robots.Player{ .row = 5, .column = 5, .hasWeapon = true };
 
     switch (event) {
         .EventInit => {
@@ -23,13 +25,14 @@ pub export fn eventHandler(pd_in: *pdapi.PlaydateAPI, event: pdapi.PDSystemEvent
             const font = pd.graphics.loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", null).?;
             pd.graphics.setFont(font);
 
-            world.init(pd);
-            world.startGame();
+            robots.init(pd);
+            robots.startGame();
+
+            setupMenu();
 
             pd.system.setUpdateCallback(updateAndRender, pd);
         },
         .EventPause => {
-            setupMenu();
         },
         .EventResume => {
             // back from menu
@@ -49,10 +52,7 @@ fn setupMenu() void {
     // pd.system.removeAllMenuItems();
 
     wrapper.set_playdate_api(pd);
-    const string: [:0]const u8 = worldCard.name;
-    const jello: [:0]const u8 = "jello";
-    const snarnge: [:0]const u8 = "snarnge";
-    var strings = [_][*c]const u8{ string.ptr, jello.ptr, snarnge.ptr };
+    var strings = [_][*c]const u8{ robotsCard.name.ptr, collisionsCard.name.ptr };
 
     const menuItem = wrapper.add_options_menu_item(
         "Title",
@@ -85,7 +85,7 @@ pub fn mongoLog(comptime format: []const u8, args: anytype) void {
 fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
     _ = userdata; // this is the playdate api, but we have a global we can access.
 
-    world.draw(pd);
+    robots.draw(pd);
 
     var current: pdapi.PDButtons = 0;
     var pushed: pdapi.PDButtons = 0;
@@ -94,11 +94,11 @@ fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
 
     if (pushed != 0) {
         mongoLog("pooshed {b}", .{pushed});
-        world.startGame();
+        robots.startGame();
     }
 
-    if (world.tick(current, pushed, released)) {
-        world.draw(pd);
+    if (robots.tick(current, pushed, released)) {
+        robots.draw(pd);
         // returning 1 signals to the OS to draw the frame.
         return 1;
     } else {
