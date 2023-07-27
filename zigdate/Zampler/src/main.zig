@@ -9,9 +9,14 @@ const robots = @import("robots.zig");
 const collisions = @import("collisions.zig");
 const robotsCard = robots.card;
 const collisionsCard = collisions.card;
+// !!! not a fan of the hardcoded 2
+const allCards: [2]card.Card = .{ robotsCard, collisionsCard };
+var currentCard: card.Card = robotsCard;
 
 var g_playdate_image: *pdapi.LCDBitmap = undefined;
 var pd: *pdapi.PlaydateAPI = undefined;
+
+var optionsMenu: *pdapi.PDMenuItem = undefined;
 
 pub export fn eventHandler(pd_in: *pdapi.PlaydateAPI, event: pdapi.PDSystemEvent, arg: u32) callconv(.C) c_int {
     _ = arg;
@@ -44,6 +49,10 @@ pub export fn eventHandler(pd_in: *pdapi.PlaydateAPI, event: pdapi.PDSystemEvent
 
 fn menuItemCallback(userdata: ?*anyopaque) callconv(.C) void {
     _ = userdata;
+
+    var chosenOption: c_uint = @as(c_uint, @intCast(pd.system.getMenuItemValue(optionsMenu)));
+//    const chosenOption = @truncate(u32, pd.system.getMenuItemValue(optionsMenu));
+    currentCard = allCards[chosenOption];
 }
 
 fn setupMenu() void {
@@ -52,14 +61,15 @@ fn setupMenu() void {
     // pd.system.removeAllMenuItems();
 
     wrapper.set_playdate_api(pd);
-    var strings = [_][*c]const u8{ robotsCard.name.ptr, collisionsCard.name.ptr };
+    var strings = [_][*c]const u8{
+        robotsCard.name.ptr,
+        collisionsCard.name.ptr };
 
-    const menuItem = wrapper.add_options_menu_item(
+    optionsMenu = wrapper.add_options_menu_item(
         "Title",
         menuItemCallback,
         &strings,
         null);
-    _ = menuItem;
 }
 
 pub fn mongoLog(comptime format: []const u8, args: anytype) void {
@@ -85,7 +95,7 @@ pub fn mongoLog(comptime format: []const u8, args: anytype) void {
 fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
     _ = userdata; // this is the playdate api, but we have a global we can access.
 
-    robots.draw(pd);
+    currentCard.draw(pd);
 
     var current: pdapi.PDButtons = 0;
     var pushed: pdapi.PDButtons = 0;
@@ -98,7 +108,7 @@ fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
     }
 
     if (robots.tick(current, pushed, released)) {
-        robots.draw(pd);
+        currentCard.draw(pd);
         // returning 1 signals to the OS to draw the frame.
         return 1;
     } else {

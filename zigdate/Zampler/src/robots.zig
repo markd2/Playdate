@@ -4,7 +4,10 @@ const cardmod = @import("card.zig");
 
 const RndGen = std.rand.DefaultPrng;
 
-pub const card = cardmod.Card{ .name = "Robots" };
+pub const card = cardmod.Card{
+    .name = "Robots",
+    .draw = draw
+};
 
 var rnd = RndGen.init(0);
 
@@ -80,3 +83,4 @@ pub fn draw(pd: *pdapi.PlaydateAPI) void {
         pd.graphics.drawBitmap(g_robot_image, x, y, .BitmapUnflipped);
     }
 }
+
