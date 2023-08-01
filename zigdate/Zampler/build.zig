@@ -48,6 +48,7 @@ pub fn build(b: *std.build.Builder) !void {
         "cp", 
         "assets/playdate_image.png", 
         "assets/robot.png", 
+        "assets/player.png", 
         "assets/pdxinfo", 
         "assets/icon.png",
         "zig-out/Source" });
