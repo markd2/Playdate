@@ -30,8 +30,8 @@ pub export fn eventHandler(pd_in: *pdapi.PlaydateAPI, event: pdapi.PDSystemEvent
             const font = pd.graphics.loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", null).?;
             pd.graphics.setFont(font);
 
-            robots.init(pd);
-            robots.startGame();
+            robotsCard.init(pd);
+            collisionsCard.init(pd);
 
             setupMenu();
 
@@ -95,7 +95,7 @@ pub fn mongoLog(comptime format: []const u8, args: anytype) void {
 fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
     _ = userdata; // this is the playdate api, but we have a global we can access.
 
-    currentCard.draw(pd);
+    currentCard.draw();
 
     var current: pdapi.PDButtons = 0;
     var pushed: pdapi.PDButtons = 0;
@@ -104,11 +104,10 @@ fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
 
     if (pushed != 0) {
         mongoLog("pooshed {b}", .{pushed});
-        robots.startGame();
     }
 
     if (robots.tick(current, pushed, released)) {
-        currentCard.draw(pd);
+        currentCard.draw();
         // returning 1 signals to the OS to draw the frame.
         return 1;
     } else {

@@ -4,8 +4,11 @@ const cardmod = @import("card.zig");
 
 const RndGen = std.rand.DefaultPrng;
 
+var pd: *pdapi.PlaydateAPI = undefined;
+
 pub const card = cardmod.Card{
     .name = "Robots",
+    .init = init,
     .draw = draw
 };
 
@@ -43,11 +46,10 @@ const cellSize = 8;
 const maxRows = 240 / cellSize;
 const maxColumns = 400 / cellSize;
 
-pub fn init(pd: *pdapi.PlaydateAPI) void {
-    g_robot_image = pd.graphics.loadBitmap("robot", null).?;
-}
+pub fn init(p: *pdapi.PlaydateAPI) void {
+    pd = p;
 
-pub fn startGame() void {
+    g_robot_image = pd.graphics.loadBitmap("robot", null).?;
     robotCount = 0;
 
     for (0..initialRobotCount) |i| {
@@ -71,7 +73,7 @@ pub fn tick(current: pdapi.PDButtons,
 }
 
 
-pub fn draw(pd: *pdapi.PlaydateAPI) void {
+pub fn draw() void {
     pd.graphics.clear(@intFromEnum(pdapi.LCDSolidColor.ColorWhite));
     
     for (0..robotCount) |i| {
