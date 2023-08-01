@@ -5,6 +5,5 @@ pub const Card = struct {
     name: [:0]const u8,
 
     init: *const fn (pd: *pdapi.PlaydateAPI) void,
-
-    draw: *const fn () void
+    tick: *const fn (deltaTime: u32) bool
 };

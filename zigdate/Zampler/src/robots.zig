@@ -9,7 +9,7 @@ var pd: *pdapi.PlaydateAPI = undefined;
 pub const card = cardmod.Card{
     .name = "Robots",
     .init = init,
-    .draw = draw
+    .tick = tick
 };
 
 var rnd = RndGen.init(0);
@@ -62,16 +62,6 @@ pub fn init(p: *pdapi.PlaydateAPI) void {
                     .hasWeapon = true };
 }
 
-// returns true if things need redrawing
-pub fn tick(current: pdapi.PDButtons,
-            pushed: pdapi.PDButtons,
-            released: pdapi.PDButtons) bool {
-    _ = current;
-    _ = pushed;
-    _ = released;
-    return true;
-}
-
 
 pub fn draw() void {
     pd.graphics.clear(@intFromEnum(pdapi.LCDSolidColor.ColorWhite));
@@ -86,3 +76,9 @@ pub fn draw() void {
     }
 }
 
+
+pub fn tick (deltaTime: u32) bool {
+    _ = deltaTime;
+    draw();
+    return true;
+}

@@ -7,7 +7,7 @@ var pd: *pdapi.PlaydateAPI = undefined;
 pub const card = cardmod.Card{
     .name = "Collisions",
     .init = init,
-    .draw = draw
+    .tick = tick
 };
 
 
@@ -23,3 +23,10 @@ pub fn draw() void {
     pd.graphics.drawRect(10, 50, 100, 75, black);
 }
 
+
+pub fn tick (deltaTime: u32) bool {
+    _ = deltaTime;
+
+    draw();
+    return true;
+}

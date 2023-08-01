@@ -17,6 +17,7 @@ var g_playdate_image: *pdapi.LCDBitmap = undefined;
 var pd: *pdapi.PlaydateAPI = undefined;
 
 var optionsMenu: *pdapi.PDMenuItem = undefined;
+var lastTime: u32 = undefined;
 
 pub export fn eventHandler(pd_in: *pdapi.PlaydateAPI, event: pdapi.PDSystemEvent, arg: u32) callconv(.C) c_int {
     _ = arg;
@@ -29,6 +30,8 @@ pub export fn eventHandler(pd_in: *pdapi.PlaydateAPI, event: pdapi.PDSystemEvent
 
             const font = pd.graphics.loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", null).?;
             pd.graphics.setFont(font);
+
+            lastTime = @as(u32, pd.system.getCurrentTimeMilliseconds());
 
             robotsCard.init(pd);
             collisionsCard.init(pd);
@@ -92,25 +95,13 @@ pub fn mongoLog(comptime format: []const u8, args: anytype) void {
     pd.system.logToConsole(string);
 }
 
+
 fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
     _ = userdata; // this is the playdate api, but we have a global we can access.
 
-    currentCard.draw();
+    var now = @as(u32, pd.system.getCurrentTimeMilliseconds());
+    var delta = now - lastTime;
+    lastTime = now;
 
-    var current: pdapi.PDButtons = 0;
-    var pushed: pdapi.PDButtons = 0;
-    var released: pdapi.PDButtons = 0;
-    pd.system.getButtonState(&current, &pushed, &released);
-
-    if (pushed != 0) {
-        mongoLog("pooshed {b}", .{pushed});
-    }
-
-    if (robots.tick(current, pushed, released)) {
-        currentCard.draw();
-        // returning 1 signals to the OS to draw the frame.
-        return 1;
-    } else {
-        return 0;
-    }
+    return if (currentCard.tick(delta)) 1 else 0;
 }
