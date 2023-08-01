@@ -15,6 +15,7 @@ pub const card = cardmod.Card{
 var rnd = RndGen.init(0);
 
 var g_robot_image: *pdapi.LCDBitmap = undefined;
+var g_player_image: *pdapi.LCDBitmap = undefined;
 
 pub const Robot = struct {
     row: u16,
@@ -50,15 +51,32 @@ pub fn init(p: *pdapi.PlaydateAPI) void {
     pd = p;
 
     g_robot_image = pd.graphics.loadBitmap("robot", null).?;
+    g_player_image = pd.graphics.loadBitmap("player", null).?;
     robotCount = 0;
 
-    for (0..initialRobotCount) |i| {
-        robots[i] = Robot{ .row = @mod(rnd.random().int(u16), maxRows),
-                          .column = @mod(rnd.random().int(u16), maxColumns) };
+    var playerRow: u8 = maxRows / 2;
+    var playerColumn: u8 = maxColumns / 2;
+
+    while (robotCount < initialRobotCount) {
+
+        const row = @mod(rnd.random().int(u16), maxRows);
+        const column = @mod(rnd.random().int(u16), maxColumns);
+
+        // give the player some breathing room
+        const playerSpace = 3;
+        if (row >= playerRow - playerSpace
+                and row <= playerRow + playerSpace
+                and column >= playerColumn - playerSpace
+                and column <= playerColumn + playerSpace) {
+            continue;
+        }
+        
+        robots[robotCount] = Robot{ .row = row, .column = column };
+        
         robotCount += 1;
     }
 
-    player = Player{ .row = maxRows / 2, .column = maxColumns / 2,
+    player = Player{ .row = playerRow, .column = playerColumn,
                     .hasWeapon = true };
 }
 
@@ -74,6 +92,13 @@ pub fn draw() void {
         
         pd.graphics.drawBitmap(g_robot_image, x, y, .BitmapUnflipped);
     }
+
+    const row = player.row;
+    const col = player.column;
+    const x = col * cellSize;
+    const y = row * cellSize;
+        
+    pd.graphics.drawBitmap(g_player_image, x, y, .BitmapUnflipped);
 }
 
 
