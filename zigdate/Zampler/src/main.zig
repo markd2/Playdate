@@ -1,7 +1,8 @@
-const std = @import("std");
-const pdapi = @import("playdate_api_definitions.zig");
-const geo = @import("geometry.zig");
 const card = @import("card.zig");
+const geo = @import("geometry.zig");
+const pdapi = @import("playdate_api_definitions.zig");
+const std = @import("std");
+const util = @import("util.zig");
 const wrapper = @import("playdate_api_wrapper.zig");
 
 // Cards
@@ -26,6 +27,7 @@ pub export fn eventHandler(pd_in: *pdapi.PlaydateAPI, event: pdapi.PDSystemEvent
     switch (event) {
         .EventInit => {
             pd = pd_in;
+            util.setPd(pd);
             g_playdate_image = pd.graphics.loadBitmap("playdate_image", null).?;
 
             const font = pd.graphics.loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", null).?;
@@ -74,27 +76,6 @@ fn setupMenu() void {
         &strings,
         null);
 }
-
-pub fn mongoLog(comptime format: []const u8, args: anytype) void {
-    const size = 0x100;
-    const trunc_msg = "(msg truncated)";
-    var buf: [size + trunc_msg.len]u8 = undefined;
-
-    const msg = std.fmt.bufPrint(buf[0..size], format, args) catch |err| switch (err) {
-        error.NoSpaceLeft => blk: {
-            @memcpy(buf[size..], trunc_msg);
-            break :blk &buf;
-        },
-    };
-
-    // needing to go from the []u8 from bufPrint, to [*c]const u8
-    // - [*c]T is just a C pointer to type T
-    msg[msg.len - 1] = 0;
-    var string: [*c]const u8 = @ptrCast(msg);
-
-    pd.system.logToConsole(string);
-}
-
 
 fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
     _ = userdata; // this is the playdate api, but we have a global we can access.
