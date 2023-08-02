@@ -1,10 +1,16 @@
 const std = @import("std");
 const pdapi = @import("playdate_api_definitions.zig");
 const cardmod = @import("card.zig");
+const util = @import("util.zig");
 
 const RndGen = std.rand.DefaultPrng;
 
 var pd: *pdapi.PlaydateAPI = undefined;
+
+pub const kButtonLeft = pdapi.BUTTON_LEFT;
+pub const kButtonRight = pdapi.BUTTON_RIGHT;
+pub const kButtonUp = pdapi.BUTTON_UP;
+pub const kButtonDown = pdapi.BUTTON_DOWN;
 
 pub const card = cardmod.Card{
     .name = "Robots",
@@ -102,8 +108,46 @@ pub fn draw() void {
 }
 
 
+var lastCurrent: pdapi.PDButtons = -1;
+
 pub fn tick (deltaTime: u32) bool {
     _ = deltaTime;
-    draw();
-    return true;
+
+    var current: pdapi.PDButtons = undefined;
+    pd.system.getButtonState(&current, null, null);
+
+    var redraw = false;
+
+    if (lastCurrent == -1) {
+        redraw = true;
+    }
+
+    if (current != lastCurrent) {
+        
+        if (current & kButtonLeft != 0) {
+            util.mongoLog("left huh what's going on?", .{});
+            player.column -= 1;
+        }
+        if (current & kButtonRight != 0) {
+            util.mongoLog("right", .{});
+            player.column += 1;
+        }
+        if (current & kButtonUp != 0) {
+            util.mongoLog("up ", .{});
+            player.row -= 1;
+        }
+        if (current & kButtonDown != 0) {
+            util.mongoLog("down ", .{});
+            player.row += 1;
+        }
+
+        lastCurrent = current;
+        redraw = true;
+        util.mongoLog("--------", .{});
+    }
+
+    if (redraw) {
+        draw();
+    }
+    return redraw;
 }
