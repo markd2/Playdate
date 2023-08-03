@@ -24,18 +24,18 @@ var g_robot_image: *pdapi.LCDBitmap = undefined;
 var g_player_image: *pdapi.LCDBitmap = undefined;
 
 pub const Robot = struct {
-    row: u16,
-    column: u16
+    row: i16,
+    column: i16
 };
 
 pub const Pile = struct {
-    row: u16,
-    column: u16
+    row: i16,
+    column: i16
 };
 
 pub const Player = struct {
-    row: u16,
-    column: u16,
+    row: i16,
+    column: i16,
     hasWeapon: bool
 };
 
@@ -56,8 +56,8 @@ const maxColumns = 400 / cellSize;
 // var playfield: [maxRows * maxColumns]u8 = {0} ** (maxRows * maxColumns);
 var playfield= [_]u8{0} ** (maxRows * maxColumns);
 
-fn indexOf(row: u16, column: u16) u16 {
-    return row * maxColumns + column;
+fn indexOf(row: i16, column: i16) u16 {
+    return @bitCast(row * maxColumns + column);
 }
 
 const kEmpty = 0;
@@ -76,8 +76,8 @@ pub fn init(p: *pdapi.PlaydateAPI) void {
 
     while (robotCount < initialRobotCount) {
 
-        const row = @mod(rnd.random().int(u16), maxRows);
-        const column = @mod(rnd.random().int(u16), maxColumns);
+        const row = @mod(rnd.random().int(i16), maxRows);
+        const column = @mod(rnd.random().int(i16), maxColumns);
 
         if (playfield[indexOf(row, column)] != kEmpty) {
             continue;
@@ -126,6 +126,18 @@ pub fn draw() void {
 }
 
 
+fn movePlayer(deltaRow: i8, deltaColumn: i8) void {
+    const newRow = player.row + deltaRow;
+    const newColumn = player.column + deltaColumn;
+
+    playfield[indexOf(player.row, player.column)] = kEmpty;
+    
+    player.row = newRow;
+    player.column = newColumn;
+
+    playfield[indexOf(player.row, player.column)] = kPlayer;
+}
+
 var lastCurrent: pdapi.PDButtons = -1;
 
 pub fn tick (deltaTime: u32) bool {
@@ -140,24 +152,28 @@ pub fn tick (deltaTime: u32) bool {
         redraw = true;
     }
 
+    var deltaRow: i8 = 0;
+    var deltaColumn: i8 = 0;
     if (current != lastCurrent) {
         
         if (current & kButtonLeft != 0) {
             util.mongoLog("left huh what's going on?", .{});
-            player.column -= 1;
+            deltaColumn = -1;
         }
         if (current & kButtonRight != 0) {
             util.mongoLog("right", .{});
-            player.column += 1;
+            deltaColumn = 1;
         }
         if (current & kButtonUp != 0) {
             util.mongoLog("up ", .{});
-            player.row -= 1;
+            deltaRow = -1;
         }
         if (current & kButtonDown != 0) {
             util.mongoLog("down ", .{});
-            player.row += 1;
+            deltaRow = 1;
         }
+
+        movePlayer(deltaRow, deltaColumn);
 
         lastCurrent = current;
         redraw = true;
