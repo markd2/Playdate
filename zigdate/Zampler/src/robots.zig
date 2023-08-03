@@ -130,12 +130,38 @@ fn movePlayer(deltaRow: i8, deltaColumn: i8) void {
     const newRow = player.row + deltaRow;
     const newColumn = player.column + deltaColumn;
 
+    if (newRow < 0 or newColumn < 0) return;
+    if (newRow >= maxRows or newColumn >= maxColumns) return;
+    
     playfield[indexOf(player.row, player.column)] = kEmpty;
     
     player.row = newRow;
     player.column = newColumn;
 
     playfield[indexOf(player.row, player.column)] = kPlayer;
+}
+
+fn moveAllRobots(deltaRow: i8, deltaColumn: i8) void {
+    for (robots, 0..) | robot, i | {
+        const newRow = robot.row - deltaRow;
+        const newColumn = robot.column - deltaColumn;
+
+        if (newRow < 0 or newColumn < 0) continue;
+        if (newRow >= maxRows or newColumn >= maxColumns) continue;
+
+        const index = indexOf(robot.row, robot.column);
+        const newIndex = indexOf(newRow, newColumn);
+        if (playfield[newIndex] == kEmpty) {
+            util.mongoLog("moving?", .{});
+            playfield[index] = kEmpty;
+            playfield[newIndex] = kRobot;
+
+            var newRobot = robot;
+            newRobot.row = newRow;
+            newRobot.column = newColumn;
+            robots[i] = newRobot;
+        }
+    }
 }
 
 var lastCurrent: pdapi.PDButtons = -1;
@@ -174,6 +200,7 @@ pub fn tick (deltaTime: u32) bool {
         }
 
         movePlayer(deltaRow, deltaColumn);
+        moveAllRobots(deltaRow, deltaColumn);
 
         lastCurrent = current;
         redraw = true;
