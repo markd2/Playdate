@@ -39,7 +39,7 @@ pub const Player = struct {
     hasWeapon: bool
 };
 
-const initialRobotCount = 30;
+const initialRobotCount = 20;
 
 var robotCount: u8 = 0;
 var robots: [30]Robot = undefined;
@@ -52,6 +52,17 @@ var player: Player = undefined;
 const cellSize = 8;
 const maxRows = 240 / cellSize;
 const maxColumns = 400 / cellSize;
+
+// var playfield: [maxRows * maxColumns]u8 = {0} ** (maxRows * maxColumns);
+var playfield= [_]u8{0} ** (maxRows * maxColumns);
+
+fn indexOf(row: u16, column: u16) u16 {
+    return row * maxColumns + column;
+}
+
+const kEmpty = 0;
+const kRobot = 1;
+const kPlayer = 2;
 
 pub fn init(p: *pdapi.PlaydateAPI) void {
     pd = p;
@@ -68,6 +79,10 @@ pub fn init(p: *pdapi.PlaydateAPI) void {
         const row = @mod(rnd.random().int(u16), maxRows);
         const column = @mod(rnd.random().int(u16), maxColumns);
 
+        if (playfield[indexOf(row, column)] != kEmpty) {
+            continue;
+        }
+
         // give the player some breathing room
         const playerSpace = 3;
         if (row >= playerRow - playerSpace
@@ -78,12 +93,15 @@ pub fn init(p: *pdapi.PlaydateAPI) void {
         }
         
         robots[robotCount] = Robot{ .row = row, .column = column };
+
+        playfield[indexOf(row, column)] = kRobot;
         
         robotCount += 1;
     }
 
     player = Player{ .row = playerRow, .column = playerColumn,
                     .hasWeapon = true };
+    playfield[indexOf(playerRow, playerColumn)] = kPlayer;
 }
 
 
