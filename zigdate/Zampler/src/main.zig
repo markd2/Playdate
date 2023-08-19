@@ -12,7 +12,7 @@ const robotsCard = robots.card;
 const collisionsCard = collisions.card;
 // !!! not a fan of the hardcoded 2
 const allCards: [2]card.Card = .{ robotsCard, collisionsCard };
-var currentCard: card.Card = robotsCard;
+var currentCard: card.Card = undefined;
 
 var g_playdate_image: *pdapi.LCDBitmap = undefined;
 var pd: *pdapi.PlaydateAPI = undefined;
@@ -38,7 +38,10 @@ pub export fn eventHandler(pd_in: *pdapi.PlaydateAPI, event: pdapi.PDSystemEvent
             robotsCard.init(pd);
             collisionsCard.init(pd);
 
+            moveToCard(allCards[0]);
+
             setupMenu();
+
 
             pd.system.setUpdateCallback(updateAndRender, pd);
         },
@@ -52,12 +55,17 @@ pub export fn eventHandler(pd_in: *pdapi.PlaydateAPI, event: pdapi.PDSystemEvent
     return 0;
 }
 
+fn moveToCard(newCard: card.Card) void {
+    currentCard = newCard;
+    const rate = @as(f32, @floatFromInt(currentCard.refreshHertz));
+    pd.display.setRefreshRate(rate);
+}
+
 fn menuItemCallback(userdata: ?*anyopaque) callconv(.C) void {
     _ = userdata;
 
     var chosenOption: c_uint = @as(c_uint, @intCast(pd.system.getMenuItemValue(optionsMenu)));
-//    const chosenOption = @truncate(u32, pd.system.getMenuItemValue(optionsMenu));
-    currentCard = allCards[chosenOption];
+    moveToCard(allCards[chosenOption]);
 }
 
 fn setupMenu() void {
@@ -80,7 +88,11 @@ fn setupMenu() void {
 fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
     _ = userdata; // this is the playdate api, but we have a global we can access.
 
+
     var now = @as(u32, pd.system.getCurrentTimeMilliseconds());
+
+    util.mongoLog("snorgle {}", .{now});
+
     var delta = now - lastTime;
     lastTime = now;
 

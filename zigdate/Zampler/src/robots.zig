@@ -14,6 +14,7 @@ pub const kButtonDown = pdapi.BUTTON_DOWN;
 
 pub const card = cardmod.Card{
     .name = "Robots",
+    .refreshHertz = 16,
     .init = init,
     .tick = tick
 };
