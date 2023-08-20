@@ -6,12 +6,16 @@ const util = @import("util.zig");
 const wrapper = @import("playdate_api_wrapper.zig");
 
 // Cards
-const robots = @import("robots.zig");
+const animator = @import("animator.zig");
 const collisions = @import("collisions.zig");
-const robotsCard = robots.card;
+const robots = @import("robots.zig");
+
+const animatorCard = animator.card;
 const collisionsCard = collisions.card;
-// !!! not a fan of the hardcoded 2
-const allCards: [2]card.Card = .{ robotsCard, collisionsCard };
+const robotsCard = robots.card;
+
+// !!! not a fan of the hardcoded ~2~ 3
+const allCards: [3]card.Card = .{ animatorCard, robotsCard, collisionsCard };
 var currentCard: card.Card = undefined;
 
 var g_playdate_image: *pdapi.LCDBitmap = undefined;
@@ -35,13 +39,13 @@ pub export fn eventHandler(pd_in: *pdapi.PlaydateAPI, event: pdapi.PDSystemEvent
 
             lastTime = @as(u32, pd.system.getCurrentTimeMilliseconds());
 
+            animatorCard.init(pd);
             robotsCard.init(pd);
             collisionsCard.init(pd);
 
             moveToCard(allCards[0]);
 
             setupMenu();
-
 
             pd.system.setUpdateCallback(updateAndRender, pd);
         },
@@ -75,6 +79,7 @@ fn setupMenu() void {
 
     wrapper.set_playdate_api(pd);
     var strings = [_][*c]const u8{
+        animatorCard.name.ptr,
         robotsCard.name.ptr,
         collisionsCard.name.ptr };
 
@@ -88,10 +93,7 @@ fn setupMenu() void {
 fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
     _ = userdata; // this is the playdate api, but we have a global we can access.
 
-
     var now = @as(u32, pd.system.getCurrentTimeMilliseconds());
-
-    util.mongoLog("snorgle {}", .{now});
 
     var delta = now - lastTime;
     lastTime = now;

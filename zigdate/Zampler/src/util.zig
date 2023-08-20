@@ -27,3 +27,6 @@ pub fn mongoLog(comptime format: []const u8, args: anytype) void {
     pd.system.logToConsole(string);
 }
 
+pub fn drawBitmap(bitmap: *pdapi.LCDBitmap, x: i16, y: i16) void {
+    pd.graphics.drawBitmap(bitmap, x, y, .BitmapUnflipped);
+}

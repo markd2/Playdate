@@ -192,39 +192,6 @@ fn moveAllRobots(deltaRow: i8, deltaColumn: i8) void {
 fn animateRobotMove(anim: MovingRobot) bool {
     _ = anim;
 
-    var x = anim.startColumn * cellSize;
-    var y = anim.startRow * cellSize;
-    const destX = anim.destinationColumn * cellSize;
-    const destY = anim.destinationRow * cellSize;
-
-    const deltaX = x - destX;
-    const deltaY = y - destY;
-
-    // var now = @as(f32, @floatFromInt());
-    const elapsedTime = now - anim.startTime;
-    const percentage = anim.moveDuration / elapsedTime;
-
-    util.mongoLog("snorgle {} {} {} {}", .{anim.startTime, now, percentage});
-
-    if (percentage > 1.0) {
-        // move goalposts
-        movingRobot.startRow = movingRobot.destinationRow;
-        movingRobot.startColumn = movingRobot.destinationColumn;
-
-        movingRobot.destinationRow += 1;
-        movingRobot.destinationColumn += 1;
-        return false;
-    }
-
-    const percentX: f32 = @as(f32, @floatFromInt(deltaX)) * percentage;
-    const percentY: f32 = @as(f32, @floatFromInt(deltaY)) * percentage;
-    const newX = x + @as(i16, @intFromFloat(percentX));
-    const newY = y + @as(i16, @intFromFloat(percentY));
-
-    util.mongoLog("  {}-{} {}-{}", .{ x, y, newX, newY} );
-
-    pd.graphics.drawBitmap(g_player_image, newX, newY, .BitmapUnflipped);
-//    pd.graphics.drawBitmap(g_robot_image, newX, newY, .BitmapUnflipped);
     return true;
 }
 
@@ -272,7 +239,7 @@ pub fn tick (deltaTime: u32) bool {
     }
 
     if (redraw) {
-//        draw();
+        draw();
     }
 
     if (animateRobotMove(movingRobot)) {
