@@ -32,6 +32,12 @@ pub fn draw() void {
 
     util.drawBitmap(g_player_image, 10, 10);
     util.drawBitmap(g_robot_image, 60, 80);
+
+    const text = "(A) to animate.   (>) to Step";
+
+    const x = 5;
+    const y = 220;
+    _ = pd.graphics.drawText(text.ptr, text.len, .ASCIIEncoding, x, y);
 }
 
 pub fn tick (deltaTime: u32) bool {
