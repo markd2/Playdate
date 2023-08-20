@@ -21,6 +21,7 @@ pub const card = cardmod.Card{
 
 var rnd = RndGen.init(0);
 
+// TODO unify - used by other cards
 var g_robot_image: *pdapi.LCDBitmap = undefined;
 var g_player_image: *pdapi.LCDBitmap = undefined;
 
@@ -38,6 +39,26 @@ pub const Player = struct {
     row: i16,
     column: i16,
     hasWeapon: bool
+};
+
+pub const MovingRobot = struct {
+    robot: Robot,
+    moveDuration: f32,
+    startRow: i16,
+    startColumn: i16,
+    destinationRow: i16,
+    destinationColumn: i16,
+    startTime: f32
+};
+
+var movingRobot = MovingRobot {
+    .robot = undefined,
+    .moveDuration = 1.0,
+    .startRow = 2,
+    .startColumn = 2,
+    .destinationRow = 3,
+    .destinationColumn = 3,
+    .startTime = undefined
 };
 
 const initialRobotCount = 20;
@@ -103,6 +124,9 @@ pub fn init(p: *pdapi.PlaydateAPI) void {
     player = Player{ .row = playerRow, .column = playerColumn,
                     .hasWeapon = true };
     playfield[indexOf(playerRow, playerColumn)] = kPlayer;
+
+    var now = @as(f32, @floatFromInt(pd.system.getCurrentTimeMilliseconds()));
+    movingRobot.startTime = now;
 }
 
 
@@ -165,6 +189,45 @@ fn moveAllRobots(deltaRow: i8, deltaColumn: i8) void {
     }
 }
 
+fn animateRobotMove(anim: MovingRobot) bool {
+    _ = anim;
+
+    var x = anim.startColumn * cellSize;
+    var y = anim.startRow * cellSize;
+    const destX = anim.destinationColumn * cellSize;
+    const destY = anim.destinationRow * cellSize;
+
+    const deltaX = x - destX;
+    const deltaY = y - destY;
+
+    // var now = @as(f32, @floatFromInt());
+    const elapsedTime = now - anim.startTime;
+    const percentage = anim.moveDuration / elapsedTime;
+
+    util.mongoLog("snorgle {} {} {} {}", .{anim.startTime, now, percentage});
+
+    if (percentage > 1.0) {
+        // move goalposts
+        movingRobot.startRow = movingRobot.destinationRow;
+        movingRobot.startColumn = movingRobot.destinationColumn;
+
+        movingRobot.destinationRow += 1;
+        movingRobot.destinationColumn += 1;
+        return false;
+    }
+
+    const percentX: f32 = @as(f32, @floatFromInt(deltaX)) * percentage;
+    const percentY: f32 = @as(f32, @floatFromInt(deltaY)) * percentage;
+    const newX = x + @as(i16, @intFromFloat(percentX));
+    const newY = y + @as(i16, @intFromFloat(percentY));
+
+    util.mongoLog("  {}-{} {}-{}", .{ x, y, newX, newY} );
+
+    pd.graphics.drawBitmap(g_player_image, newX, newY, .BitmapUnflipped);
+//    pd.graphics.drawBitmap(g_robot_image, newX, newY, .BitmapUnflipped);
+    return true;
+}
+
 var lastCurrent: pdapi.PDButtons = -1;
 
 pub fn tick (deltaTime: u32) bool {
@@ -209,7 +272,16 @@ pub fn tick (deltaTime: u32) bool {
     }
 
     if (redraw) {
-        draw();
+//        draw();
+    }
+
+    if (animateRobotMove(movingRobot)) {
+        redraw = true;
     }
     return redraw;
 }
+
+// my glasses are dialed in a 16" laptop, if it helps,
+// I need this as a reasonable accomidation for
+// (might need a doctor's note)
+
