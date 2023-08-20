@@ -9,6 +9,7 @@ var pd: *pdapi.PlaydateAPI = undefined;
 
 // todo - unify these constants
 pub const kButtonRight = pdapi.BUTTON_RIGHT;
+pub const kButtonLeft = pdapi.BUTTON_LEFT;
 
 var g_robot_image: *pdapi.LCDBitmap = undefined;
 var g_player_image: *pdapi.LCDBitmap = undefined;
@@ -33,8 +34,13 @@ const Anim = struct {
     end: Point,
 
     fn location(self: Anim, percentage: u8) Point {
-        _ = percentage;
-        return Point{ .x = self.start.x, .y = self.start.y };
+        const deltax = self.end.x - self.start.x;
+        const deltay = self.end.y - self.start.y;
+
+        const newx = self.start.x + @divTrunc((deltax * percentage), 100);
+        const newy = self.start.y + @divTrunc((deltay * percentage), 100);
+
+        return Point{ .x = newx, .y = newy };
     }
 };
 
@@ -54,17 +60,21 @@ pub fn init(p: *pdapi.PlaydateAPI) void {
     g_player_image = pd.graphics.loadBitmap("player", null).?;
 }
 
+fn drawEnd(point: Point) void {
+    const black = @intFromEnum(pdapi.LCDSolidColor.ColorBlack);
+    pd.graphics.drawEllipse(point.x, point.y, 10, 10,
+                            1, 0.0, 360.0, black);
+}
 
 pub fn draw() void {
     const white = @intFromEnum(pdapi.LCDSolidColor.ColorWhite);
     pd.graphics.clear(white);
 
-    const text = "(A) to animate.   (>) to Step";
+    const text = "(A) to animate.   (< >) to Step";
 
     const x = 5;
     const y = 220;
     _ = pd.graphics.drawText(text.ptr, text.len, .ASCIIEncoding, x, y);
-
 
     for (anims) | anim | {
         const p = anim.location(percent);
@@ -73,6 +83,7 @@ pub fn draw() void {
             1 => util.drawBitmap(g_robot_image, p.x, p.y),
             else => {}
         }
+        drawEnd(anim.end);
     }
 }
 
@@ -84,8 +95,11 @@ pub fn tick (deltaTime: u32) bool {
     var current: pdapi.PDButtons = undefined;
     pd.system.getButtonState(&current, null, null);
 
+    if (current & kButtonLeft != 0) {
+        percent -%= 10;
+        if (percent > 100) percent = 100;
+    }
     if (current & kButtonRight != 0) {
-        util.mongoLog("right ", .{});
         percent += 10;
         if (percent > 100) percent = 0;
     }
