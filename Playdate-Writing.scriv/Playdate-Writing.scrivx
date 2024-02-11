@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ScrivenerProject Identifier="50E1DF6E-DB4C-4E12-9B9B-BA54345719BA" Version="2.0" Creator="SCRMAC-3.2.2-14632" Device="SqueakyToy" Author="" Modified="2022-04-23 20:22:12 -0400" ModID="7D188206-24C2-4E58-85E8-C74D455646E0">
+<ScrivenerProject Identifier="50E1DF6E-DB4C-4E12-9B9B-BA54345719BA" Version="2.0" Creator="SCRMAC-3.3.1-15588" Device="SqueakyToy" Author="" Modified="2023-10-20 10:58:56 -0400" ModID="589B8835-B80A-44C9-B67F-0097D53A7DBA">
     <Binder>
         <BinderItem UUID="5D8E677A-EC96-43F1-B51B-B4204F069297" Type="DraftFolder" Created="2022-04-23 10:05:59 -0400" Modified="2022-04-23 10:05:59 -0400">
             <Title>Draft</Title>
@@ -158,14 +158,14 @@
     </StatusSettings>
     <ProjectTargets Notify="No">
         <DraftTarget Type="Words" CountIncludedOnly="Yes" CurrentCompileGroupOnly="No" Deadline="2022-04-23 10:05:59 -0400" IgnoreDeadline="Yes">0</DraftTarget>
-        <SessionTarget Type="Words" CountDraftOnly="Yes" AllowNegatives="Yes" NextResetDate="2022-04-24 01:00:00 -0400" ResetType="Time" ResetTime="00:00" DeterminedFromDeadline="No" WritingDays="" CanWriteOnDeadlineDate="No">0</SessionTarget>
-        <PreviousSession Words="117" Characters="766" Date="2022-04-23 20:21:42 -0400"/>
+        <SessionTarget Type="Words" CountDraftOnly="Yes" AllowNegatives="Yes" NextResetDate="2023-10-21 01:00:00 -0400" ResetType="Time" ResetTime="00:00" DeterminedFromDeadline="No" WritingDays="" CanWriteOnDeadlineDate="No">0</SessionTarget>
+        <PreviousSession Words="0" Characters="0" Date="2023-10-20 10:58:53 -0400"/>
     </ProjectTargets>
-    <RecentWritingHistory Date="2022-04-23 10:05:59 -0400">
-        <DraftWordCount>117</DraftWordCount>
-        <DraftCharCount>766</DraftCharCount>
+    <RecentWritingHistory Date="2023-10-20 00:00:00 -0400">
+        <DraftWordCount>0</DraftWordCount>
+        <DraftCharCount>0</DraftCharCount>
         <OtherWordCount>0</OtherWordCount>
         <OtherCharCount>0</OtherCharCount>
     </RecentWritingHistory>
-    <PrintSettings PaperSize="612.0,792.0" LeftMargin="72.0" RightMargin="72.0" TopMargin="90.0" BottomMargin="90.0" PaperType="na-letter" Orientation="Portrait" HorizontalPagination="Clip" VerticalPagination="Auto" ScaleFactor="1.0" HorizontallyCentered="Yes" VerticallyCentered="Yes" Collates="Yes" PagesAcross="1" PagesDown="1"/>
+    <PrintSettings PaperSize="611.999993,792.0" LeftMargin="72.0" RightMargin="72.0" TopMargin="90.0" BottomMargin="90.0" PaperType="na-letter" Orientation="Portrait" HorizontalPagination="Clip" VerticalPagination="Auto" ScaleFactor="1.0" HorizontallyCentered="Yes" VerticallyCentered="Yes" Collates="Yes" PagesAcross="1" PagesDown="1"/>
 </ScrivenerProject>

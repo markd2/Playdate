@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SearchIndexes Version="1.0">
     <Documents>
-        <Document ID="08AA1F02-AC63-43AB-8FB7-9F5677D41B5A">
-            <Text>Hello there this is big enough to see</Text>
-        </Document>
         <Document ID="5FB2B3E8-2CEE-45B9-AC18-614ADF2734CB">
             <Title>Swift(!)</Title>
             <Text>Swift on Playdate
@@ -15,6 +12,9 @@ https://devforum.play.date/t/using-the-swift-programming-language-on-playdate/41
         <Document ID="431C6BE8-DE0A-45AC-AED5-3F2189017DF2">
             <Title>Assembly</Title>
             <Text>Assembly on Playdate</Text>
+        </Document>
+        <Document ID="08AA1F02-AC63-43AB-8FB7-9F5677D41B5A">
+            <Text>Hello there this is big enough to see</Text>
         </Document>
         <Document ID="EC7C13EA-2184-41FD-B1A1-26231280C97F">
             <Title>Fortran</Title>

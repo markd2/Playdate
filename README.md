@@ -43,3 +43,5 @@ Now... what to actually program it?
       with a custom tool into an in-memory binary format, using
       something like `xxd -i README.md` - prevent the necessity of
       opening a file and reading in.
+* [ ] Zipball - Mega Duck (from Italian Grandma)
+
