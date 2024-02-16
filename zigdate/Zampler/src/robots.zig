@@ -14,12 +14,14 @@ pub const kButtonDown = pdapi.BUTTON_DOWN;
 
 pub const card = cardmod.Card{
     .name = "Robots",
+    .refreshHertz = 16,
     .init = init,
     .tick = tick
 };
 
 var rnd = RndGen.init(0);
 
+// TODO unify - used by other cards
 var g_robot_image: *pdapi.LCDBitmap = undefined;
 var g_player_image: *pdapi.LCDBitmap = undefined;
 
@@ -37,6 +39,26 @@ pub const Player = struct {
     row: i16,
     column: i16,
     hasWeapon: bool
+};
+
+pub const MovingRobot = struct {
+    robot: Robot,
+    moveDuration: f32,
+    startRow: i16,
+    startColumn: i16,
+    destinationRow: i16,
+    destinationColumn: i16,
+    startTime: f32
+};
+
+var movingRobot = MovingRobot {
+    .robot = undefined,
+    .moveDuration = 1.0,
+    .startRow = 2,
+    .startColumn = 2,
+    .destinationRow = 3,
+    .destinationColumn = 3,
+    .startTime = undefined
 };
 
 const initialRobotCount = 20;
@@ -102,6 +124,9 @@ pub fn init(p: *pdapi.PlaydateAPI) void {
     player = Player{ .row = playerRow, .column = playerColumn,
                     .hasWeapon = true };
     playfield[indexOf(playerRow, playerColumn)] = kPlayer;
+
+    var now = @as(f32, @floatFromInt(pd.system.getCurrentTimeMilliseconds()));
+    movingRobot.startTime = now;
 }
 
 
@@ -164,6 +189,12 @@ fn moveAllRobots(deltaRow: i8, deltaColumn: i8) void {
     }
 }
 
+fn animateRobotMove(anim: MovingRobot) bool {
+    _ = anim;
+
+    return true;
+}
+
 var lastCurrent: pdapi.PDButtons = -1;
 
 pub fn tick (deltaTime: u32) bool {
@@ -210,5 +241,14 @@ pub fn tick (deltaTime: u32) bool {
     if (redraw) {
         draw();
     }
+
+    if (animateRobotMove(movingRobot)) {
+        redraw = true;
+    }
     return redraw;
 }
+
+// my glasses are dialed in a 16" laptop, if it helps,
+// I need this as a reasonable accomidation for
+// (might need a doctor's note)
+

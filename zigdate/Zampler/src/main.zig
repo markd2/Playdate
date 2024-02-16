@@ -6,13 +6,17 @@ const util = @import("util.zig");
 const wrapper = @import("playdate_api_wrapper.zig");
 
 // Cards
-const robots = @import("robots.zig");
+const animator = @import("animator.zig");
 const collisions = @import("collisions.zig");
-const robotsCard = robots.card;
+const robots = @import("robots.zig");
+
+const animatorCard = animator.card;
 const collisionsCard = collisions.card;
-// !!! not a fan of the hardcoded 2
-const allCards: [2]card.Card = .{ robotsCard, collisionsCard };
-var currentCard: card.Card = robotsCard;
+const robotsCard = robots.card;
+
+// !!! not a fan of the hardcoded ~2~ 3
+const allCards: [3]card.Card = .{ animatorCard, robotsCard, collisionsCard };
+var currentCard: card.Card = undefined;
 
 var g_playdate_image: *pdapi.LCDBitmap = undefined;
 var pd: *pdapi.PlaydateAPI = undefined;
@@ -35,8 +39,11 @@ pub export fn eventHandler(pd_in: *pdapi.PlaydateAPI, event: pdapi.PDSystemEvent
 
             lastTime = @as(u32, pd.system.getCurrentTimeMilliseconds());
 
+            animatorCard.init(pd);
             robotsCard.init(pd);
             collisionsCard.init(pd);
+
+            moveToCard(allCards[0]);
 
             setupMenu();
 
@@ -52,12 +59,17 @@ pub export fn eventHandler(pd_in: *pdapi.PlaydateAPI, event: pdapi.PDSystemEvent
     return 0;
 }
 
+fn moveToCard(newCard: card.Card) void {
+    currentCard = newCard;
+    const rate = @as(f32, @floatFromInt(currentCard.refreshHertz));
+    pd.display.setRefreshRate(rate);
+}
+
 fn menuItemCallback(userdata: ?*anyopaque) callconv(.C) void {
     _ = userdata;
 
     var chosenOption: c_uint = @as(c_uint, @intCast(pd.system.getMenuItemValue(optionsMenu)));
-//    const chosenOption = @truncate(u32, pd.system.getMenuItemValue(optionsMenu));
-    currentCard = allCards[chosenOption];
+    moveToCard(allCards[chosenOption]);
 }
 
 fn setupMenu() void {
@@ -67,6 +79,7 @@ fn setupMenu() void {
 
     wrapper.set_playdate_api(pd);
     var strings = [_][*c]const u8{
+        animatorCard.name.ptr,
         robotsCard.name.ptr,
         collisionsCard.name.ptr };
 
@@ -81,6 +94,7 @@ fn updateAndRender(userdata: ?*anyopaque) callconv(.C) c_int {
     _ = userdata; // this is the playdate api, but we have a global we can access.
 
     var now = @as(u32, pd.system.getCurrentTimeMilliseconds());
+
     var delta = now - lastTime;
     lastTime = now;
 

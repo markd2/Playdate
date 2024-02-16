@@ -6,6 +6,7 @@ var pd: *pdapi.PlaydateAPI = undefined;
 
 pub const card = cardmod.Card{
     .name = "Collisions",
+    .refreshHertz = 2,
     .init = init,
     .tick = tick
 };
