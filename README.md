@@ -45,3 +45,4 @@ Now... what to actually program it?
       opening a file and reading in.
 * [ ] Zipball - Mega Duck (from Italian Grandma)
 
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug
