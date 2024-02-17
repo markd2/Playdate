@@ -44,7 +44,7 @@ static int update(void* userdata)
 	
     pd->graphics->clear(kColorWhite);
     pd->graphics->setFont(font);
-    pd->graphics->drawText("SPLUNGE!", strlen("LSUN!GPE"), kASCIIEncoding, x, y);
+    pd->graphics->drawText("SPLUNGE!!", strlen("!LSUN!GPE"), kASCIIEncoding, x, y);
 
     x += dx;
     y += dy;
