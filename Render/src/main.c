@@ -23,8 +23,11 @@ static void drawNoiseForRow(int y);
 static void moveAndDrawRect(Rect from, Rect to);
 static void plotPoint(uint8_t *buffer, int x, int y, Color color);
 static void drawLine(uint8_t *buffer);
+static void fillRect(uint8_t *buffer, Rect rect, Color color);
+static void moveSprite(uint8_t *buffer);
 
-static Rect sprite = { 0, 0, 20, 20 };
+
+static Rect sprite = { 0, 0, 20, 30 };
 
 static int frameCounter = 0;
 
@@ -38,13 +41,7 @@ static int update(void* userdata) {
         
 //    drawStaticBackground();
 
-    Rect oldRect = sprite;
-    sprite.x += 1;
-    sprite.y += (frameCounter % 5 == 0) ? 1 : 0;
-
-    if (sprite.y + sprite.height > screenHeight) { sprite.y = 0; }
-    // moveAndDrawRect(oldRect, sprite);
-    drawLine(frameBuffer);
+    moveSprite(frameBuffer);
 
     pd->system->drawFPS(0, 0);
 
@@ -54,6 +51,24 @@ static int update(void* userdata) {
 } // update
 
 
+static void moveSprite(uint8_t *buffer) {
+
+    Rect oldRect = sprite;
+    sprite.x += 2;
+    sprite.y += 1;
+    if (sprite.x + sprite.width >= screenWidth) {
+        sprite.x = 0;
+    }
+    if (sprite.y + sprite.height >= screenHeight) {
+        sprite.y = 0;
+    }
+
+    fillRect(buffer, oldRect, Color_Light);
+    fillRect(buffer, sprite, Color_Dark);
+
+} // moveSprite
+
+
 static void drawLine(uint8_t *buffer) {
     for (int y = 0; y < 150; y++) {
         plotPoint(buffer, y, y, Color_Dark);
@@ -61,6 +76,16 @@ static void drawLine(uint8_t *buffer) {
 } // drawLine
 
 
+static void fillRect(uint8_t *buffer, Rect rect, Color color) {
+    for (int y = rect.y; y < rect.y + rect.height; y++) {
+        for (int x = rect.x; x < rect.x + rect.width; x++) {
+            plotPoint(buffer, x, y, color);
+        }
+    }
+
+    pd->graphics->markUpdatedRows(rect.y, rect.y + rect.height);
+
+} // fillRect
 
 
 static void plotPoint(uint8_t *buffer, int x, int y, Color color) {
@@ -84,24 +109,7 @@ static void plotPoint(uint8_t *buffer, int x, int y, Color color) {
 
 
 static void moveAndDrawRect(Rect from, Rect to) {
-    uint8_t *frameBuffer = pd->graphics->getFrame();
 
-    // fill in where rect was
-    for (int y = from.y; y < from.y + from.height; y++) {
-        drawNoiseForRow(y);
-    }
-
-    // render rectangle, slowly
-    
-    for (int y = to.y; y < to.y + to.height; y++) {
-        uint8_t *scan = frameBuffer + y * LCD_ROWSIZE;
-
-        for (int x = to.x; x < to.x + to.width; x++) {
-            *(scan + x) = 0xFF;
-        }
-    }
-
-    pd->graphics->markUpdatedRows(from.y, from.y + from.height);
     pd->graphics->markUpdatedRows(to.y, to.y + to.height);
     
 } // moveAndDrawRect
