@@ -14,6 +14,7 @@ static int update(void* userdata) {
     pd = userdata;
 	
     pd->graphics->clear(kColorWhite);
+    pd->display->setRefreshRate(50);
         
     draw();
 
