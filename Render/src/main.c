@@ -8,15 +8,17 @@ PlaydateAPI *pd;
 static const int screenWidth = 400;
 static const int screenHeight = 240;
 
-static void draw(void);
+static void draw(char bit0, char bit1, char bit2, char bit3, char bit4,char bit5, char bit6, char bit7);
 
 static int update(void* userdata) {
     pd = userdata;
 	
     pd->graphics->clear(kColorWhite);
     pd->display->setRefreshRate(50);
+    
+    
         
-    draw();
+    draw(rand() %2, rand() %2, rand() %2, rand() %2, rand() %2, rand() %2, rand() %2, rand() %2);
 
     pd->system->drawFPS(0,0);
 
@@ -24,14 +26,41 @@ static int update(void* userdata) {
 } // update
 
 
-static void draw(void) {
+static void draw(char bit0, char bit1, char bit2, char bit3, char bit4,char bit5, char bit6, char bit7) {
     uint8_t *frameBuffer = pd->graphics->getFrame();
     uint8_t *scan;
 
     for (int y = 0; y < screenHeight; y += 1) {
         scan = frameBuffer + y * LCD_ROWSIZE;
         for (int x = 0; x < screenWidth / 8; x++) {
-            *scan++ = 0xF5; // clear bits are black, set bits are white
+            char byte = 0;
+            if (bit0) {
+                byte |= 1 << 0;
+            }
+            if (bit1) {
+                byte |= 1 << 1;
+            }
+            if (bit2) {
+                byte |= 1 << 2;
+            }
+            if (bit3) {
+                byte |= 1 << 3;
+            }
+            if (bit4) {
+                byte |= 1 << 4;
+            }
+            if (bit5) {
+                byte |= 1 << 5;
+            }
+            if (bit6) {
+                byte |= 1 << 6;
+            }
+            if (bit7) {
+                byte |= 1 << 7;
+            }
+
+            *scan++ = byte;
+            // *scan++ = 0xF5; // clear bits are black, set bits are white
         }
     }
 } // draw
