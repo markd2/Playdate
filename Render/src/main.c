@@ -27,26 +27,30 @@ typedef struct Rect {
     int width, height;
 } Rect;
 
+static const int spriteWidth = 10;
+static const int spriteHeight = 7;
+
+typedef struct Sprite {
+    Rect rect;
+    int deltaX;
+    int deltaY;
+} Sprite;
+
+static Sprite sprite = { { 0, 0, spriteWidth, spriteHeight }, 1, 1};
+static Sprite sprites[200];
+
 static void drawStaticBackground(void);
 static void drawNoiseForRow(int y);
 static void moveAndDrawRect(Rect from, Rect to);
 static void plotPoint(uint8_t *buffer, int x, int y, Color color);
 static void drawLine(uint8_t *buffer);
 static void fillRect(uint8_t *buffer, Rect rect, Color color);
-static void moveSprite(uint8_t *buffer, Rect *inoutSprite);
+static void moveSprite(uint8_t *buffer, Sprite *sprite);
 static void moveSprites(uint8_t *buffer);
 static void bulkBlortFromTo(const uint8_t *from, uint8_t *to);
 
-static const int spriteWidth = 10;
-static const int spriteHeight = 7;
-
-static Rect sprite = { 0, 0, spriteWidth, spriteHeight };
-static Rect sprites[150];
-
-static int frameCounter = 0;
-
 static void firstTimeSetup(void) {
-    Rect *scan, *stop;
+    Sprite *scan, *stop;
     scan = sprites;
     stop = scan + sizeof(sprites) / sizeof(*sprites);
 
@@ -54,10 +58,16 @@ static void firstTimeSetup(void) {
     int vmod = screenHeight - spriteHeight;
 
     while (scan < stop) {
-        scan->x = rand() % hmod;
-        scan->y = rand() % vmod;
-        scan->width = 8 + rand() % spriteWidth;
-        scan->height = 6 + rand() % spriteHeight;
+        scan->rect.x = rand() % hmod;
+        scan->rect.y = rand() % vmod;
+        scan->rect.width = 8 + rand() % spriteWidth;
+        scan->rect.height = 6 + rand() % spriteHeight;
+        scan->deltaX = 1;
+        if (rand() % 3) { scan->deltaX = 2; }
+
+        scan->deltaY = 1;
+        if (rand() % 5) { scan->deltaY = 2; }
+
         scan++;
     }
 } // firstTimeSetup
@@ -79,8 +89,6 @@ static int update(void* userdata) {
 
     pd->system->drawFPS(0, 0);
 
-    frameCounter++;
-
     return 1;
 } // update
 
@@ -95,7 +103,7 @@ static void bulkBlortFromTo(const uint8_t *from, uint8_t *to) {
 
 
 static void moveSprites(uint8_t *buffer) {
-    Rect *scan, *stop;
+    Sprite *scan, *stop;
     scan = sprites;
     stop = scan + sizeof(sprites) / sizeof(*sprites);
 
@@ -107,23 +115,24 @@ static void moveSprites(uint8_t *buffer) {
 } // moveSprites
 
 
-static void moveSprite(uint8_t *buffer, Rect *inoutSprite) {
+static void moveSprite(uint8_t *buffer, Sprite *sprite) {
 
-    Rect oldRect = *inoutSprite;
-    Rect sprite = *inoutSprite;
-    sprite.x += 2;
-    sprite.y += 1;
-    if (sprite.x + sprite.width >= screenWidth) {
-        sprite.x = 0;
+    Rect oldRect = sprite->rect;
+    Rect newRect = sprite->rect;
+
+    newRect.x += sprite->deltaX;
+    newRect.y += sprite->deltaY;
+    if (newRect.x + newRect.width >= screenWidth) {
+        newRect.x = 0;
     }
-    if (sprite.y + sprite.height >= screenHeight) {
-        sprite.y = 0;
+    if (newRect.y + newRect.height >= screenHeight) {
+        newRect.y = 0;
     }
 
     fillRect(buffer, oldRect, Color_Light);
-    fillRect(buffer, sprite, Color_Dark);
+    fillRect(buffer, newRect, Color_Dark);
 
-    *inoutSprite = sprite;
+    sprite->rect = newRect;
 
 } // moveSprite
 
