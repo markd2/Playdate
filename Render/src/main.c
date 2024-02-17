@@ -21,8 +21,8 @@ typedef struct Rect {
 static void drawStaticBackground(void);
 static void drawNoiseForRow(int y);
 static void moveAndDrawRect(Rect from, Rect to);
-static void plotPoint(int x, int y, Color color);
-static void drawLine(void);
+static void plotPoint(uint8_t *buffer, int x, int y, Color color);
+static void drawLine(uint8_t *buffer);
 
 static Rect sprite = { 0, 0, 20, 20 };
 
@@ -30,6 +30,8 @@ static int frameCounter = 0;
 
 static int update(void* userdata) {
     pd = userdata;
+
+    uint8_t *frameBuffer = pd->graphics->getFrame();
 	
     // pd->graphics->clear(kColorWhite);
     pd->display->setRefreshRate(0);
@@ -42,7 +44,7 @@ static int update(void* userdata) {
 
     if (sprite.y + sprite.height > screenHeight) { sprite.y = 0; }
     // moveAndDrawRect(oldRect, sprite);
-    drawLine();
+    drawLine(frameBuffer);
 
     pd->system->drawFPS(0, 0);
 
@@ -52,17 +54,18 @@ static int update(void* userdata) {
 } // update
 
 
-static void drawLine() {
+static void drawLine(uint8_t *buffer) {
     for (int y = 0; y < 150; y++) {
-        plotPoint(y, y, Color_Dark);
+        plotPoint(buffer, y, y, Color_Dark);
     }
 } // drawLine
 
 
-static void plotPoint(int x, int y, Color color) {
-    uint8_t *frameBuffer = pd->graphics->getFrame();
 
-    uint8_t *byteAddress = frameBuffer + (y * LCD_ROWSIZE) + (x / 8);
+
+static void plotPoint(uint8_t *buffer, int x, int y, Color color) {
+
+    uint8_t *byteAddress = buffer + (y * LCD_ROWSIZE) + (x / 8);
     uint8_t byte = *byteAddress;
     uint8_t bit = 7 - x % 8;
     uint8_t mask = 1 << bit;
