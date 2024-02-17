@@ -8,6 +8,11 @@ PlaydateAPI *pd;
 static const int screenWidth = 400;
 static const int screenHeight = 240;
 
+typedef enum Color {
+    Color_Dark,
+    Color_Light
+} Color;
+
 typedef struct Rect {
     int x, y;
     int width, height;
@@ -16,8 +21,10 @@ typedef struct Rect {
 static void drawStaticBackground(void);
 static void drawNoiseForRow(int y);
 static void moveAndDrawRect(Rect from, Rect to);
+static void plotPoint(int x, int y, Color color);
+static void drawLine(void);
 
-static Rect sprite = { 0, 0, 2 /*bytes*/, 20 /*rows*/ };
+static Rect sprite = { 0, 0, 20, 20 };
 
 static int frameCounter = 0;
 
@@ -27,14 +34,15 @@ static int update(void* userdata) {
     // pd->graphics->clear(kColorWhite);
     pd->display->setRefreshRate(0);
         
-    drawStaticBackground();
+//    drawStaticBackground();
 
     Rect oldRect = sprite;
     sprite.x += 1;
     sprite.y += (frameCounter % 5 == 0) ? 1 : 0;
 
     if (sprite.y + sprite.height > screenHeight) { sprite.y = 0; }
-    moveAndDrawRect(oldRect, sprite);
+    // moveAndDrawRect(oldRect, sprite);
+    drawLine();
 
     pd->system->drawFPS(0, 0);
 
@@ -42,6 +50,34 @@ static int update(void* userdata) {
 
     return 1;
 } // update
+
+
+static void drawLine() {
+    for (int y = 0; y < 150; y++) {
+        plotPoint(y, y, Color_Dark);
+    }
+} // drawLine
+
+
+static void plotPoint(int x, int y, Color color) {
+    uint8_t *frameBuffer = pd->graphics->getFrame();
+
+    uint8_t *byteAddress = frameBuffer + (y * LCD_ROWSIZE) + (x / 8);
+    uint8_t byte = *byteAddress;
+    uint8_t bit = 7 - x % 8;
+    uint8_t mask = 1 << bit;
+
+    if (color == Color_Dark) {
+        // clear the bit
+        byte &= ~mask;
+    } else {
+        // set the bit
+        byte |= mask;
+    }
+
+    *byteAddress = byte;
+
+} // plotPoint
 
 
 static void moveAndDrawRect(Rect from, Rect to) {
