@@ -8,7 +8,18 @@ PlaydateAPI *pd;
 static const int screenWidth = 400;
 static const int screenHeight = 240;
 
+typedef struct Rect {
+    int x, y;
+    int width, height;
+} Rect;
+
 static void drawStaticBackground(void);
+static void drawNoiseForRow(int y);
+static void moveAndDrawRect(Rect from, Rect to);
+
+static Rect sprite = { 0, 0, 2 /*bytes*/, 20 /*rows*/ };
+
+static int frameCounter = 0;
 
 static int update(void* userdata) {
     pd = userdata;
@@ -18,10 +29,43 @@ static int update(void* userdata) {
         
     drawStaticBackground();
 
+    Rect oldRect = sprite;
+    sprite.x += 1;
+    sprite.y += (frameCounter % 5 == 0) ? 1 : 0;
+
+    if (sprite.y + sprite.height > screenHeight) { sprite.y = 0; }
+    moveAndDrawRect(oldRect, sprite);
+
     pd->system->drawFPS(0, 0);
+
+    frameCounter++;
 
     return 1;
 } // update
+
+
+static void moveAndDrawRect(Rect from, Rect to) {
+    uint8_t *frameBuffer = pd->graphics->getFrame();
+
+    // fill in where rect was
+    for (int y = from.y; y < from.y + from.height; y++) {
+        drawNoiseForRow(y);
+    }
+
+    // render rectangle, slowly
+    
+    for (int y = to.y; y < to.y + to.height; y++) {
+        uint8_t *scan = frameBuffer + y * LCD_ROWSIZE;
+
+        for (int x = to.x; x < to.x + to.width; x++) {
+            *(scan + x) = 0xFF;
+        }
+    }
+
+    pd->graphics->markUpdatedRows(from.y, from.y + from.height);
+    pd->graphics->markUpdatedRows(to.y, to.y + to.height);
+    
+} // moveAndDrawRect
 
 
 static void drawNoiseForRow(int y) {
