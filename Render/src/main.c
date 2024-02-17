@@ -8,9 +8,7 @@ PlaydateAPI *pd;
 static const int screenWidth = 400;
 static const int screenHeight = 240;
 
-static void draw(void);
-
-static int frameCounter = 0;
+static void drawStaticBackground(void);
 
 static int update(void* userdata) {
     pd = userdata;
@@ -18,7 +16,7 @@ static int update(void* userdata) {
     // pd->graphics->clear(kColorWhite);
     pd->display->setRefreshRate(0);
         
-    draw();
+    drawStaticBackground();
 
     pd->system->drawFPS(0, 0);
 
@@ -26,31 +24,32 @@ static int update(void* userdata) {
 } // update
 
 
-static void draw(void) {
+static void drawNoiseForRow(int y) {
     uint8_t *frameBuffer = pd->graphics->getFrame();
     uint8_t *scan;
-    frameCounter = rand() % screenHeight;
-    int y = frameCounter;
 
-    // for (int y = 0; y < screenHeight; y += 1) {
-        scan = frameBuffer + y * LCD_ROWSIZE;
-        for (int x = 0; x < screenWidth / 8; x++) {
-            char byte = rand() % 256;
+    scan = frameBuffer + y * LCD_ROWSIZE;
+    for (int x = 0; x < screenWidth / 8; x++) {
+        char byte = rand() % 256;
+        
+        *scan++ = byte;
+        // *scan++ = 0xF5; // clear bits are black, set bits are white  So ****o*o*. MSB first
+    }
 
-            *scan++ = byte;
-            // *scan++ = 0xF5; // clear bits are black, set bits are white  So ****o*o*. MSB first
-        }
-// }
+    pd->graphics->markUpdatedRows(y, y + 1);
+
+} // drawNoiseForRow
+
+
+static void drawStaticBackground(void) {
+    int y = rand() % screenHeight;
+
+    drawNoiseForRow(y);
 
     // whole screen
     // pd->graphics->markUpdatedRows(0, screenHeight - 1);
 
-    pd->graphics->markUpdatedRows(frameCounter, frameCounter + 1);
-
-//    frameCounter++;
-//    if (frameCounter >= screenHeight) frameCounter = 0;
-    
-} // draw
+} // drawStaticBackground
 
 
 int eventHandler(PlaydateAPI* pd, PDSystemEvent event, uint32_t arg) {
