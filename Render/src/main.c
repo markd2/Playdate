@@ -29,6 +29,7 @@ static int update(void* userdata) {
 static void draw(void) {
     uint8_t *frameBuffer = pd->graphics->getFrame();
     uint8_t *scan;
+    frameCounter = rand() % screenHeight;
     int y = frameCounter;
 
     // for (int y = 0; y < screenHeight; y += 1) {
@@ -46,8 +47,8 @@ static void draw(void) {
 
     pd->graphics->markUpdatedRows(frameCounter, frameCounter + 1);
 
-    frameCounter++;
-    if (frameCounter >= screenHeight) frameCounter = 0;
+//    frameCounter++;
+//    if (frameCounter >= screenHeight) frameCounter = 0;
     
 } // draw
 
