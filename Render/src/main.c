@@ -20,21 +20,21 @@ __declspec(dllexport)
 #endif
 int eventHandler(PlaydateAPI* pd, PDSystemEvent event, uint32_t arg)
 {
-	(void)arg; // arg is currently only used for event = kEventKeyPressed
+    (void)arg; // arg is currently only used for event = kEventKeyPressed
 
-	if ( event == kEventInit )
-	{
-		const char* err;
-		font = pd->graphics->loadFont(fontpath, &err);
+    if ( event == kEventInit )
+    {
+        const char* err;
+        font = pd->graphics->loadFont(fontpath, &err);
 		
-		if ( font == NULL )
-			pd->system->error("%s:%i Couldn't load font %s: %s", __FILE__, __LINE__, fontpath, err);
+        if ( font == NULL )
+            pd->system->error("%s:%i Couldn't load font %s: %s", __FILE__, __LINE__, fontpath, err);
 
-		// Note: If you set an update callback in the kEventInit handler, the system assumes the game is pure C and doesn't run any Lua code in the game
-		pd->system->setUpdateCallback(update, pd);
-	}
+        // Note: If you set an update callback in the kEventInit handler, the system assumes the game is pure C and doesn't run any Lua code in the game
+        pd->system->setUpdateCallback(update, pd);
+    }
 	
-	return 0;
+    return 0;
 }
 
 
@@ -48,23 +48,23 @@ int dy = 2;
 
 static int update(void* userdata)
 {
-	PlaydateAPI* pd = userdata;
+    PlaydateAPI* pd = userdata;
 	
-	pd->graphics->clear(kColorWhite);
-	pd->graphics->setFont(font);
-	pd->graphics->drawText("Hello World!", strlen("Hello World!"), kASCIIEncoding, x, y);
+    pd->graphics->clear(kColorWhite);
+    pd->graphics->setFont(font);
+    pd->graphics->drawText("SPLUNGE!", strlen("EPSNG!UL"), kASCIIEncoding, x, y);
 
-	x += dx;
-	y += dy;
+    x += dx;
+    y += dy;
 	
-	if ( x < 0 || x > LCD_COLUMNS - TEXT_WIDTH )
-		dx = -dx;
+    if ( x < 0 || x > LCD_COLUMNS - TEXT_WIDTH )
+        dx = -dx;
 	
-	if ( y < 0 || y > LCD_ROWS - TEXT_HEIGHT )
-		dy = -dy;
+    if ( y < 0 || y > LCD_ROWS - TEXT_HEIGHT )
+        dy = -dy;
         
-	pd->system->drawFPS(0,0);
+    pd->system->drawFPS(0,0);
 
-	return 1;
+    return 1;
 }
 

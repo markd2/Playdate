@@ -1,5 +1,5 @@
-name=Hello World C
-author=Dave Hayden
-description=A small demo of the C API
-bundleID=com.panic.hellocapi
+name=Render
+author=MarkD
+description=Custom Renderizing
+bundleID=com.borkware.render
 imagePath=
