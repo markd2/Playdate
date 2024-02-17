@@ -29,8 +29,9 @@ static int update(void* userdata) {
 static void draw(void) {
     uint8_t *frameBuffer = pd->graphics->getFrame();
     uint8_t *scan;
+    int y = frameCounter;
 
-    for (int y = 0; y < screenHeight; y += 1) {
+    // for (int y = 0; y < screenHeight; y += 1) {
         scan = frameBuffer + y * LCD_ROWSIZE;
         for (int x = 0; x < screenWidth / 8; x++) {
             char byte = rand() % 256;
@@ -38,15 +39,15 @@ static void draw(void) {
             *scan++ = byte;
             // *scan++ = 0xF5; // clear bits are black, set bits are white  So ****o*o*. MSB first
         }
-    }
+// }
 
     // whole screen
     // pd->graphics->markUpdatedRows(0, screenHeight - 1);
 
-    if (frameCounter >= screenHeight) frameCounter = 0;
     pd->graphics->markUpdatedRows(frameCounter, frameCounter + 1);
 
     frameCounter++;
+    if (frameCounter >= screenHeight) frameCounter = 0;
     
 } // draw
 
