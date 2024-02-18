@@ -13,6 +13,9 @@ typedef enum Color {
 static const int screenWidth = 400;
 static const int screenHeight = 240;
 
+// static const uint8_t texture[2] = { 0xB2, 0x2B }; // 10110010 00101011
+static const uint8_t texture[2] = { 0x35, 0x92 }; // 00110101 10010010  // dark dark light light...
+
 // use #define so we can statically "allocate" these buffer
 #define screenBufferSize 12480 // screenHeight * LCD_ROWSIZE
 
@@ -37,7 +40,7 @@ typedef struct Sprite {
 } Sprite;
 
 static Sprite sprite = { { 0, 0, spriteWidth, spriteHeight }, 1, 1};
-static Sprite sprites[200];
+static Sprite sprites[150];
 
 static void drawStaticBackground(void);
 static void drawNoiseForRow(int y);
@@ -48,6 +51,7 @@ static void fillRect(uint8_t *buffer, Rect rect, Color color);
 static void moveSprite(uint8_t *buffer, Sprite *sprite);
 static void moveSprites(uint8_t *buffer);
 static void bulkBlortFromTo(const uint8_t *from, uint8_t *to);
+void drawTextureAt(uint8_t *buffer, int x, int y);
 
 static void firstTimeSetup(void) {
     Sprite *scan, *stop;
@@ -85,12 +89,96 @@ static int update(void* userdata) {
         
 //    drawStaticBackground();
 
-    moveSprites(frameBuffer);
+//    moveSprites(frameBuffer);
+
+    for (int i = 40; i < 80 + 40; i++) {
+        drawTextureAt(frameBuffer, i - 40, i);
+    }
 
     pd->system->drawFPS(0, 0);
 
     return 1;
 } // update
+
+
+static uint8_t topMaskLookup[] = {
+    0b11111110,
+    0b11111100,
+    0b11111000,
+    0b11110000,
+    0b11100000,
+    0b11000000,
+    0b10000000,
+    0b00000000
+};
+
+void drawTextureAt(uint8_t *buffer, int x, int y) {
+
+    uint8_t *byteAddress = buffer + (y * LCD_ROWSIZE) + (x / 8);
+    uint8_t byte1;
+    uint8_t byte2;
+    uint8_t bit = 7 - x % 8;
+
+    if (bit == 7) {
+        // no shift necessary.  Just blort the two bytes
+        byte1 = texture[0];
+        byte2 = texture[1];
+        *byteAddress = byte1;
+        *(byteAddress + 1) = byte2;
+    } else {
+        // basically put bit 7 of text1 at bit in the frame buffer.
+        // There's four chunks
+        //  * top bits of texture[0] go to bottom bits of frame buffer byte
+        //  * bottom bits of texture[0] go to top bits of the nextByte
+        //  * top bits of texture[1] go to the bottom bits of nextByte
+        //  * bottom bits of texture[1] go to the top bites of nextNextByte
+        // and essentially can repeat this for textures bigger than two, but for now
+        // this will do
+        // 
+        // so, assuming a texture bit pattern of 
+        //       7 6 5 4 3 2 1 0    7 6 5 4 3 2 1 0
+        //     | A B C D E F G H || I J K L M N O P |
+        //
+        // and a frame buffer bit pattern of 
+        //       7 6 5 4 3 2 1 0    7 6 5 4 3 2 1 0    7 6 5 4 3 2 1 0
+        //     | a b c d e f g h || i j k l m n o p || q r s t u v w x ||
+        //
+        // and putting them together gives
+        
+        //     bit == 4
+        //           byte0              byte1              byte2
+        //     | a b c d e f g h || i j k l m n o p || q r s t u v w x ||
+        //           | A B C D E    F G H|I J K L M    N O P |
+
+        uint8_t byte0 = *byteAddress;
+        uint8_t byte1 = 0; // going to be blown away
+        uint8_t byte2 = *(byteAddress + 2);
+
+        uint8_t topMask = topMaskLookup[bit];
+        uint8_t bottomMask = ~topMask;
+
+        // byte0 - blast bottom bits to zero, shift texture over, OR in the bits
+        // say for bit == 4, top mask is 11100000 and bottom mask is 00011111
+        byte0 &= topMask;
+        byte0 |= (texture[0] >> (7 - bit)) & bottomMask;
+        byteAddress[0] = byte0;
+
+        // byte1 - bottom bits from texture 0 at the top, and top bits of text 1 at the bottom
+        // assemble the top
+        byte1 |= (texture[0] << (bit + 1)) & topMask;
+        // assemble the bottom
+        byte1 |= (texture[1] >> (7 - bit)) & bottomMask;
+        byteAddress[1] = byte1;
+
+        // byte2 - top bits from texture 1 at the bottom
+        // blast the top bits to zero
+        byte2 &= bottomMask;
+        // shift over texture[1]
+        byte2 |= (texture[1] << (bit + 1)) & topMask;
+        byteAddress[2] = byte2;
+    }
+    
+} // drawTextureAt
 
 
 // This slows everything down to 50fps on the sim, 52fps on the device
