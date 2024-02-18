@@ -85,15 +85,15 @@ static int update(void* userdata) {
 //    bulkBlortFromTo(darkScreen, frameBuffer);
 //    bulkBlortFromTo(lightScreen, frameBuffer);
 	
-//    pd->graphics->clear(kColorWhite);
+    pd->graphics->clear(kColorWhite);
         
 //    drawStaticBackground();
 
-//    moveSprites(frameBuffer);
+    moveSprites(frameBuffer);
 
-    for (int i = 40; i < 80 + 40; i++) {
-        drawTextureAt(frameBuffer, i - 40, i);
-    }
+//    for (int i = 40; i < 80 + 40; i++) {
+//        drawTextureAt(frameBuffer, i - 40, i);
+//    }
 
     pd->system->drawFPS(0, 0);
 
@@ -177,6 +177,8 @@ void drawTextureAt(uint8_t *buffer, int x, int y) {
         byte2 |= (texture[1] << (bit + 1)) & topMask;
         byteAddress[2] = byte2;
     }
+
+    pd->graphics->markUpdatedRows(y, y + 1);
     
 } // drawTextureAt
 
@@ -217,8 +219,12 @@ static void moveSprite(uint8_t *buffer, Sprite *sprite) {
         newRect.y = 0;
     }
 
-    fillRect(buffer, oldRect, Color_Light);
-    fillRect(buffer, newRect, Color_Dark);
+//    fillRect(buffer, oldRect, Color_Light);
+//    fillRect(buffer, newRect, Color_Dark);
+
+    for (int y = newRect.y; y < newRect.y + newRect.height; y++) {
+        drawTextureAt(buffer, newRect.x, y);
+    }
 
     sprite->rect = newRect;
 
