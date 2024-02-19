@@ -14,7 +14,8 @@ static const int screenWidth = 400;
 static const int screenHeight = 240;
 
 // static const uint8_t texture[2] = { 0xB2, 0x2B }; // 10110010 00101011
-static const uint8_t texture[2] = { 0x35, 0x92 }; // 00110101 10010010  // dark dark light light...
+// static const uint8_t texture[2] = { 0x35, 0x92 }; // 00110101 10010010  // dark dark light light...
+static const uint8_t texture[4] = { 0x35, 0x92, 0x5A, 0xCA }; // 00110101 10010010 01011010 11001010
 
 // use #define so we can statically "allocate" these buffer
 #define screenBufferSize 12480 // screenHeight * LCD_ROWSIZE
@@ -30,7 +31,7 @@ typedef struct Rect {
     int width, height;
 } Rect;
 
-static const int spriteWidth = 10;
+static const int spriteWidth = 15;
 static const int spriteHeight = 7;
 
 typedef struct Sprite {
@@ -40,7 +41,7 @@ typedef struct Sprite {
 } Sprite;
 
 static Sprite sprite = { { 0, 0, spriteWidth, spriteHeight }, 1, 1};
-static const int spriteCount = 500;
+static const int spriteCount = 100;
 static Sprite *sprites;
 
 static void drawStaticBackground(void);
@@ -52,7 +53,7 @@ static void fillRect(uint8_t *buffer, Rect rect, Color color);
 static void moveSprite(uint8_t *buffer, Sprite *sprite);
 static void moveSprites(uint8_t *buffer);
 static void bulkBlortFromTo(const uint8_t *from, uint8_t *to);
-void drawTextureAt(uint8_t *buffer, int x, int y);
+static void drawTextureAt(uint8_t *buffer, int x, int y);
 
 static void firstTimeSetup(void) {
 
@@ -68,6 +69,8 @@ static void firstTimeSetup(void) {
         scan->rect.x = rand() % hmod;
         scan->rect.y = rand() % vmod;
         scan->rect.width = 8 + rand() % spriteWidth;
+        if (rand() % 10) { scan->rect.width = 32; } // full texture
+
         scan->rect.height = 6 + rand() % spriteHeight;
         scan->deltaX = 1;
         if (rand() % 3) { scan->deltaX = 2; }
@@ -115,7 +118,7 @@ static uint8_t topMaskLookup[] = {
     0b00000000
 };
 
-void drawTextureAt(uint8_t *buffer, int x, int y) {
+static void drawTextureAt(uint8_t *buffer, int x, int y) {
 
     uint8_t *byteAddress = buffer + (y * LCD_ROWSIZE) + (x / 8);
     uint8_t byte1;
@@ -126,6 +129,8 @@ void drawTextureAt(uint8_t *buffer, int x, int y) {
         // no shift necessary.  Just blort the two bytes
         byteAddress[0] = texture[0];
         byteAddress[1] = texture[1];
+        byteAddress[2] = texture[2];
+        byteAddress[3] = texture[3];
     } else {
         // basically put bit 7 of text1 at bit in the frame buffer.
         // There's four chunks
@@ -153,7 +158,9 @@ void drawTextureAt(uint8_t *buffer, int x, int y) {
 
         uint8_t byte0 = *byteAddress;
         uint8_t byte1 = 0; // going to be blown away
-        uint8_t byte2 = *(byteAddress + 2);
+        uint8_t byte2 = 0;
+        uint8_t byte3 = 0;
+        uint8_t byte4 = *(byteAddress + 4);
 
         uint8_t topMask = topMaskLookup[bit];
         uint8_t bottomMask = ~topMask;
@@ -171,12 +178,26 @@ void drawTextureAt(uint8_t *buffer, int x, int y) {
         byte1 |= (texture[1] >> (7 - bit)) & bottomMask;
         byteAddress[1] = byte1;
 
-        // byte2 - top bits from texture 1 at the bottom
-        // blast the top bits to zero
-        byte2 &= bottomMask;
-        // shift over texture[1]
+        // byte1 - bottom bits from texture 1 at the top, and top bits of text 2 at the bottom
+        // assemble the top
         byte2 |= (texture[1] << (bit + 1)) & topMask;
+        // assemble the bottom
+        byte2 |= (texture[2] >> (7 - bit)) & bottomMask;
         byteAddress[2] = byte2;
+
+        // byte1 - bottom bits from texture 2 at the top, and top bits of text 3 at the bottom
+        // assemble the top
+        byte3 |= (texture[2] << (bit + 1)) & topMask;
+        // assemble the bottom
+        byte3 |= (texture[3] >> (7 - bit)) & bottomMask;
+        byteAddress[3] = byte3;
+
+        // byte2 - top bits from texture 3 at the bottom
+        // blast the top bits to zero
+        byte4 &= bottomMask;
+        // shift over texture[end]
+        byte4 |= (texture[3] << (bit + 1)) & topMask;
+        byteAddress[4] = byte4;
     }
 
     pd->graphics->markUpdatedRows(y, y + 1);
