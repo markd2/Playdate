@@ -40,7 +40,8 @@ typedef struct Sprite {
 } Sprite;
 
 static Sprite sprite = { { 0, 0, spriteWidth, spriteHeight }, 1, 1};
-static Sprite sprites[150];
+static const int spriteCount = 500;
+static Sprite *sprites;
 
 static void drawStaticBackground(void);
 static void drawNoiseForRow(int y);
@@ -54,9 +55,11 @@ static void bulkBlortFromTo(const uint8_t *from, uint8_t *to);
 void drawTextureAt(uint8_t *buffer, int x, int y);
 
 static void firstTimeSetup(void) {
+
+    sprites = malloc(sizeof(Sprite) * spriteCount);
     Sprite *scan, *stop;
     scan = sprites;
-    stop = scan + sizeof(sprites) / sizeof(*sprites);
+    stop = scan + spriteCount;
 
     int hmod = screenWidth - spriteWidth;
     int vmod = screenHeight - spriteHeight;
@@ -121,10 +124,8 @@ void drawTextureAt(uint8_t *buffer, int x, int y) {
 
     if (bit == 7) {
         // no shift necessary.  Just blort the two bytes
-        byte1 = texture[0];
-        byte2 = texture[1];
-        *byteAddress = byte1;
-        *(byteAddress + 1) = byte2;
+        byteAddress[0] = texture[0];
+        byteAddress[1] = texture[1];
     } else {
         // basically put bit 7 of text1 at bit in the frame buffer.
         // There's four chunks
@@ -195,7 +196,7 @@ static void bulkBlortFromTo(const uint8_t *from, uint8_t *to) {
 static void moveSprites(uint8_t *buffer) {
     Sprite *scan, *stop;
     scan = sprites;
-    stop = scan + sizeof(sprites) / sizeof(*sprites);
+    stop = scan + spriteCount;
 
     while (scan < stop) {
         moveSprite(buffer, scan);
