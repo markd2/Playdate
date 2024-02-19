@@ -18,6 +18,8 @@ static const int screenHeight = 240;
 static const uint8_t texture[4] = { 0x35, 0x92, 0x5A, 0xCA }; // 00110101 10010010 01011010 11001010
 
 // use #define so we can statically "allocate" these buffer
+// but for realsies probably want to dynamically allocate and memset - seems to be a limited
+// amount of statically allocated data?
 #define screenBufferSize 12480 // screenHeight * LCD_ROWSIZE
 
 //static const int screenBufferSize = 12480; // screenHeight * LCD_ROWSIZE;
@@ -53,7 +55,7 @@ static void fillRect(uint8_t *buffer, Rect rect, Color color);
 static void moveSprite(uint8_t *buffer, Sprite *sprite);
 static void moveSprites(uint8_t *buffer);
 static void bulkBlortFromTo(const uint8_t *from, uint8_t *to);
-static void drawTextureAt(uint8_t *buffer, int x, int y);
+static void drawTextureAt(uint8_t *buffer, const uint8_t *texture, int textureBytes, int x, int y);
 
 static void firstTimeSetup(void) {
 
@@ -95,11 +97,11 @@ static int update(void* userdata) {
         
 //    drawStaticBackground();
 
-    moveSprites(frameBuffer);
+//    moveSprites(frameBuffer);
 
-//    for (int i = 40; i < 80 + 40; i++) {
-//        drawTextureAt(frameBuffer, i - 40, i);
-//    }
+    for (int i = 40; i < 80 + 40; i++) {
+        drawTextureAt(frameBuffer, texture, sizeof(texture) / sizeof(*texture), i - 40, i);
+    }
 
     pd->system->drawFPS(0, 0);
 
@@ -118,7 +120,7 @@ static uint8_t topMaskLookup[] = {
     0b00000000
 };
 
-static void drawTextureAt(uint8_t *buffer, int x, int y) {
+static void drawTextureAt(uint8_t *buffer, const uint8_t *texture, int textureBytes, int x, int y) {
 
     uint8_t *byteAddress = buffer + (y * LCD_ROWSIZE) + (x / 8);
     uint8_t byte1;
@@ -156,48 +158,37 @@ static void drawTextureAt(uint8_t *buffer, int x, int y) {
         //     | a b c d e f g h || i j k l m n o p || q r s t u v w x ||
         //           | A B C D E    F G H|I J K L M    N O P |
 
-        uint8_t byte0 = *byteAddress;
-        uint8_t byte1 = 0; // going to be blown away
-        uint8_t byte2 = 0;
-        uint8_t byte3 = 0;
-        uint8_t byte4 = *(byteAddress + 4);
+        uint8_t firstByte = byteAddress[0];
+        // middle bytes will be totally blown away
+        uint8_t lastByte = byteAddress[textureBytes - 1];
 
         uint8_t topMask = topMaskLookup[bit];
         uint8_t bottomMask = ~topMask;
 
-        // byte0 - blast bottom bits to zero, shift texture over, OR in the bits
+        // firstByte - blast bottom bits to zero, shift texture over, OR in the bits
         // say for bit == 4, top mask is 11100000 and bottom mask is 00011111
-        byte0 &= topMask;
-        byte0 |= (texture[0] >> (7 - bit)) & bottomMask;
-        byteAddress[0] = byte0;
+        firstByte &= topMask;
+        firstByte |= (texture[0] >> (7 - bit)) & bottomMask;
+        byteAddress[0] = firstByte;
 
-        // byte1 - bottom bits from texture 0 at the top, and top bits of text 1 at the bottom
-        // assemble the top
-        byte1 |= (texture[0] << (bit + 1)) & topMask;
-        // assemble the bottom
-        byte1 |= (texture[1] >> (7 - bit)) & bottomMask;
-        byteAddress[1] = byte1;
+        // copy the whole bytes
+        for (int byteIndex = 1; byteIndex < textureBytes; byteIndex++) {
+            uint8_t byte = 0;
 
-        // byte1 - bottom bits from texture 1 at the top, and top bits of text 2 at the bottom
-        // assemble the top
-        byte2 |= (texture[1] << (bit + 1)) & topMask;
-        // assemble the bottom
-        byte2 |= (texture[2] >> (7 - bit)) & bottomMask;
-        byteAddress[2] = byte2;
-
-        // byte1 - bottom bits from texture 2 at the top, and top bits of text 3 at the bottom
-        // assemble the top
-        byte3 |= (texture[2] << (bit + 1)) & topMask;
-        // assemble the bottom
-        byte3 |= (texture[3] >> (7 - bit)) & bottomMask;
-        byteAddress[3] = byte3;
+            // byte - bottom bits from texture 0 at the top, and top bits of text 1 at the bottom
+            // assemble the top
+            byte = (texture[byteIndex - 1] << (bit + 1)) & topMask;
+            // assemble the bottom
+            byte |= (texture[byteIndex] >> (7 - bit)) & bottomMask;
+            byteAddress[byteIndex] = byte;
+        }
 
         // byte2 - top bits from texture 3 at the bottom
         // blast the top bits to zero
-        byte4 &= bottomMask;
+        lastByte &= bottomMask;
         // shift over texture[end]
-        byte4 |= (texture[3] << (bit + 1)) & topMask;
-        byteAddress[4] = byte4;
+        lastByte |= (texture[3] << (bit + 1)) & topMask;
+        byteAddress[4] = lastByte;
     }
 
     pd->graphics->markUpdatedRows(y, y + 1);
@@ -243,9 +234,11 @@ static void moveSprite(uint8_t *buffer, Sprite *sprite) {
 
 //    fillRect(buffer, oldRect, Color_Light);
 //    fillRect(buffer, newRect, Color_Dark);
+    
+    int textureBytes = sizeof(texture) / sizeof(*texture);
 
     for (int y = newRect.y; y < newRect.y + newRect.height; y++) {
-        drawTextureAt(buffer, newRect.x, y);
+        drawTextureAt(buffer, texture, textureBytes, newRect.x, y);
     }
 
     sprite->rect = newRect;
