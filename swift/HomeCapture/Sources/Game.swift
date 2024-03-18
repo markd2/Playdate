@@ -46,6 +46,7 @@ struct Game {
             mode = splash
         case .startGame:
             clearScreen()
+            runner.reset()
             mode = runner
         case .endGameWin:
             clearScreen()
