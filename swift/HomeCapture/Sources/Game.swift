@@ -1,6 +1,9 @@
 import Playdate
 
+var sys: playdate_sys { playdateAPI.system.unsafelyUnwrapped.pointee }
+
 struct Game {
+
     init() {
         // Setup the device before any other operations.
         srand(System.getSecondsSinceEpoch(milliseconds: nil))
@@ -8,6 +11,7 @@ struct Game {
     }
     
     mutating func updateGame() {
-        
+        sys.drawFPS(0, 0)
     }
 }
+
