@@ -12,11 +12,11 @@ struct Game {
     }
     
     mutating func updateGame() {
-        sys.drawFPS(0, 0)
+        pd.sys.drawFPS(0, 0)
 
         let text: StaticString = "splunge"
         text.withUTF8Buffer { utf8 in
-            _ = graphics.drawText(utf8.baseAddress, utf8.count, PDStringEncoding.kUTF8Encoding, x, y)
+            _ = pd.graphics.drawText(utf8.baseAddress, utf8.count, PDStringEncoding.kUTF8Encoding, x, y)
         }
 
         x += 10
