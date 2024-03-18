@@ -83,3 +83,40 @@ StaticString exists, which is easy (Well, Swift-Easy) to get bytes from:
         _ = graphics.drawText(utf8.baseAddress, utf8.count, PDStringEncoding.kUTF8Encoding, x, y)
     }
 ```
+
+## printing
+
+logToConsole isn't available because it's a C variadic?
+
+Not sure how to caveman debug this thing
+
+## Protocols
+
+Trying to do a protocol thing
+
+```
+protocol GameMode {
+    mutating func updateGame()
+}
+```
+
+and then
+
+```
+struct Game {
+    var mode: GameMode = SplashScreen()
+```
+
+getting
+
+```
+cannot use a value of protocol type 'any GameMode' in embedded Swift
+```
+
+"protocol" not mentioned at all in the example repo, so...
+
+Amusingly enough, couldn't figure out how to use protocols, but inheritance
+works just fine (with the overhead of a dynamic allocation, but for the
+game state machine, should only happen once)
+
+
