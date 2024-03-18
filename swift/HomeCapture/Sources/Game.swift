@@ -1,7 +1,5 @@
 import Playdate
 
-var sys: playdate_sys { playdateAPI.system.unsafelyUnwrapped.pointee }
-
 struct Game {
 
     init() {
