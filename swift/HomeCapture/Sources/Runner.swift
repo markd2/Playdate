@@ -87,13 +87,6 @@ class Runner: GameMode {
         houseSprites.forEach { sprite in
             kickOffSprite(sprite)
         }
-
-        // bounds already set up
-//        houseSprites[0].setCollisionResponseFunction { _, _ in .collisionTypeBounce }
-        // houseSprites[0].moveWithCollisions(goalX: 300, goalY: 200) { _, _, _ in  }
-
-//        houseSprites[0].addSprite()
-        // houseSprites[0].forget()
     }
 
     private func drawNet(at: Point) {
