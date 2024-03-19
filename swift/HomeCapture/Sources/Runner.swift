@@ -69,19 +69,23 @@ class Runner: GameMode {
         super.init()
     }
 
+    func kickOffSprite(_ sprite: Sprite) {
+        sprite.moveTo(x: 100 + Float(rand() % screenWidth - 100),
+                      y: 50 + Float(rand() % screenHeight - 50))
+        sprite.addSprite()
+        sprite.setUpdateFunction { ptr in
+            let sprite = Sprite(borrowing: ptr.unsafelyUnwrapped)
+            let (x, y) = sprite.position
+            let newX = x - 1
+            sprite.moveTo(x: newX, y: y)
+        }
+    }
+
     override func reset() {
         netOrigin = Point(x: 10, y: 10)
 
         houseSprites.forEach { sprite in
-            sprite.moveTo(x: 100 + Float(rand() % screenWidth - 100),
-                          y: 50 + Float(rand() % screenHeight - 50))
-            sprite.addSprite()
-            sprite.setUpdateFunction { ptr in
-                let sprite = Sprite(borrowing: ptr.unsafelyUnwrapped)
-                let (x, y) = sprite.position
-                let newX = x - 1
-                sprite.moveTo(x: newX, y: y)
-            }
+            kickOffSprite(sprite)
         }
 
         // bounds already set up
