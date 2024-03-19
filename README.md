@@ -4,8 +4,8 @@ Playing around with the PlayDate SDK.
 
 ### Active Development
 
-* [Sampler](Sampler)
-* [Trek](Trek)
+* [Render](Render)
+* [Swift](swift)
 
 ### Got it!
 
