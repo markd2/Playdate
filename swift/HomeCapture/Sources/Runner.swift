@@ -62,6 +62,8 @@ class Runner: GameMode {
       "house18.png"
     ]
 
+    var currentLaunchIndex = 0
+
     override init() {
         houseSprites = houseSpriteNames.map { houseName in
             Sprite(bitmapPath: houseName)
@@ -70,7 +72,7 @@ class Runner: GameMode {
     }
 
     func kickOffSprite(_ sprite: Sprite) {
-        sprite.moveTo(x: 100 + Float(rand() % screenWidth - 100),
+        sprite.moveTo(x: Float(screenWidth),
                       y: 50 + Float(rand() % screenHeight - 50))
         sprite.addSprite()
         sprite.setUpdateFunction { ptr in
@@ -83,10 +85,6 @@ class Runner: GameMode {
 
     override func reset() {
         netOrigin = Point(x: 10, y: 10)
-
-        houseSprites.forEach { sprite in
-            kickOffSprite(sprite)
-        }
     }
 
     private func drawNet(at: Point) {
@@ -129,6 +127,12 @@ class Runner: GameMode {
         var pushed = PDButtons(rawValue: 0)
         pd.sys.getButtonState(nil, &pushed, nil)
         
+        if pushed == .a {
+            let sprite = houseSprites[currentLaunchIndex]
+            currentLaunchIndex = (currentLaunchIndex + 1) % houseSprites.count
+            kickOffSprite(sprite)
+        }
+
         if pushed == .b {
             // game over man, GAME OVER
 
