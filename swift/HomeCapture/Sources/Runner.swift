@@ -1,4 +1,7 @@
+// House images from https://www.etsy.com/shop/HeatherRobertsArt
+
 import Playdate
+
 
 struct Point {
     var x: Int32
@@ -8,6 +11,28 @@ struct Point {
 let screenHeight: Int32 = 240
 let screenWidth: Int32 = 400
 
+// Stolen from swift-playdate-examples
+extension Sprite {
+    init(bitmapPath: StaticString) {
+        let bitmap = Graphics.loadBitmap(path: bitmapPath)
+        var width: Int32 = 0
+        var height: Int32 = 0
+        Graphics.getBitmapData(
+          bitmap: bitmap,
+          width: &width,
+          height: &height,
+          rowbytes: nil,
+          mask: nil,
+          data: nil)
+        let bounds = PDRect(x: 0, y: 0, width: Float(width), height: Float(height))
+
+        self.init()
+        self.setImage(image: bitmap)
+        self.bounds = bounds
+        self.collideRect = bounds
+    }
+}
+
 
 class Runner: GameMode {
     var netOrigin: Point = Point(x: 10, y: 10)
@@ -15,14 +40,64 @@ class Runner: GameMode {
     let netWidth: Int32 = 20
     let netHeight: Int32 = 70
 
+    var houseSprites: [Sprite]
+    let houseSpriteNames: [StaticString] = [
+      "house1.png",
+      "house2.png",
+      "house3.png",
+      "house4.png",
+      "house5.png",
+      "house6.png",
+      "house7.png",
+      "house8.png",
+      "house9.png",
+      "house10.png",
+      "house11.png",
+      "house12.png",
+      "house13.png",
+      "house14.png",
+      "house15.png",
+      "house16.png",
+      "house17.png",
+      "house18.png"
+    ]
+
+    override init() {
+        houseSprites = houseSpriteNames.map { houseName in
+            Sprite(bitmapPath: houseName)
+        }
+        super.init()
+    }
+
     override func reset() {
         netOrigin = Point(x: 10, y: 10)
+
+        houseSprites.forEach { sprite in
+            sprite.moveTo(x: 100 + Float(rand() % screenWidth - 100),
+                          y: 50 + Float(rand() % screenHeight - 50))
+            sprite.addSprite()
+            sprite.setUpdateFunction { ptr in
+                let sprite = Sprite(borrowing: ptr.unsafelyUnwrapped)
+                let (x, y) = sprite.position
+                let newX = x - 1
+                sprite.moveTo(x: newX, y: y)
+            }
+        }
+
+        // bounds already set up
+//        houseSprites[0].setCollisionResponseFunction { _, _ in .collisionTypeBounce }
+        // houseSprites[0].moveWithCollisions(goalX: 300, goalY: 200) { _, _, _ in  }
+
+//        houseSprites[0].addSprite()
+        // houseSprites[0].forget()
     }
 
     private func drawNet(at: Point) {
         pd.graphics.setBackgroundColor(LCDSolidColor.colorBlack)
 
         pd.graphics.fillRect(at.x, at.y, netWidth, netHeight, 0)
+
+        pd.graphics.setBackgroundColor(LCDSolidColor.colorWhite)
     }
 
     private func moveNet(by delta: Int32) {
@@ -45,8 +120,11 @@ class Runner: GameMode {
 
     override func updateGame() -> State {
 
+
         // draw stuff
         clearScreen()
+        Sprite.updateAndDrawSprites()
+
         drawNet(at: netOrigin)
         pd.sys.drawFPS(0, 0)
 
