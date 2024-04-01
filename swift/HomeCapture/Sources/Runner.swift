@@ -104,7 +104,9 @@ class Runner: GameMode {
 
     override init() {
         houseSprites = houseSpriteNames.map { houseName in
-            Sprite(bitmapPath: houseName)
+            var sprite = Sprite(bitmapPath: houseName)
+            sprite.zIndex = Int16(rand() % 10 + 2)
+            return sprite
         }
         super.init()
     }
@@ -117,7 +119,7 @@ class Runner: GameMode {
         sprite.setUpdateFunction { ptr in
             let sprite = Sprite(borrowing: ptr.unsafelyUnwrapped)
             let (x, y) = sprite.position
-            let newX = x - 1
+            let newX = x - Float(sprite.zIndex) / 4.0
             sprite.moveTo(x: newX, y: y)
         }
     }
