@@ -120,3 +120,57 @@ works just fine (with the overhead of a dynamic allocation, but for the
 game state machine, should only happen once)
 
 
+### I can hazs string?
+
+Sources/SplashScreen.swift:56:45: error: cannot find type 'CVarArg' in scope
+
+starting with
+
+```
+    func formatString(_ format: String, _ args: CVarArg...) -> [CChar] {
+        var args = args
+        let bufferSize = 1024
+        var buffer = [CChar](repeating: 0, count: bufferSize)
+        
+        withVaList(args) { vaListPointer in
+            vsnprintf(&buffer, bufferSize, format, vaListPointer)
+            // pd.vaFormatString(&buffer, 
+        }
+        
+        return buffer
+    }
+```
+
+```
+56 │ func formatString(_ format: String, _ args: CVarArg...) -> [CChar] {
+   │                                             ╰─ error: cannot find type 'CVarArg' in scope
+```
+
+This works.  Not pretty, and definitely not safe.  But does let us catenate
+strings together.
+
+```
+    let bufferSize = 1024
+
+    let blah: StaticString = "hello"
+    let space: StaticString = " "
+    let oop: StaticString = "freaks"
+
+    var scribble = UnsafeMutablePointer<CChar>.allocate(capacity: 1024)
+    let base = scribble
+
+    blah.withUTF8Buffer { utf8 in
+        scribble = stpcpy(scribble, utf8.baseAddress)
+    }
+    space.withUTF8Buffer { utf8 in
+        scribble = stpcpy(scribble, utf8.baseAddress)
+    }
+    oop.withUTF8Buffer { utf8 in
+        scribble = stpcpy(scribble, utf8.baseAddress)
+    }
+
+    let length = strlen(base)
+
+    _ = pd.graphics.drawText(base, length, PDStringEncoding.kUTF8Encoding, 100, 50)
+```
+

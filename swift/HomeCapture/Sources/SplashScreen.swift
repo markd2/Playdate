@@ -49,7 +49,49 @@ class SplashScreen: GameMode {
             text = "2D Home Capture"
         }
 
+        blah()
+
         return .loco
     }
 }
 
+func blah() {
+    let bufferSize = 1024
+
+    let blah: StaticString = "hello"
+    let space: StaticString = " "
+    let oop: StaticString = "freaks"
+
+    var scribble = UnsafeMutablePointer<CChar>.allocate(capacity: 1024)
+    let base = scribble
+
+    blah.withUTF8Buffer { utf8 in
+        scribble = stpcpy(scribble, utf8.baseAddress)
+    }
+    space.withUTF8Buffer { utf8 in
+        scribble = stpcpy(scribble, utf8.baseAddress)
+    }
+    oop.withUTF8Buffer { utf8 in
+        scribble = stpcpy(scribble, utf8.baseAddress)
+    }
+
+    let length = strlen(base)
+
+    _ = pd.graphics.drawText(base, length, PDStringEncoding.kUTF8Encoding, 100, 50)
+}
+
+/*
+// so close - CVarArg not defined, alas
+func formatString(_ format: String, _ args: CVarArg...) -> [CChar] {
+    var args = args
+    let bufferSize = 1024
+    var buffer = [CChar](repeating: 0, count: bufferSize)
+
+    withVaList(args) { vaListPointer in
+        // vsnprintf(&buffer, bufferSize, format, vaListPointer)
+        pd.vaFormatString(&buffer, 
+    }
+
+    return buffer
+}
+*/
