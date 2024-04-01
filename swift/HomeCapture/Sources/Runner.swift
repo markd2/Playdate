@@ -115,7 +115,6 @@ class Runner: GameMode {
 
     override func updateGame() -> State {
 
-
         // draw stuff
         clearScreen()
         Sprite.updateAndDrawSprites()
@@ -148,7 +147,36 @@ class Runner: GameMode {
         let delta = pd.sys.getCrankChange()
         moveNet(by: Int32(delta))
 
+
+        for sprite in houseSprites {
+            if spriteIntersectsNet(sprite) {
+                sprite.removeSprite()
+            }
+        }
+
         // stick with us, we got another frame to process
         return .loco
+    }
+
+    func spriteIntersectsNet(_ sprite: Sprite) -> Bool {
+        // PDRect is float coords
+        let bounds = sprite.bounds
+
+        let paddleMinX = netOrigin.x
+        let paddleMaxX = netOrigin.x + netWidth
+        let paddleMinY = netOrigin.y
+        let paddleMaxY = netOrigin.y + netHeight
+
+        let houseMinX = (Int32)(bounds.x)
+        let houseMaxX = (Int32)(bounds.x + bounds.width)
+        let houseMinY = (Int32)(bounds.y)
+        let houseMaxY = (Int32)(bounds.y + bounds.height)
+
+        if paddleMaxX < houseMinX || paddleMinX > houseMaxX ||
+           paddleMaxY < houseMinY || paddleMinY > houseMaxY {
+            return false
+        }
+
+        return true
     }
 }
