@@ -42,24 +42,24 @@ class Runner: GameMode {
 
     var houseSprites: [Sprite]
     let houseSpriteNames: [StaticString] = [
-      "house1.png",
-      "house2.png",
-      "house3.png",
-      "house4.png",
-      "house5.png",
-      "house6.png",
-      "house7.png",
-      "house8.png",
-      "house9.png",
-      "house10.png",
-      "house11.png",
-      "house12.png",
-      "house13.png",
-      "house14.png",
-      "house15.png",
-      "house16.png",
-      "house17.png",
-      "house18.png"
+      "house-1.png",
+      "house-2.png",
+      "house-3.png",
+      "house-4.png",
+      "house-5.png",
+      "house-6.png",
+      "house-7.png",
+      "house-8.png",
+      "house-9.png",
+      "house-10.png",
+      "house-11.png",
+      "house-12.png",
+      "house-13.png",
+      "house-14.png",
+      "house-15.png",
+      "house-16.png",
+      "house-17.png",
+      "house-18.png"
     ]
 
     var currentLaunchIndex = 0
@@ -140,9 +140,9 @@ class Runner: GameMode {
             return .endGameWin
         }
 
-        let text: StaticString = "Press (B) to Exit"
+        let text: StaticString = "Press (A) To Add House | (B) to Exit"
         text.withUTF8Buffer { utf8 in
-            _ = pd.graphics.drawText(utf8.baseAddress, utf8.count, PDStringEncoding.kUTF8Encoding, 50, 50)
+            _ = pd.graphics.drawText(utf8.baseAddress, utf8.count, PDStringEncoding.kUTF8Encoding, 5, 220)
         }
 
         let delta = pd.sys.getCrankChange()
