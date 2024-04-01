@@ -21,7 +21,6 @@ class SplashScreen: GameMode {
         }
 
         pd.sys.drawFPS(0, 0)
-
         
         if frameSkip == 0 {
             text.withUTF8Buffer { utf8 in
@@ -46,38 +45,37 @@ class SplashScreen: GameMode {
             text = "B BUTTON"
         } else {
             // pd.graphics.clear(1)
-            text = "2D Home Capture"
+            text = ""
+            blah(x: x, y: y)
         }
-
-        blah()
 
         return .loco
     }
 }
 
-func blah() {
+func blah(x: Int32, y: Int32) {
     let bufferSize = 1024
 
-    let blah: StaticString = "hello"
-    let space: StaticString = " "
-    let oop: StaticString = "freaks"
+    let phrase: [StaticString] = [
+      "2D",
+      " ",
+      "Home",
+      " ",
+      "Capture"
+    ]
 
-    var scribble = UnsafeMutablePointer<CChar>.allocate(capacity: 1024)
+    var scribble = UnsafeMutablePointer<CChar>.allocate(capacity: bufferSize)
     let base = scribble
 
-    blah.withUTF8Buffer { utf8 in
-        scribble = stpcpy(scribble, utf8.baseAddress)
-    }
-    space.withUTF8Buffer { utf8 in
-        scribble = stpcpy(scribble, utf8.baseAddress)
-    }
-    oop.withUTF8Buffer { utf8 in
-        scribble = stpcpy(scribble, utf8.baseAddress)
+    phrase.forEach { sstring in
+        sstring.withUTF8Buffer { utf8 in
+            scribble = stpcpy(scribble, utf8.baseAddress)
+        }
     }
 
     let length = strlen(base)
 
-    _ = pd.graphics.drawText(base, length, PDStringEncoding.kUTF8Encoding, 100, 50)
+    _ = pd.graphics.drawText(base, length, PDStringEncoding.kUTF8Encoding, x, y)
 }
 
 /*
