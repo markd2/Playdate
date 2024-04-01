@@ -167,10 +167,11 @@ class Runner: GameMode {
         let paddleMinY = netOrigin.y
         let paddleMaxY = netOrigin.y + netHeight
 
-        let houseMinX = (Int32)(bounds.x)
-        let houseMaxX = (Int32)(bounds.x + bounds.width)
-        let houseMinY = (Int32)(bounds.y)
-        let houseMaxY = (Int32)(bounds.y + bounds.height)
+        let borderFactor: Float = 3.0
+        let houseMinX = (Int32)(bounds.x + borderFactor)
+        let houseMaxX = (Int32)(bounds.x + bounds.width - borderFactor * 2)
+        let houseMinY = (Int32)(bounds.y + borderFactor)
+        let houseMaxY = (Int32)(bounds.y + bounds.height - borderFactor * 2)
 
         if paddleMaxX < houseMinX || paddleMinX > houseMaxX ||
            paddleMaxY < houseMinY || paddleMinY > houseMaxY {

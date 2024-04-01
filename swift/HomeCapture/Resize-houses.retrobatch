@@ -57,7 +57,7 @@
 		</dict>
 		<dict>
 			<key>canvasOrigin</key>
-			<string>{400, 240}</string>
+			<string>{320, 400}</string>
 			<key>class</key>
 			<string>OTScaleNode</string>
 			<key>inputHeight</key>
@@ -80,14 +80,14 @@
 			<integer>800</integer>
 			<key>outputsIds</key>
 			<array>
-				<string>9b763d5b-5499-4729-b2af-a7bf5e04212e</string>
+				<string>fc7433e2-03a7-4aa4-bc79-3695e0c6d2c7</string>
 			</array>
 			<key>proccessId</key>
 			<string>302588e1-417f-4782-b2c7-2e5fd791d852</string>
 		</dict>
 		<dict>
 			<key>canvasOrigin</key>
-			<string>{560, 80}</string>
+			<string>{640, 161}</string>
 			<key>class</key>
 			<string>OTWriteNode</string>
 			<key>inputFileNameTokens</key>
@@ -152,7 +152,7 @@
 		</dict>
 		<dict>
 			<key>canvasOrigin</key>
-			<string>{160, 320}</string>
+			<string>{240, 240}</string>
 			<key>class</key>
 			<string>OTTrimEdgesNode</string>
 			<key>inputEdgeColorArchivedColorData</key>
@@ -294,6 +294,26 @@
 			</array>
 			<key>proccessId</key>
 			<string>0bcb7977-b32f-478a-8561-4fd2f3d97148</string>
+		</dict>
+		<dict>
+			<key>canvasOrigin</key>
+			<string>{560, 319}</string>
+			<key>class</key>
+			<string>OTBorderNode</string>
+			<key>enabled</key>
+			<false/>
+			<key>inputBorderCIColorArchivedCIColorData</key>
+			<string>0 0 0 1</string>
+			<key>inputBorderOTCornerRadius</key>
+			<string>0 px</string>
+			<key>inputBorderOTWidth</key>
+			<string>1 px</string>
+			<key>outputsIds</key>
+			<array>
+				<string>9b763d5b-5499-4729-b2af-a7bf5e04212e</string>
+			</array>
+			<key>proccessId</key>
+			<string>fc7433e2-03a7-4aa4-bc79-3695e0c6d2c7</string>
 		</dict>
 	</array>
 	<key>version</key>
