@@ -174,3 +174,16 @@ strings together.
     _ = pd.graphics.drawText(base, length, PDStringEncoding.kUTF8Encoding, 100, 50)
 ```
 
+Closure capture:
+
+When  I try to capture in a closure:
+
+```
+1.	Apple Swift version 6.0-dev (LLVM d1625da873daa4c, Swift bae6450bf96dceb)
+2.	Compiling with the current language version
+3.	While evaluating request ExecuteSILPipelineRequest(Run pipelines { Mandatory Diagnostic Passes + Enabling Optimization Passes } on SIL for game_device)
+4.	While running pass #1233 SILFunctionTransform "TransferNonSendable" on SILFunction "@$s11game_device6RunnerC13kickOffSpriteyy09playdate_B00F0OF".
+ for 'kickOffSprite(_:)' (at Sources/Runner.swift:112:5)
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+```
+

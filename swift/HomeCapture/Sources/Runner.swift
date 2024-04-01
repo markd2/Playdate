@@ -37,8 +37,8 @@ extension Sprite {
 class Runner: GameMode {
     var netOrigin: Point = Point(x: 10, y: 10)
 
-    let netWidth: Int32 = 30
-    let netHeight: Int32 = 40
+    let netWidth: Int32 = 15
+    let netHeight: Int32 = 30
 
     var houseSprites: [Sprite]
     let houseSpriteNames: [StaticString] = [
@@ -59,7 +59,45 @@ class Runner: GameMode {
       "house-15.png",
       "house-16.png",
       "house-17.png",
-      "house-18.png"
+      "house-18.png",
+
+      "house-1.png",
+      "house-2.png",
+      "house-3.png",
+      "house-4.png",
+      "house-5.png",
+      "house-6.png",
+      "house-7.png",
+      "house-8.png",
+      "house-9.png",
+      "house-10.png",
+      "house-11.png",
+      "house-12.png",
+      "house-13.png",
+      "house-14.png",
+      "house-15.png",
+      "house-16.png",
+      "house-17.png",
+      "house-18.png",
+
+      "house-1.png",
+      "house-2.png",
+      "house-3.png",
+      "house-4.png",
+      "house-5.png",
+      "house-6.png",
+      "house-7.png",
+      "house-8.png",
+      "house-9.png",
+      "house-10.png",
+      "house-11.png",
+      "house-12.png",
+      "house-13.png",
+      "house-14.png",
+      "house-15.png",
+      "house-16.png",
+      "house-17.png",
+      "house-18.png",
     ]
 
     var currentLaunchIndex = 0
@@ -75,6 +113,7 @@ class Runner: GameMode {
         sprite.moveTo(x: Float(screenWidth),
                       y: 50 + Float(rand() % screenHeight - 50))
         sprite.addSprite()
+
         sprite.setUpdateFunction { ptr in
             let sprite = Sprite(borrowing: ptr.unsafelyUnwrapped)
             let (x, y) = sprite.position
