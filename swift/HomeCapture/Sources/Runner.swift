@@ -37,8 +37,8 @@ extension Sprite {
 class Runner: GameMode {
     var netOrigin: Point = Point(x: 10, y: 10)
 
-    let netWidth: Int32 = 20
-    let netHeight: Int32 = 70
+    let netWidth: Int32 = 30
+    let netHeight: Int32 = 40
 
     var houseSprites: [Sprite]
     let houseSpriteNames: [StaticString] = [
