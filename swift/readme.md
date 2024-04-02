@@ -187,3 +187,29 @@ When  I try to capture in a closure:
 Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
 ```
 
+## other fun
+
+```
+<unknown>:0: error: module 'Swift' cannot be imported in embedded Swift mode
+make: *** [build/Modules/playdate_device.o] Error 1
+```
+
+```
+Sources/Runner.swift:43:23: error: type 'Sprite' does not conform to protocol 'Copyable'
+ 41 │     let netHeight: Int32 = 70
+ 42 │ 
+ 43 │     var houseSprites: [Sprite]
+    │                       ╰─ error: type 'Sprite' does not conform to protocol 'Copyable'
+```
+
+```
+ 15 │ extension Sprite: Copyable {
+    │ ├─ warning: extension declares a conformance of imported type 'Sprite' to imported protocol 'Copyable'; this will not behave correctly if the owners of 'Playdate' introduce this conformance in the future
+    │ ╰─ note: add '@retroactive' to silence this warning
+```
+
+Tried sprinkling @retroactive around, and got more errors.
+
+So snarfed the 2024-03-13 snapshot from another machine.
+(2024-03-27 had the issues above)
+
